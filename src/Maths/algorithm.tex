@@ -1,0 +1,83 @@
+\chapter{Algoritmo para códigos cíclico sesgados}%
+\label{chap:conceptos_básicos_sobre_códigos_lineales}
+
+\begin{lemma}
+    Sea \(L\) un cuerpo, \(\sigma\) un automorfismo de \(L\) de orden finito \(n\), y \(K = L^\sigma\) el subcuerpo invariante bajo \(\sigma\). Sea  \(\{a_0, \dots, a_{n-1}\) una \(K\)-base de \(L\). Entonces, para todo \(t \leq n\), y cada subconjunto \(k_0 < k_1 < \dots < k_{t-1} \subset \{0, 1, \dots, n-1\}\)
+    \[
+    \begin{vmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
+        \sigma^{t-1}(\alpha_{k_0}) & \sigma^{t-1}(\alpha_{k_1}) & \dots & \sigma^{t-1}(\alpha_{k_{t-1}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t-1}(\alpha_{k_0}) & \sigma^{t-1}(\alpha_{k_1}) & \dots & \sigma^{t-1}(\alpha_{k_{t-1}})
+    \end{vmatrix}
+    \neq 0
+    .\]
+\end{lemma}
+
+\begin{proofs}
+    Realizaremos la prueba por inducción sobre \(t\). El caso \(t = 1\) se cumple trivialmente. Por tanto, supongamos que el lema se cummple para un cierto  \(t \geq 1\). Tenemos que comprobar que, para toda matriz \((t+1) \times (t+1)\)
+    \[
+    \Delta =
+    \begin{pmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
+        \sigma^{t-1}(\alpha_{k_0}) & \sigma^{t-1}(\alpha_{k_1}) & \dots & \sigma^{t-1}(\alpha_{k_{t-1}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t}(\alpha_{k_0}) & \sigma^{t}(\alpha_{k_1}) & \dots & \sigma^{t}(\alpha_{k_{t}})
+
+    \end{pmatrix}
+    .\]
+el determinante \(|\Delta|\) es distinto de cero. Supongamos por el contrario que \(|\Delta| = 0\). Por la hipótesis de inducción tenemos que las primeras \(t\) columnas de \(\Delta\) son linealmente independientes, luego existen \(a_0, \dots, a_{t-1} \in L\) tales que
+
+\[
+(a_{k_t}, \sigma^{t-1}(a_{k_t}, \dots, \sigma^t(a_{k_t}))) = \sum_{j=0}^{t-1} a_j(\alpha_{k_j}, \sigma^{t-1}(\alpha_{k_j}), \dots, \sigma^t(\alpha_{k_j}))
+.\]
+
+Es decir, \(a_0, \dots, a_{t-1}\) satisfacen el sistema lineal
+
+\begin{equation}
+\label{linear_system}
+\begin{cases}
+    \alpha_{k_t} = a_0\alpha_{k_0} + \cdots + a_{t-1}\alpha_{k_{t-1}} \\
+    \sigma^{t-1}(\alpha_{k_t}) = a_0\sigma^{t-1}(\alpha_{k_0}) + \cdots + a_{t-1}\sigma^{t-1}(\alpha_{k_{t-1}}) \\
+    \vdots \\
+    \sigma^t(\alpha_{k_t}) = a_0\sigma^t(\alpha_{k_0}) + \cdots + a_{t-1}\sigma^t(\alpha_{k_{t-1}})
+\end{cases}
+.
+\end{equation}
+
+Para cada \(j = 0, \dots, t-1\), restamos en (\ref{linear_system}) la ecuación \(j+1\) transformada por \(\sigma^{-1}\) a la ecuación \(j\). Esto produce el siguiente sistema lineal homogéneo
+
+\begin{equation}
+\label{hom_liner_system}
+\begin{cases}
+0 = (a_0 - \sigma^{-1}(a_0))\alpha_{k_0} + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\alpha_{k_{t-1}} \\
+0 = (a_0 - \sigma^{-1}(a_0))\sigma^{t-1}(\alpha_{k_0}) + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\sigma^{t-1}(\alpha_{k_{t-1}}) \\
+\vdots \\
+0 = (a_0 - \sigma^{-1}(a_0))\sigma^{t-1}(\alpha_{k_0}) + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\sigma^{t-1}(\alpha_{k_{t-1}}) \\
+\end{cases}
+.
+\end{equation}
+
+La matriz de coeficientes de (\ref{hom_liner_system}) es no singular, por la hipótesis de inducción, así que tenemos que para todo \(j = 0, \dots, t-1\), \(a_j - \sigma^{-1}(a_j) = 0\), y por tanto \(a_0, \dots, a_{t-1} \in K\). Como consecuencia, la ecuación (\ref{linear_system}) establece una dependencia lineal sobre  \(K\) de la  \(K\)-base  \(\{\alpha_0, \dots, \alpha{n-1}\), creando una contradicción. Por tanto, \(|\Delta| \neq 0\) y el resultado queda demostrado.
+\end{proofs}
+
+\begin{lemma}
+    Sea \(\alpha \in \F\) tal que \(\{\alpha, \sigma(\alpha), \dots, \sigma^{n-1}(\alpha)\) sea una base de \(\F\) como  \(\F^\sigma\)-espacio vectorial. Fijemos  \(\beta = \alpha^{-1}\sigma(\alpha)\). Para todo subconjunto \(T = \{t_1 < t_2 < \cdots < t_m\} \subset \{0, 1, \dots, n-1\}\), los polinomios
+    \[
+    g^l = [x - \sigma^{t_1}(\beta), x - \sigma^{t_2}(\beta), \dots, x - \sigma^{t_m}(\beta)]_l
+    \]
+y
+    \[
+    g^r = [x - \sigma^{t_1}(\beta^{-1}), x - \sigma^{t_2}(\beta^{-1}), \dots, x - \sigma^{t_m}(\beta^{-1})]_r
+    \]
+tienen grado \(m\). Por tanto, si \(x - \sigma^s(\beta) |_r g^l\) o \(x - \sigma^s(\beta^{-1}) |_l g^r\), entonces \(s \in T\).
+\end{lemma}
+
+\begin{proofs}
+    Supongamos que \(\deg g^l < m\), así que \(g^l = \sum_{i=0}^{m-1} g_i x^i\). Como \(g\) es un múltiplo a la izquierda de \(x - \sigma^{t_j}(\beta)\) para todo \(1 \leq j \leq m\), por el lema (TODO) tenemos que
+    \[
+    \sum_{i=0}^{m-1}g_i N_i(\sigma^{t_j}(\beta)) = 0 \text{ para todo } 1 \leq j \leq m
+    .\]
+
+Esto es un sistema lineal homogéneo cuya matriz de coeficientes es la transpuesta de
+\end{proofs}

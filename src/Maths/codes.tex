@@ -1,2 +1,121 @@
-\section{Conceptos básicos sobre códigos lineales}%
-\label{sec:conceptos_básicos_sobre_códigos_lineales}
+\chapter{Conceptos básicos sobre códigos lineales}%
+\label{chap:conceptos_básicos_sobre_códigos_lineales}
+
+\section{Códigos lineales, matrices generatriz y de paridad}%
+\label{sec:códigos_lineales_matrices_generatriz_y_de_paridad}
+
+Sea \(\F_q^n\) el espacio vectorial de todas las \(n\)-tuplas sobre el cuerpo finito \(\F_q\).
+
+\begin{definition}[Código]
+ Definimos un \((n, M)\) \textit{código} \(\mathcal{C}\) sobre \(\F_q\) como un subconjunto de \(\F_q^n\) de tamaño \(M\).
+\end{definition}
+
+Normalmente escribiremos los vectores \((a_1, a_2, \dots, a_n)\) en \(\F_q^n\) de la forma \(a_1 a_2 \cdots a_n\) y llamaremos a los vectores en \(\mathcal{C}\) \textit{palabras código}, o simplemente \textit{palabras}. Además, utilizaremos nombres concretos para referirnos a códigos sobre algunos de los cuerpos más comunes . A los códigos sobre \(\F_2\) los llamaremos \textit{códigos binarios}, los códigos sobre \(\F_3\) los notaremos como \textit{códigos ternarios} y a los códigos sobre \(F_4\) los llamaremos \textit{códigos cuaternarios}.\\
+
+Dicho esto, necesitamos dotar de algún tipo de estructura adicional a los códigos pues siendo únicamente conjuntos estamos muy limitados. La estructura adicional más útil que se les impone es la linealidad.
+
+\begin{definition}[Código lineal]
+Si \(\mathcal{C}\) es un subespacio vectorial de dimensión \(k\) de \(\F_q^n\), diremos que \(\mathcal{C}\) es un \([n,k]\) \textit{código lineal} sobre \(\F_q\).
+\end{definition}
+
+Dicho esto, las dos maneras más comunes de presentar un código lineal son dando una matriz generatriz o una matriz de paridad.
+
+\begin{definition}[Matriz generatriz]
+    Una \textit{matriz generatriz} de un \([n,k]\) código lineal \(\mathcal{C}\) es cualquier matriz \(G\) de dimensiones \(k \times n\) cuyas filas formen una base de \(\mathcal{C}\).
+\end{definition}
+
+Dado una matriz generatriz \(G\), para cualquier conjunto de \(k\) columnas independientes de esta, diremos que el correspondiente conjunto de coordenadas es un \textit{conjunto de información} de C. Las restantes \(r=n-k\) coordenadas las notaremos como \textit{conjunto de redundancia}, y llamaremos a \(r\) \textit{redundancia} de \(\C\). Si las primeras \(k\) coordenadas forman un conjunto de información, existe una única matriz generatriz para el código de la forma \([I_k | A]\) donde \(I_k\) es la matriz identidad de orden \(k\). Diremos que una matriz generatriz así está en \textit{forma estándar}.
+
+\begin{definition}
+    Una \textit{matriz de paridad } de un \([n,k]\) código lineal \(\C\) es cualquier matriz \(H\) de dimensiones \((n-k)\times n\) tal que
+    \[
+    \C = \{x \in \F_q^n | Hx^T = 0\}
+    .\]
+\end{definition}
+
+Como un código lineal es un subespacio de un espacio vectorial, es el núcleo de alguna aplicación lineal, y por tanto, para un código lineal siempre existe alguna matriz de paridad \(H\). Mencionemos que las filas de \(H\) son también independientes. Esto es porque, al ser \(H\) una aplicación lineal de \(\F_q^n\) en  \(\F_q^{n-k}\), y la dimensión del núcleo de dicha aplicación es \(k\), tenemos que la dimensión de la imagen es \(n-k\) y por tanto el rango de \(H\) también.
+
+\section{Códigos duales}%
+\label{sec:códigos_duales}
+
+Como mencionamos en la sección anterior, las filas de una matriz de paridad de un código \(\C\) son independientes, y por tanto \(H\) es a su vez la matriz generatriz de otro código, el llamado \textit{dual} o \textit{ortogonal} de \(\C\), denotado por \(\C^\bot\). Es inmediato ver que \(\C^\bot\) es un \([n, n-k]\) código. Además, es posible dar una construcción alternativa para \(\C^\bot\) utilizando el producto escalar en  \(\F_q^n\):
+\[
+\C^\bot = \{x \in \F_q^n | x \cdot c = 0\ \forall c \in \C\}
+.\]
+
+\section{Pesos y distancias}
+Una de las características más útiles para el estudio de códigos es la distancia mínima entre las palabras de este.
+
+\begin{definition}
+Dados dos vectores \(x, y \in F_q^n\), definimos la distancia \textit{Hamming} entre ellos \(d(x,y)\) como el numero de coordenadas en las que  \(x\) e \(y\) difieren.
+\end{definition}
+
+Veamos que en efecto esta es una distancia:
+
+\begin{proposition}
+La función distancia \(d(x,y)\) satisface las siguientes condiciones:
+\begin{nlist}
+    \item \(d(x,y) \geq 0\) para todo \(x, y \in \F_q^n\).
+    \item \(d(x,y) = 0\) si y solo si \(x = y\).
+    \item \(d(x,y) = d(y,x)\) for all \(x,y \in \F_q^n\)
+    \item \(d(x,z) \leq d(x,y) + d(y,z)\) para todo \(x, y, z \in \F_q^n\)
+\end{nlist}
+
+\begin{proofs}
+Las tres primeras propiedades son obvias por la propia definición de la distancia. Veamos pues la propiedad iv).\\
+
+Dados dos vectores \(x, y \in \F_q^n\), definimos el conjunto \(D(x,y) = \{i | x_i \neq y_i\}\), y denotamos el complementario por \(D^c(x, y) = \{i | x_i = y_i\}\). Es claro que entonces el cardinal de \(D(x,y)\) coincide con nuestra distancia. \\
+
+Recordemos también algunas propiedades sobre cardinales de conjuntos. Sea un conjunto \(A\), notemos por \(|A|\) su cardinal. Entonces, para cualesquiera conjuntos \(A\) y \(B\):
+\begin{nlist}
+    \item \(|A| \leq |A \cup B|\)
+    \item \(|A \cup |B| \leq |A| + |B|\)
+    \item Si \(|A| \leq |B|\), entonces \(|A^c| \geq |B^c|\)
+\end{nlist}
+Con esto, dados \(x, y, z \in \F_q^n\), conjuntos tenemos que
+
+\[
+D^c(x,z) = \{i | x_i = z_i\} = \{i | x_i = z_i = y_i\} \cup \{i | x_i = z_i \neq y_i\}
+\]
+\[
+\implies |D^c(x,z)| \geq |\{i | x_i = z_i = y_i\}| = |\{i | x_i = y_i\} \cap \{i | z_i = y_i\}|
+\]
+\[
+\implies |D(x,z)| \leq |\{i | x_i \neq y_i\} \cup \{i | z_i \neq y_i\}| = |D(x,y) \cup D(y,z)|
+\]
+\[
+\implies |D(x,z)| \leq |D(x,y)| + |D(y,z)|
+\]
+quedándo demostrado el resultado.
+\end{proofs}
+\end{proposition}
+
+Ahora, la \textit{distancia (mínima)} de un código \(\C\) es la mínima distancia entre dos palabras distintas de dicho código. Esta propiedad será crucial a la hora de determinar el número de errores que podrá corregir un código.
+
+\begin{definition}
+Diremos que el peso (\textit{de Hamming}) \(wt(x)\) de un vector \(x \in \F_q^n\) es el número de coordenadas distintas de cero de \(x\).
+\end{definition}
+
+Si tenemos dos vectores \(x, y \in \F_q^n\) es inmediato comprobar que \(d(x,y) = wt(x - y)\). En el siguiente mostramos la relación entre la distancia y el peso.
+
+\begin{proposition}
+Si \(\C\) es un  código lineal, la distancia mínima coincide con el mínimo de los pesos de las palabras distintas de cero de C.
+
+\begin{proofs}
+Sea \(d = d(x,y)\) la distancia mínima del código \(\C\), que se alcanza entre dos vectores \(x, y \in \C\), y \(d' = wt(z)\) el peso mínimo que se alcanza en \(z \in C\).
+
+Por ser \(\C\) un subespacio vectorial,  \(0 \in \C\), y por tanto  \(d \leq d(z, 0) = wt(z) = d'\). De nuevo por ser \(\C\) un subespacio vectorial tenemos que \(x-y \in \C\), y por tanto  \(d' \leq wt(x-y) = d(x,y) = d\), y por tanto \(d = d'\).
+\end{proofs}
+\end{proposition}
+
+Como consecuencia a este resultado, para códigos lineales, a la distancia mínima también se le llama \textit{peso mínimo} del código. En adelante, si el peso mínimo \(d\) de un \([n,k]\) código es conocido, entonces nos referiremos al código como un \([n,k,d]\) código.
+
+\section{Codificar, decodificar, y el Teorema de Shannon}
+
+\subsection{Codificar}%
+Sea \(\C\) un \([n,k]\) código lineal sobre el cuerpo \(\F_q\) con matriz generatriz \(G\). Como este es un subespacio vectorial de \(\F_q^n\) de dimensión \(k\), contiene \(q^k\) palabras, que están en correspondencia uno a uno con \(q^k\) posibles mensajes. Por esto, la forma más simple es ver estos mensajes como \(k\)-tuplas \(x\) en \(\F_q^k\). Así, lo más común es codificar un mensaje \(x\) como la palabra \(c = xG\). Si G está en forma estándar, las primeras \(k\) coordenadas son los símbolos de información \(x\); el resto de \(n-k\) símbolos son los simbolos de paridad, es decir, la redundancia añadida a \(x\) con el fin de poder recuperarla si ocurre algún error. Dicho esto, la matriz \(G\) puede no estar en forma estándar. En particular, si existen índices de columnas \(i_1, i_2, \dots, i_n \) tales que la matriz \(k \times k\) formada por estas columnas es la matriz identidad, entonces el mensaje se encuentra en las coordenadas \(i_1, i_2, \dots, i_n \) separado pero sin modificar, es decir, el símbolo del mensaje \(x_j\) se encuentra en la componente \(i_j\) de la palabra código. Si esto ocurre diremos que el codificador e s \textit{sistemático}.
+
+\subsection{Decodificar y el Teorema de Shannon}%
+\label{sub:decodificar_y_el_teorema_de_shannon}
+
+El proceso de decodificar, consistente en determinar qué palabra (y por tanto qué mensaje \(x\)) fue mandado al recibir un vector \(y\), es más complejo. Encontrar algoritmos de decodificación eficientes es una área de investigación muy relevante en la teoría de códigos debido a sus aplicaciones prácticas. En general, codificar es sencillo y decodificar es complicado, especialmente si tiene un tamaño suficientemente grande.

@@ -1,0 +1,102 @@
+\chapter{Introducción a extensiones de Ore}%
+\label{chap:conceptos_básicos_sobre_códigos_lineales}
+
+\section{Conceptos básicos sobre extensiones de Ore}
+En esta sección introduciremos algunos conceptos básicos básicos para continuar. Nuestro algoritmo trabajarán sobre polinomios de Ore no conmutativos, sobre una única variable indeterminada \(x\), con coeficientes en u (TODO)
+
+\section{Introducción}
+
+Fijemos primero la notación que utilizaremos de aquí en adelante. Sea \(\F = \F_q\) el cuerpo con \(q\) elementos, donde \(q\) es una potencia de un número primo. Consideremos un \(\F\)-álgebra automorfismo \(\sigma\) de \(\F\) de (necesariamente) orden finito. Por abreviar, denotaremos por \(R\) el anillo no conmutativo de polinomios sesgados \(\F[x;\sigma]\), es decir, el \(\F\) espacio vectorial conmutativo estándar de polinomios cuyo producto se encuentra alterado por la regla \(x\gamma = \sigma(\gamma)x\) para todo  \(\gamma \in \F\).
+
+En primer lugar comprobemos que el polinomio \(x^n -1\) es central en \(R\). Efectivamente, dado \(\gamma \in \F\), tenemos que \((x^n-1)\gamma= x^n \gamma - \gamma = \sigma^n(\gamma)x^n - \gamma = \gamma(x^n -1)\). Por tanto el ideal por la izquierda que genera es también un ideal por la derecha, así que podemos considerar el anillo cociente \(\mathcal{R} = \F[x;\sigma] / <x^n -1>\). En efecto, cada ideal a la izquierda \(I \leq \mathcal{R}\) designa un código \(\C =\mathfrak{v} \) de longitud  \(n\), donde  \(\mathfrak{v}:\mathcal{R} \rightarrow \F^n\) es el mapa de coordenadas asociado a la base \(\mathcal{B} = \{1, x, \dots, x^n\}\). Así, la longitud del código coincide con el orden de \(\sigma\). De aquí en adelante suponemos establecidas estas condiciones. Llamaremos a cualquier código de este tipo \textit{código cíclico sesgado}, o CCS para abreviar.
+
+Recordemos la proposición TODO que nos dice que el centro de \(\F[x;\sigma]\) es el anillo de polinomios conmutativo  \(\F^\sigma[x^n]\), donde  \(\F^\sigma\) denota el subcuerpo invariante por  \(\sigma\), es decir, los elementos  \(a \in \F\) tales que  \(\sigma(a) = a\). Para continuar necesitamos conocer mejor la estructura de nuestro anillo \(\mathcal{R}\), y para demostraremos el siguiente teorema.
+
+% Notas
+% R(x-1) \in R
+% R/R(x-1) ann as R-module = <x^n -1> // Haces cociente sobre el anulador y sigue siendo simple
+% R/Rx^n-1
+% El anillo cociente por el anulador es un algebra sobre los invariantes.
+
+% ---
+
+\begin{theorem}\label{th:matrix_iso}
+    El anillo \(\mathcal{R}\) es isomorfo al anillo de matrices \(\mathcal{M}_n(\F^\sigma)\). Como consecuencia, para cada \(k \leq n\) existe un CCS de dimensión \(k\). Mas aún, cada CCS se puede ver como el ideal a la izquierda generado por un elemento idempotente.
+\end{theorem}
+
+\begin{proofs}
+
+\end{proofs}
+
+Veamos a continuación un método para construir CCSs. Sabemos que todo ideal a la izquierda de \(\mathcal{R}\) es principal, pues ya dijimos en (TODO insertar referencia) que los anillos de polinomios sesgados son dominios de ideales principales a la izquierda, así que todo CCS está generado por un divisor a la derecha de \(x^n - 1\). Por tanto, de forma análoga a como lo hicimos para polinomios cíclicos, necesitaremos encontrar factores a la derecha de este. El problema que nos encontramos es que, hasta donde sabemos, no existe un algoritmo de factorización completa para polinomios de Ore sobre \(\F\). Por tanto construiremos un procedimiento específico para \(x^n - 1\). Veamos primero un método para encontrar divisores lineales a la derecha.
+
+\begin{proposition}
+\label{prop:x_beta}
+    Sea \(\beta \in \F\), entonces  \(x - \beta\) divide por la derecha a  \(x^n -1\) si y solo si  \(\beta = \sigma(c)c^{-1}\) para algún  \(c \in \F\) distinto de cero.
+\end{proposition}
+
+\begin{proofs}
+    Sea \(R = \F[x; \sigma]\). Si \(x - \beta\) divide por la derecha a \(x^n - 1\), entonces \(R/R(x - \beta) = R/R(x-1)\) como \(\mathcal{R}\)-módulos. Por la (TODO referencia), tenemos \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\) distinto de 0. Para la ver la implicación contraria, sea  \(c \in \F\), y  \(\beta = \sigma(c)c^{-1}\) \dots (TODO).
+\end{proofs}
+
+Por el teorema \ref{th:matrix_iso}, sabemos que \(x^n - 1\) se puede descomponer como el mínimo común múltiplo por la izquierda de polinomios lineales (correspondiendo al ideal cero de \(\mathcal{R}\) visto como intersección de \(n\) submódulos a la izquierda maximales (TODO)). Con el objetivo de encontrar una descomposición de este tipo de \(x^n - 1\)a (y por tanto divisores a la derecha no lineales (TODO)), nuestra estrategia es construir \(\beta \in \F\) tal que
+\begin{equation}
+\label{eq:lclm}
+[x - \beta, x - \sigma(\beta), \dots, x - \sigma^{n-1}(\beta)]_l = x^n -1
+\end{equation}
+
+donde \([]_l\) denota el mínimo común múltiplo a la izquierda. Por analogía con \cite{turing1936a} es claro que
+\ref{eq:lclm} se cumple si y solo el determinante de la matriz
+
+\[
+\begin{pmatrix}
+    1 & \beta & \beta\sigma(\beta) & \dots & \beta\sigma(\beta)\dots\sigma^{n-2}(\beta) \\
+    1 & \sigma(\beta) & \sigma(\beta)\sigma^2(\beta) & \dots & \sigma(\beta)\sigma^2(\beta)\dots\sigma^{n-1}(\beta) \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    1 & \sigma^{n-1}(\beta) & \sigma^{n-1}(\beta)\beta & \dots & \sigma^{n-1}(\beta)\beta\dots\sigma^{n-3}(\beta)
+
+\end{pmatrix}
+\]
+
+es distinto de cero. Utilizando que \(\beta = \sigma(c)c^{-1}\) por la proposición \ref{prop:x_beta}, esto es equivalente a que el determinante de la matriz
+
+\[
+\begin{pmatrix}
+    c & \sigma(c) & \sigma^2(c) & \dots & \sigma^{n-1}(c) \\
+    \sigma(c) & \sigma(c)^2 & \sigma^3(c) & \dots & c \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    \sigma^{n-1}(c) & c & \sigma(c) & \dots & \sigma{n-2}(c)
+\end{pmatrix}
+\]
+
+sea distinto de cero o, equivalentemente, que \(\{c, \sigma(c), \dots, \sigma^{n-1}(c)\) sea una base normal de la extensión de cuerpos \(F^\sigma \subset \F\) \cite{turing1936a}. Recordamos que \(F^\sigma = \F[t]\), donde \(t \in \F\), que puede calcularse como se muestra en \cite{turing1936a}. En nuestro caso particular, el grupo que escogemos es el grupo cíclico \(\{1, \sigma, \dots, \sigma^{n-1}\}\), de manera que el elemento \(t \in \F\) puede obtenerse elegiendo cualquier  (\dots TODO). La existencia de un \(c \in \F\) que genere dicha base está asegurada por el Teorema de la Base Normal. \(\dots\)
+
+Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados}. El siguiente resultado, que es un caso particulas de \cite{turing1936a}, será importante en resultados posteriores. Mostraremos una prueba elemental de este.
+
+\begin{lemma}
+    Sea \(L\) un cuerpo, \(\sigma\) un automorfismo de \(L\) de orden finito \(n\), y \(K = L^\sigma\) el subcuerpo invariante bajo \(\sigma\). Sea  \(\{a_0, \dots, a_{n-1}\) una \(K\)-base de \(L\). Entonces, para todo \(t \leq n\), y cada subconjunto \(k_0 < k_1 < \dots < k_{t-1} \subset \{0, 1, \dots, n-1\}\)
+    \[
+    \begin{vmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
+        \sigma(\alpha_{k_0}) & \sigma(\alpha_{k_1}) & \dots & \sigma(\alpha_{k_{t-1}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t-1}(\alpha_{k_0}) & \sigma^{t-1}(\alpha_{k_1}) & \dots & \sigma^{t-1}(\alpha_{k_{t-1}})
+    \end{vmatrix}
+    \neq 0
+    .\]
+\end{lemma}
+
+\begin{proofs}
+    Realizaremos la prueba por inducción sobre \(t\). El caso \(t = 1\) se cumple trivialmente. Por tanto, supongamos que el lema se cummple para un cierto  \(t \geq 1\). Tenemos que comprobar que, para toda matriz \((t+1) \times (t+1)\)
+    \[
+    \Delta =
+    \begin{pmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
+        \sigma(\alpha_{k_0}) & \sigma(\alpha_{k_1}) & \dots & \sigma(\alpha_{k_{t-1}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t}(\alpha_{k_0}) & \sigma^{t}(\alpha_{k_1}) & \dots & \sigma^{t}(\alpha_{k_{t}})
+
+    \end{pmatrix}
+    .\]
+el determinante \(|\Delta|\) es distinto de cero. Supongamos por el contrario que \(|\Delta| = 0\).
+\end{proofs}
