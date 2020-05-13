@@ -1,8 +1,279 @@
 \chapter{Introducción a extensiones de Ore}%
 \label{chap:conceptos_básicos_sobre_códigos_lineales}
-
 \section{Conceptos básicos sobre extensiones de Ore}
-En esta sección introduciremos algunos conceptos básicos básicos para continuar. Nuestro algoritmo trabajarán sobre polinomios de Ore no conmutativos, sobre una única variable indeterminada \(x\), con coeficientes en u (TODO)
+En esta sección introduciremos algunos conceptos básicos básicos para continuar. Nuestro algoritmo trabajarán sobre polinomios de Ore no conmutativos, con una única variable indeterminada \(x\), con coeficientes en un cuerpo finito de \(q\) elementos. Precisando, nuestros polinomios serán elementos de un anillo asociativo \(R = \F[x;\sigma]\), donde
+
+\begin{itemize}
+    \item \(\F\) es el cuerpo finito de \(q\) elementos siendo \(q\) una potencia de un primo.
+    \item \(\sigma: \F \to \F\) es un automorfismo de cuerpos.
+\end{itemize}
+
+La construcción de \(R = \F[x;\sigma]\) sigue de la siguiente forma:
+\begin{itemize}
+    \item \(R\) es un \(\F\)-espacio vectorial a la izquierda sobre la base  \(\{x^n: n \geq 0\). Entonces, los elementos de  \(R\) son polinomios a la izquierda de la forma \(a_0 + a_1 x + \cdots + a_n x^n\) con \(a_i \in \F\).
+    \item La suma de polimios es la usual.
+    \item El producto de \(R\) está basado en las siguientes reglas: \(x^n x^m = x^{n+m}\), para \(m, n \in \mathbb{N}\), y \(xa = \sigma(a)x\) para  \(a \in \F\). Este producto se extiende recursivamente a \(R\).
+\end{itemize}
+
+El grado \(\deg (f)\) de un polinomio no nulo \(f \in R\), al igual que su coeficiente lider se definen de la manera usual, tal que
+\[
+f = \lc(f)x^{\deg(f)} + f_{\downarrow}, \text{ con } \deg(f_{\downarrow}) < \deg(f) \text{ y } \lc(f) \neq 0
+.\]
+
+Escribimos \(\deg(0) = -\infty\), con las convenciones usuales para este símbolo, y \(\lc(0) = 0\).
+
+Es facil comprobar que, dados \(f, g \in R\):
+\[
+\deg(fg) = \deg(f) + \deg(g), \quad \lc(fg) = \lc(f)\sigma^{\deg(f)}(\lc(g))
+.\]
+
+Esto nos dice que \(R\) es un dominio de integridad no conmutativo.
+
+El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse los algoritmos \ref{left_euclidean_div} y \ref{right_euclidean_div}).
+
+\begin{algorithm}[H]
+ \label{left_euclidean_div}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{\(f,g \in \F[x;\sigma] \text{ con } g \neq 0\)}
+ \KwOut{\(q,r \in \F[x;\sigma] \text{ tales que } f = qg + r \text{ y } \deg(r) < \deg(g)\)}
+ \Initialization{\(q:=0, r:=f\)} \\
+ \While{\(\deg(g) \leq \deg(r)\)}{
+  \(a = \lc(r)\sigma^{deg(r) - deg(g)}(\lc(g)^{-1})\) \\
+  \(q := q + ax^{\deg(r) - \deg(g)}, r:= r - ax^{deg(r) - deg(g)}g\)
+ }
+ \caption{División Euclídea a la izquierda}
+\end{algorithm}
+
+\begin{algorithm}[H]
+ \label{right_euclidean_div}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{\(f,g \in \F[x;\sigma] \text{ con } g \neq 0\)}
+ \KwOut{\(q,r \in \F[x;\sigma] \text{ tales que } f = gq + r \text{ y } \deg(r) < \deg(g)\)}
+ \Initialization{\(q:=0, r:=f\)} \\
+ \While{\(\deg(g) \leq \deg(r)\)}{
+  \(a = \sigma^{-deg(g)}(\lc(g)^{-1}\lc(r))\) \\
+  \(q := q + ax^{\deg(r) - \deg(g)}, r:= r - gax^{deg(r) - deg(g)}\)
+ }
+ \caption{División Euclídea a la derecha}
+\end{algorithm}
+
+Mostramos a continuación la demostración que justifica estos algoritmos.
+
+\begin{theorem}
+Sea \(\F\) un cuerpo finito de \(q\) elementos siendo \(q\) una potencia de un primo,  \(\sigma\) un autormorfismo de \(\F\) no nulo, y \(R = \F[x;\sigma]\) la extensión de Ore correspondiente. Entonces, dados \(f, g \in R\) exiten \(q, r \in R\) únicos tales que:
+\begin{nlist}
+    \item \(f = qg + r\).
+    \item \(\deg(r) < \deg(g)\).
+\end{nlist}
+
+Bajo las mismas hipótesis, existen también \(q, r \in R\) únicos tales que:
+\begin{nlist}
+    \item \(f = gq + r\)
+    \item \(\deg(r) < \deg(g)\).
+\end{nlist}
+\end{theorem}
+
+\begin{proof}
+Para abreviar digamos \(m = \deg(g), n = \deg(f)\). Veamos primero la prueba de la división a la izquierda. Si \(m > n\), entonces no tenemos nada que probar, pues tomando  \(q = 0, r = f\) se cumple el resultado. Por otro lado, si \(m \leq n\), sean \(f = \sum_{i=0}^{n} a_i x^i\) y \(g = \sum_{j=0}^{m} b_j x^j\), aplicaremos inducción sobre \(n\). Si \(n = 0\), entonces también \(m = 0\), así que  \(f = a_0, g = b_0\), y por tanto tomamos \(r = 0, q = a_0 b_0^{-1}\).
+
+Por tanto, supongamos la afirmación cierta para todo \(f\) de grado menor que \(n\).  Sea \(a = a_n \sigma^{n-m}(b_m^{-1})\). Entonces es claro que
+\[
+\deg(ax^{n-m}g) = n,
+\]
+\[
+\lc(ax^{n-m}g) = a_n
+.\]
+Por tanto tenemos que
+\[
+\deg(f - a x^{n-m}g) < n,
+\]
+y por tanto, la hipótesis de inducción nos dice que existen \(q'\) y \(r'\) compliendo que \(\deg(r') < \deg(g)\)  y
+\[
+f - a x^{n-m}g = q'g + r'.
+.\]
+
+Sea
+\[
+q = a x^{n-m} + q'
+,\]
+
+entonces
+\[
+f = a x^{n-m}g + q'g + r' = qg + r'
+.\]
+
+Queda probar que \(q\) y \(r\) son únicos como tales. Supongamos que
+\[
+f = q_1g + r_1 = q_2g + r_2,
+\]
+con \(\deg(r_1), \deg(r_2) < \deg(g)\). Entonces, \((q_1 - q_2)g = r_2 - r_1\), y podemos afirmar entonces que
+\[
+\deg(q_1 - q_2) + \deg(g) = \deg((q_1-q_2)g)
+\]
+\[
+= \deg(r_2-r_1) \leq \max(\deg(r_2), \deg(r_1)) < \deg(g)
+.\]
+Esto prueba que \(\deg(q_1-q_2) = -\infty\), demostrando que \(q_1 - q_2 = 0\) y que \(r_2 = r_1 = 0\) que termina la prueba de la primera parte.
+
+%Para la división a la derecha, si \(m > n\) procedemos de forma similar, así que supongamos de nuevo \(m \leq n\), \(f = \sum_{i=0}^n a_i x_i\) y \(g = \sum_i{j=0}^m b_j x^j\), y aplicaremos inducción sobre \(n\). Si \(n = 0\) el razonamiento es el mismo que para la división a la derecha, por tanto supongamos que la afirmación es cierta para todo \(f\) de grado menor que \(n\).
+\end{proof}
+
+Los polinomios \(r\) y \(q\) obtenidos como salida del algoritmo \ref{left_euclidean_div} los llamaremos \textit{resto a la izquierda} y  \textit{cociente a la izquierda}, respectivamente, de la división de \(f\) por \(g\). Utilizaremos la notación \(r = \operatorname{lrem}(f,g)\) y \(q = \operatorname{lquo}(f,g)\). Asumimos convenciones y notaciones análogas para el algoritmo de división a la derecha.
+
+Como consecuencia del algoritmo de división a la izquierda, dado un ideal a la izquierda \(I\) de \(R\), y cualquier polinomio no nulo  \(f \in I\) de grado mínimo, obtenemos que  \(f\) es un generador de  \(I\). Notaremos en este caso \(I = Rf\). Análogamente, cualquier ideal a la derecha de \(R\) es principal.  Por tanto \(R\) es un dominio de ideales principales no conmutativo.
+
+Dados \(f,g \in R\), \(Rf \in Rg\) implica que \(g\) es un \textit{divisor a la derecha} de \(f\) o que \(f\) es \textit{múltiplo a la izquierda} de \(g\). Por ser \(R\) un DIP sabemos que \(Rf + Rg = Rd\) para algún \(d \in R\), y es inmediato comprobar que \(d |_r f\) y  \(d |_r g\). Además, si tenemos \(d'\) con \(d' |_r f\), \(d' |_r g\), entonces \(Rf + Rg \subset Rd'\), luego \(Rd \subset Rd'\) y por tanto  \(d |_r d'\). En este caso diremos que \(d\) es un máximo común divisor a la derecha de \(f\) y \(g\). Utilizaremos la notación \(d = (f,g)_r\). Este está unívocamente determinado salvo múltiplicación a la izquierda por una unidad de \(R\). Similarmente  \(Rf \cap Rg = Rm\) si y solo si \(m\) es un mínimo comúm múltiplo a la izquierda de \(f\) y \(g\), notado por \(m = [f,g]_l\). Este también es único salvo multiplicación a la izquierda por una unidad de \(R\).
+
+Tanto \((f,g)_r\) como \([f,g]_l\) se pueden calcular utilizando el Algoritmo Extendido de Euclides a la izquierda. La versión a la derecha de estas definiciones y propiedades puede establecerse análogamente. Más adelante utilizaremos el Algoritmo Extendido de Euclides a la derecha, que nos proporciona los coeficientes de Bezout en cada etapa del algoritmo, por esto es la que demostramos a continuación y describimos explícitamente en el algoritmo \(\ref{right_ext_euc_alg}\).
+
+\begin{algorithm}[H]
+ \label{right_ext_euc_alg}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{\(f,g \in \F[x;\sigma] \text{ con } f \neq 0,\ g \neq 0\)}
+ \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = fu_i + gv_i \text{ para todo  } i, r_h = (f,g)_l, \text{ y } u_{h+1}f = [f,g]_r.\)}
+ \Initialization{\\
+ \(r_0 \leftarrow f, r_1 \leftarrow g\) \\
+ \(u_0 \leftarrow 1, u_1 \leftarrow 0\) \\
+ \(v_0 \leftarrow 0, v_1 \leftarrow 1\) \\
+ \(q \leftarrow 0, rem \leftarrow 0\) \\
+ \(i \leftarrow 1\) \\
+ }
+ \While{\(r_i \neq 0\)}{
+  \(q,\ rem \leftarrow \operatorname{rquot-rem}(r_{i-1}, r_i)\) \\
+  \(r_{i+1} \leftarrow rem\) \\
+  \(u_{i+1} \leftarrow u_{i-1} - u_i q\) \\
+  \(v_{i+1} \leftarrow v_{i-1} - v_{i} q\)
+  \(i \leftarrow i +1\) \\
+ \Return{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1}\)}
+ }
+ \caption{Algoritmo extendido de Euclides a la derecha}
+\end{algorithm}
+
+\begin{theorem}
+    El algoritmo  \ref{right_ext_euc_alg} es correcto.
+\end{theorem}
+\begin{proof}
+    En primer lugar, vemos que siempre que \(r_i \neq 0\) se tiene que \(\deg(r_{i+1}) < \deg(r_i)\), por tanto existe  \(h \geq 1\) tal que \(r_h \neq 0\) pero \(r_{h+1} = 0\).
+
+Para \(i \leq h\) tenemos que \(r_i \neq 0\), y por tanto podemos utilizar la división a la derecha de \(r_{i-1}\) entre \(r_i\) para obtener
+
+\[
+r_{i-1} = r_i q_{i+1} + r_{i+1}
+.\]
+
+De aquí obtenemos que los divisores a la izquierda comunes de \(r_{i-1}\) y de \(r_i\) coinciden con los divisores a la izquierda comunes de  \(r_i\) y de  \(r_{i+1}\). Luego
+\[
+r_h = (0, r_h)_l = (r_{h+1}, r_h)_l = (r_h, r_{h-1-})_l = \cdots = (r_1, r_0)_l = (g,f)_l
+.\]
+
+Ahora vamos a definir \(u_i, v_i \in R\) con \(i = 0,1, \dots, h, h+1\). En primer lugar, tomamos
+\[
+u_0 = 1,\ v_0 = 0,\ u_1 = 0,\ v_1 = 1.
+.\]
+Una vez dados \(u_{i-1}, v_{i-1}, u_i, v_i\) para \(1 \leq i \leq h\) definimos
+\[
+u_{i+1} = u_{i-1} - u_iq_{i+1}, \quad
+v_{i+1} = v_{i-1} - v_iq_{i+1}
+.\]
+
+Aplicaremos un argumento por inducción para comprobar que \(r_i = fu_i + gv_i\). Es inmediato comprobar que para \(i = 0,1\) se cumple, así que supongamos que se cumple para \(i-1,\ i\) y veamos que se cumple para \(i+1\). En efecto
+\[
+f u_{i+1} + g v_{i+1j} = f(u_{i-1} - u_iq_{i+1}) + g(v_{i-1} - v_iq_{i+1}) =
+\]
+\[
+f u_{i-1} + g v_{i-1} - (f u_i + g v_i)q_{i+1} = r_{i-1} - r_iq_{i+1} = r_{i+1}
+.\]
+
+TODO-*-*-*
+. Veamos para concluir que \(u_{h+1}f = [f,g]_r\). Observemos que \(0 = r_{h+1} = fu_{h+1} + gv_{h+1}\), luego \(fu_{h+1} = -gv_{h+1}\) es un múltiplo a la derecha común de \(f\) y \(g\). Para terminar y ver que \(f u_{h+1} = [f,g]_r\) demostremos primero que
+\[-u_{i+1}v_i + u_iv_{i+1} = 1\quad \forall 0 \leq i \leq h.\]
+Esta igualdad es clara para \(i = 0\). Si \(1 \leq i \leq h\), supuesta la igualdad para \(i-1\), tenemos
+\[
+-u_{i+1}v_i + u_iv_{i+1} = -(u_{i-1} - u_iq_{i+1})v_i + u_i(v_{i-1} - v_iq_{i+1}) =
+.\]
+\end{proof}
+-*-*-*-*
+
+Ahora, con el objetivo de poder definir la evaluación de nuestro polinomios, dado \(j \geq 0\), definimos la \textit{norma j-ésima} para cualquier \(\gamma \in \F\) de forma recursiva como sigue:
+\[
+N_0(\gamma) = 1
+\]
+\[
+N_{j+1}(\gamma) = \gamma \sigma(N_{j}) = \gamma \sigma(\gamma)\dots\sigma^{j}(\gamma)
+.\]
+La noción de norma j-ésima admite también una versión para índices negativos dada por
+\[
+N_{-j-1}(\gamma) = \gamma \sigma^{-1}(N_{-j}) =  \gamma \sigma^{-1}(\gamma) \cdots \sigma^{-j}(\gamma)
+.\]
+La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) en un \(a \in \F\) se define como el resto de la división a la izquierda de \(f\) por  \(x - a\), y de forma simular para la  \textit{evaluación a la derecha}. Estas evaluaciones nos permiten hablar de raices a izquierda y derecha de estos polinomios.
+
+\begin{lemma}
+    Sea \(\gamma \in \F\) y  \(f = \sum_{i=0}^r f_ix^i \in R\). Entonces:
+    \begin{nlist}
+    \item El resto de la división a la izquerda de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{r} f_i N_i(\gamma)\).
+    \item El resto de la división a la derecha de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{r}\sigma^{-i}(f_i)N_{-i}(\gamma)\).
+    \item \(N_j(\sigma^k(\gamma)) = \sigma^k(N_j(\gamma))\) para todo \(i,k\).
+    \end{nlist}
+\end{lemma}
+\begin{proof}
+    Para demostrar \textit{i)} observamos primero un caso especial de este resultado:
+\begin{equation}
+\label{norm_proof}
+    x^j - N_j(\gamma) \in R(x-\gamma)\ \forall j \geq 0.
+\end{equation}
+    Es evidente que el resultado es cierto para \(j = 0\), asi que procedemos por inducción sobre \(j\). Supongamos el resultado cierto para \(j\), entonces
+\[
+\begin{aligned}
+x^{j+1} - N_{j+1}(\gamma) &= x^{j+1} - \sigma(N_j(\gamma))\gamma \\
+&= x^{j+1} +  \sigma(N_j(\gamma))(x-\gamma) - \sigma(N_j(\gamma))x \\
+&= x^{j+1} +  \sigma(N_j(\gamma))(x-\gamma) - xN_j(\gamma) \\
+&= \sigma(N_j(\gamma))(x-\gamma) + x(x^{j} - N_j(\gamma)) \in R(x-\gamma)
+\end{aligned}
+.\]
+Utilizando (\ref{norm_proof}) tenemos entonces que
+\[
+f - \sum_{i=0}^r f_i N_i(\gamma) = \sum_{i=0}^r f_i(x^i - N_i(\gamma)) \in R(x - \gamma)
+\]
+y, por la unicidad del resto de la división euclídea tenemos que \(r = \sum_i=0^r f_i N_i(\gamma)\).
+
+Para la siguiente afirmación procedemos de forma similar. Veamos en primer lugar que
+\begin{equation}
+\label{right_norm_proof}
+    x^j - N_{-j}(\gamma) \in (x-\gamma)R\ \forall j \geq 0.
+\end{equation}
+
+De nuevo, es obvio para \(j = 0\), por tanto procedemos por inducción supuesto cierto para \(j\).
+\[
+\begin{aligned}
+x^{j+1} - N_{-j-1}(\gamma) &= x^{j+1} - \gamma\sigma^{-1}(N_j(\gamma))  \\
+&= x^{j+1} +  (x-\gamma)\sigma^{-1}(N_{-j}(\gamma)) - x\sigma^{-1}(N_{-j}(\gamma)) \\
+&= x^{j+1} + (x-\gamma)\sigma^{-1}(N_{-j}(\gamma)) - N_{-j}(\gamma)x \\
+&= (x-\gamma)\sigma^{-1}(N_{-j}(\gamma)) + (x^{j} - N_{-j}(\gamma))x \in (x-\gamma)R
+\end{aligned}
+.\]
+Así, usando (\ref{right_norm_proof}) vemos que
+\[
+f - \sum_{i=0}^r \sigma^{-i}(f_i) N_{-i}(\gamma) = \sum_{i=0}^r x^i\sigma^{-i}(f_i) - N_{-i}(\gamma)\sigma^{-i}(f_i)
+\]
+\[
+= \sum_{i=0}^r (x^i - N_{-i}(\gamma))\sigma^{-i}(f_i) \in (x - \gamma)R
+.\]
+Así que por la unicidad del resto queda probado \textit{ii)}.
+
+Para probar \textit{iii)},
+    \[
+    N_j(\sigma^k(\gamma)) = \sigma^k(\gamma)\sigma^{k+1}(\gamma)\cdots\sigma^{k+j-1}(\gamma)
+\]
+\[
+    = \sigma^k(\gamma \sigma(\gamma)\dots\sigma^{j-1}(\gamma)) = \sigma^k(N_j(\gamma))
+    .\]
+\end{proof}
 
 \section{Introducción}
 
@@ -24,9 +295,9 @@ Recordemos la proposición TODO que nos dice que el centro de \(\F[x;\sigma]\) e
     El anillo \(\mathcal{R}\) es isomorfo al anillo de matrices \(\mathcal{M}_n(\F^\sigma)\). Como consecuencia, para cada \(k \leq n\) existe un CCS de dimensión \(k\). Mas aún, cada CCS se puede ver como el ideal a la izquierda generado por un elemento idempotente.
 \end{theorem}
 
-\begin{proofs}
+\begin{proof}
 
-\end{proofs}
+\end{proof}
 
 Veamos a continuación un método para construir CCSs. Sabemos que todo ideal a la izquierda de \(\mathcal{R}\) es principal, pues ya dijimos en (TODO insertar referencia) que los anillos de polinomios sesgados son dominios de ideales principales a la izquierda, así que todo CCS está generado por un divisor a la derecha de \(x^n - 1\). Por tanto, de forma análoga a como lo hicimos para polinomios cíclicos, necesitaremos encontrar factores a la derecha de este. El problema que nos encontramos es que, hasta donde sabemos, no existe un algoritmo de factorización completa para polinomios de Ore sobre \(\F\). Por tanto construiremos un procedimiento específico para \(x^n - 1\). Veamos primero un método para encontrar divisores lineales a la derecha.
 
@@ -35,9 +306,9 @@ Veamos a continuación un método para construir CCSs. Sabemos que todo ideal a 
     Sea \(\beta \in \F\), entonces  \(x - \beta\) divide por la derecha a  \(x^n -1\) si y solo si  \(\beta = \sigma(c)c^{-1}\) para algún  \(c \in \F\) distinto de cero.
 \end{proposition}
 
-\begin{proofs}
+\begin{proof}
     Sea \(R = \F[x; \sigma]\). Si \(x - \beta\) divide por la derecha a \(x^n - 1\), entonces \(R/R(x - \beta) = R/R(x-1)\) como \(\mathcal{R}\)-módulos. Por la (TODO referencia), tenemos \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\) distinto de 0. Para la ver la implicación contraria, sea  \(c \in \F\), y  \(\beta = \sigma(c)c^{-1}\) \dots (TODO).
-\end{proofs}
+\end{proof}
 
 Por el teorema \ref{th:matrix_iso}, sabemos que \(x^n - 1\) se puede descomponer como el mínimo común múltiplo por la izquierda de polinomios lineales (correspondiendo al ideal cero de \(\mathcal{R}\) visto como intersección de \(n\) submódulos a la izquierda maximales (TODO)). Con el objetivo de encontrar una descomposición de este tipo de \(x^n - 1\)a (y por tanto divisores a la derecha no lineales (TODO)), nuestra estrategia es construir \(\beta \in \F\) tal que
 \begin{equation}
@@ -86,7 +357,7 @@ Nuestro siguiente objetivo será proporcionar un método sistemático para contr
     .\]
 \end{lemma}
 
-\begin{proofs}
+\begin{proof}
     Realizaremos la prueba por inducción sobre \(t\). El caso \(t = 1\) se cumple trivialmente. Por tanto, supongamos que el lema se cummple para un cierto  \(t \geq 1\). Tenemos que comprobar que, para toda matriz \((t+1) \times (t+1)\)
     \[
     \Delta =
@@ -99,4 +370,4 @@ Nuestro siguiente objetivo será proporcionar un método sistemático para contr
     \end{pmatrix}
     .\]
 el determinante \(|\Delta|\) es distinto de cero. Supongamos por el contrario que \(|\Delta| = 0\).
-\end{proofs}
+\end{proof}
