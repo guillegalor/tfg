@@ -1,30 +1,26 @@
 \chapter{Conceptos básicos sobre códigos lineales}%
 \label{chap:conceptos_básicos_sobre_códigos_lineales}
 
-\section{Códigos lineales, matrices generatriz y de paridad}%
-\label{sec:códigos_lineales_matrices_generatriz_y_de_paridad}
+En este capítulo presentaremos los conceptos básicos sobre códigos lineales, para lo cual nos hemos basado en el primer capítulo de~\cite{foecc}.
+
+\section{Códigos lineales, matrices generadora y de paridad}%
+\label{sec:códigos_lineales_matrices_generadora_y_de_paridad}
 
 Sea \(\F_q^n\) el espacio vectorial de todas las \(n\)-tuplas sobre el cuerpo finito \(\F_q\).
-
-\begin{definition}[Código]
- Definimos un \((n, M)\) \textit{código} \(\mathcal{C}\) sobre \(\F_q\) como un subconjunto de \(\F_q^n\) de tamaño \(M\).
-\end{definition}
-
-Normalmente escribiremos los vectores \((a_1, a_2, \dots, a_n)\) en \(\F_q^n\) de la forma \(a_1 a_2 \cdots a_n\) y llamaremos a los vectores en \(\mathcal{C}\) \textit{palabras código}, o simplemente \textit{palabras}. Además, utilizaremos nombres concretos para referirnos a códigos sobre algunos de los cuerpos más comunes . A los códigos sobre \(\F_2\) los llamaremos \textit{códigos binarios}, los códigos sobre \(\F_3\) los notaremos como \textit{códigos ternarios} y a los códigos sobre \(F_4\) los llamaremos \textit{códigos cuaternarios}.\\
-
-Dicho esto, necesitamos dotar de algún tipo de estructura adicional a los códigos pues siendo únicamente conjuntos estamos muy limitados. La estructura adicional más útil que se les impone es la linealidad.
 
 \begin{definition}[Código lineal]
 Si \(\mathcal{C}\) es un subespacio vectorial de dimensión \(k\) de \(\F_q^n\), diremos que \(\mathcal{C}\) es un \([n,k]\) \textit{código lineal} sobre \(\F_q\).
 \end{definition}
 
-Dicho esto, las dos maneras más comunes de presentar un código lineal son dando una matriz generatriz o una matriz de paridad.
+Normalmente escribiremos los vectores \((a_1, a_2, \dots, a_n)\) en \(\F_q^n\) de la forma \(a_1 a_2 \cdots a_n\) y llamaremos a los vectores en \(\mathcal{C}\) \textit{palabras código}, o simplemente \textit{palabras}. Además, utilizaremos nombres concretos para referirnos a códigos sobre algunos de los cuerpos más comunes . A los códigos sobre \(\F_2\) los llamaremos \textit{códigos binarios}, los códigos sobre \(\F_3\) los notaremos como \textit{códigos ternarios} y a los códigos sobre \(F_4\) los llamaremos \textit{códigos cuaternarios}.\\
 
-\begin{definition}[Matriz generatriz]
-    Una \textit{matriz generatriz} de un \([n,k]\) código lineal \(\mathcal{C}\) es cualquier matriz \(G\) de dimensiones \(k \times n\) cuyas filas formen una base de \(\mathcal{C}\).
+Dicho esto, las dos maneras más comunes de presentar un código lineal son dando una matriz generadora o una matriz de paridad.
+
+\begin{definition}[Matriz generadora]
+    Una \textit{matriz generadora} de un \([n,k]\) código lineal \(\mathcal{C}\) es cualquier matriz \(G\) de dimensiones \(k \times n\) cuyas filas formen una base de \(\mathcal{C}\).
 \end{definition}
 
-Dado una matriz generatriz \(G\), para cualquier conjunto de \(k\) columnas independientes de esta, diremos que el correspondiente conjunto de coordenadas es un \textit{conjunto de información} de C. Las restantes \(r=n-k\) coordenadas las notaremos como \textit{conjunto de redundancia}, y llamaremos a \(r\) \textit{redundancia} de \(\C\). Si las primeras \(k\) coordenadas forman un conjunto de información, existe una única matriz generatriz para el código de la forma \([I_k | A]\) donde \(I_k\) es la matriz identidad de orden \(k\). Diremos que una matriz generatriz así está en \textit{forma estándar}.
+Dado una matriz generadora \(G\), para cualquier conjunto de \(k\) columnas independientes de esta, diremos que el correspondiente conjunto de coordenadas es un \textit{conjunto de información} de C. Las restantes \(r=n-k\) coordenadas las notaremos como \textit{conjunto de redundancia}, y llamaremos a \(r\) \textit{redundancia} de \(\C\). Si las primeras \(k\) coordenadas forman un conjunto de información, existe una única matriz generadora para el código de la forma \([I_k | A]\) donde \(I_k\) es la matriz identidad de orden \(k\). Diremos que una matriz generadora así está en \textit{forma estándar}.
 
 \begin{definition}
     Una \textit{matriz de paridad } de un \([n,k]\) código lineal \(\C\) es cualquier matriz \(H\) de dimensiones \((n-k)\times n\) tal que
@@ -35,16 +31,16 @@ Dado una matriz generatriz \(G\), para cualquier conjunto de \(k\) columnas inde
 
 Como un código lineal es un subespacio de un espacio vectorial, es el núcleo de alguna aplicación lineal, y por tanto, para un código lineal siempre existe alguna matriz de paridad \(H\). Mencionemos que las filas de \(H\) son también independientes. Esto es porque, al ser \(H\) una aplicación lineal de \(\F_q^n\) en  \(\F_q^{n-k}\), y la dimensión del núcleo de dicha aplicación es \(k\), tenemos que la dimensión de la imagen es \(n-k\) y por tanto el rango de \(H\) también.
 
-\section{Códigos duales}%
-\label{sec:códigos_duales}
+% \section{Códigos duales}%
+% \label{sec:códigos_duales}
 
-Como mencionamos en la sección anterior, las filas de una matriz de paridad de un código \(\C\) son independientes, y por tanto \(H\) es a su vez la matriz generatriz de otro código, el llamado \textit{dual} o \textit{ortogonal} de \(\C\), denotado por \(\C^\bot\). Es inmediato ver que \(\C^\bot\) es un \([n, n-k]\) código. Además, es posible dar una construcción alternativa para \(\C^\bot\) utilizando el producto escalar en  \(\F_q^n\):
-\[
-\C^\bot = \{x \in \F_q^n | x \cdot c = 0\ \forall c \in \C\}
-.\]
+% Como mencionamos en la sección anterior, las filas de una matriz de paridad de un código \(\C\) son independientes, y por tanto \(H\) es a su vez la matriz generadora de otro código, el llamado \textit{dual} o \textit{ortogonal} de \(\C\), denotado por \(\C^\bot\). Es inmediato ver que \(\C^\bot\) es un \([n, n-k]\) código. Además, es posible dar una construcción alternativa para \(\C^\bot\) utilizando el producto escalar en  \(\F_q^n\):
+% \[
+% \C^\bot = \{x \in \F_q^n | x \cdot c = 0\ \forall c \in \C\}
+% .\]
 
 \section{Pesos y distancias}
-Una de las características más útiles para el estudio de códigos es la distancia mínima entre las palabras de este.
+La característica que distingue un código lineal de un mero subespacio vectorial es la distancia. En realidad, un código lineal debería definirse como un subespacio vectorial de un espacio vectorial dotado de una distancia. Aunque no las tratemos aquí, hay otras distancias, como la del rango, que se usan. De esta manera, el mismo subespacio vectorial puede considerarse como dos códigos distintos.
 
 \begin{definition}
 Dados dos vectores \(x, y \in F_q^n\), definimos la distancia \textit{Hamming} entre ellos \(d(x,y)\) como el numero de coordenadas en las que  \(x\) e \(y\) difieren.
@@ -61,7 +57,7 @@ La función distancia \(d(x,y)\) satisface las siguientes condiciones:
     \item \(d(x,z) \leq d(x,y) + d(y,z)\) para todo \(x, y, z \in \F_q^n\)
 \end{nlist}
 
-\begin{proofs}
+\begin{proof}
 Las tres primeras propiedades son obvias por la propia definición de la distancia. Veamos pues la propiedad iv).\\
 
 Dados dos vectores \(x, y \in \F_q^n\), definimos el conjunto \(D(x,y) = \{i | x_i \neq y_i\}\), y denotamos el complementario por \(D^c(x, y) = \{i | x_i = y_i\}\). Es claro que entonces el cardinal de \(D(x,y)\) coincide con nuestra distancia. \\
@@ -87,7 +83,7 @@ D^c(x,z) = \{i | x_i = z_i\} = \{i | x_i = z_i = y_i\} \cup \{i | x_i = z_i \neq
 \implies |D(x,z)| \leq |D(x,y)| + |D(y,z)|
 \]
 quedándo demostrado el resultado.
-\end{proofs}
+\end{proof}
 \end{proposition}
 
 Ahora, la \textit{distancia (mínima)} de un código \(\C\) es la mínima distancia entre dos palabras distintas de dicho código. Esta propiedad será crucial a la hora de determinar el número de errores que podrá corregir un código.
@@ -101,19 +97,85 @@ Si tenemos dos vectores \(x, y \in \F_q^n\) es inmediato comprobar que \(d(x,y) 
 \begin{proposition}
 Si \(\C\) es un  código lineal, la distancia mínima coincide con el mínimo de los pesos de las palabras distintas de cero de C.
 
-\begin{proofs}
+\begin{proof}
 Sea \(d = d(x,y)\) la distancia mínima del código \(\C\), que se alcanza entre dos vectores \(x, y \in \C\), y \(d' = wt(z)\) el peso mínimo que se alcanza en \(z \in C\).
 
 Por ser \(\C\) un subespacio vectorial,  \(0 \in \C\), y por tanto  \(d \leq d(z, 0) = wt(z) = d'\). De nuevo por ser \(\C\) un subespacio vectorial tenemos que \(x-y \in \C\), y por tanto  \(d' \leq wt(x-y) = d(x,y) = d\), y por tanto \(d = d'\).
-\end{proofs}
+\end{proof}
 \end{proposition}
 
 Como consecuencia a este resultado, para códigos lineales, a la distancia mínima también se le llama \textit{peso mínimo} del código. En adelante, si el peso mínimo \(d\) de un \([n,k]\) código es conocido, entonces nos referiremos al código como un \([n,k,d]\) código.
 
+A continuación mostramos que existe una relación elemental entre el peso de una palabra y una matriz de paridad de un código lineal.
+
+\begin{proposition}
+    Sea \(\C\) un código lineal con matriz de paridad \(H\). Si \(c \in \C\), las columnas de \(H\) que corresponde a coordenadas no nulas de \(c\) son linealmente dependientes. En el sentido contrario, si existe una dependencia lineal con coeficientes no nulos entre \(\w\) columnas de  \(H\), entonces existe una palabra en \(\C\) de peso \(w\) cuyas coordenadas no nulas corresponden a dichas columnas.
+\end{proposition}
+
+\begin{proof}
+    Sea \(c = (c_1, c_2, \dots, c_n) \in \C\), \(J \subset \{1, 2, \dots, n\}\) tal que \(c_j \neq 0\) para todo \(j \in J\). Entonces, por ser \(H\) una matriz de paridad de \(\C\) tenemos que
+    \[
+    Hc^T = 0,
+    \]
+es decir, si \(H = (h_{ij})\) con \(i \in \{1,\dots, n-k\}, j \in \{1,\dots, n\}\),
+\[
+Hc^T =
+\begin{pmatrix}
+   \sum_{j=1}^n h_{1j} c_j \\
+   \sum_{j=1}^n h_{2j} c_j \\
+    \vdots \\
+   \sum_{j=1}^n h_{(n-k)j} c_j
+\end{pmatrix}
+= \sum_{j=1}^n c_j
+\begin{pmatrix}
+    h_{1j}\\
+    h_{2j}\\
+    \vdots \\
+    h_{(n-k)j}
+\end{pmatrix}
+= \sum_{j\in J} c_j
+\begin{pmatrix}
+    h_{1j}\\
+    h_{2j}\\
+    \vdots \\
+    h_{(n-k)j}
+\end{pmatrix}
+= 0
+\]
+quedando demostrada la primera parte.
+
+Por otro lado, dado \(J = \{j_1, \dots, j_w\} \subset \{1, \dots, n\}\), supongamos que tenemos una dependencia lineal entre las columnas asociadas a \(J\) dada por \(c_{j_1}h_{i j_1} + \cdots + c_{j_w} h_{i j_w}\) para cualquier \(i = 1, \dots, n-k\). Entonces, si construimos \(c = (c_1, \dots, c_n) \in \F_q^n\) como sigue
+\[
+\begin{cases}
+    c_j = 0 & \text{si } j \not \in J \\
+    c_j = c_{j_l} & \text{si } j = j_l \in J
+\end{cases}
+,\]
+
+es evidente que \(wt(c) = w\), y que
+\[
+Hc^T = \sum_{j \in J} c_j
+\begin{pmatrix}
+    h_{1j}\\
+    h_{2j}\\
+    \vdots \\
+    h_{(n-k)j}
+\end{pmatrix} = 0
+\]
+terminando la demostración de la proposición.
+\end{proof}
+
+Una manera de encontrar la distancia mínima \(d\) de un código lineal es examinar todas las palabras no nulas. El siguiente corolario, que es consecuencia directa de la proposición recién demostrado, muestra como utilizar una matriz de paridad para hallar \(d\).
+
+\begin{corollary}
+\label{cor:distance_parity_matrix}
+Un código lineal tiene peso o distancia mínima \(d\) si y solo si su matriz de paridad tiene un conjunto de \(d\) columnas linealmente dependientes pero ninguno de \(d-1\) columnas linealmente dependientes.
+\end{corollary}
+
 \section{Codificar, decodificar, y el Teorema de Shannon}
 
 \subsection{Codificar}%
-Sea \(\C\) un \([n,k]\) código lineal sobre el cuerpo \(\F_q\) con matriz generatriz \(G\). Como este es un subespacio vectorial de \(\F_q^n\) de dimensión \(k\), contiene \(q^k\) palabras, que están en correspondencia uno a uno con \(q^k\) posibles mensajes. Por esto, la forma más simple es ver estos mensajes como \(k\)-tuplas \(x\) en \(\F_q^k\). Así, lo más común es codificar un mensaje \(x\) como la palabra \(c = xG\). Si G está en forma estándar, las primeras \(k\) coordenadas son los símbolos de información \(x\); el resto de \(n-k\) símbolos son los simbolos de paridad, es decir, la redundancia añadida a \(x\) con el fin de poder recuperarla si ocurre algún error. Dicho esto, la matriz \(G\) puede no estar en forma estándar. En particular, si existen índices de columnas \(i_1, i_2, \dots, i_n \) tales que la matriz \(k \times k\) formada por estas columnas es la matriz identidad, entonces el mensaje se encuentra en las coordenadas \(i_1, i_2, \dots, i_n \) separado pero sin modificar, es decir, el símbolo del mensaje \(x_j\) se encuentra en la componente \(i_j\) de la palabra código. Si esto ocurre diremos que el codificador e s \textit{sistemático}.
+Sea \(\C\) un \([n,k]\) código lineal sobre el cuerpo \(\F_q\) con matriz generadora \(G\). Como este es un subespacio vectorial de \(\F_q^n\) de dimensión \(k\), contiene \(q^k\) palabras, que están en correspondencia uno a uno con \(q^k\) posibles mensajes. Por esto, la forma más simple es ver estos mensajes como \(k\)-tuplas \(x\) en \(\F_q^k\). Así, lo más común es codificar un mensaje \(x\) como la palabra \(c = xG\). Si G está en forma estándar, las primeras \(k\) coordenadas son los símbolos de información \(x\); el resto de \(n-k\) símbolos son los simbolos de paridad, es decir, la redundancia añadida a \(x\) con el fin de poder recuperarla si ocurre algún error. Dicho esto, la matriz \(G\) puede no estar en forma estándar. En particular, si existen índices de columnas \(i_1, i_2, \dots, i_n \) tales que la matriz \(k \times k\) formada por estas columnas es la matriz identidad, entonces el mensaje se encuentra en las coordenadas \(i_1, i_2, \dots, i_n \) separado pero sin modificar, es decir, el símbolo del mensaje \(x_j\) se encuentra en la componente \(i_j\) de la palabra código. Si esto ocurre diremos que el codificador es \textit{sistemático}.
 
 \subsection{Decodificar y el Teorema de Shannon}%
 \label{sub:decodificar_y_el_teorema_de_shannon}
