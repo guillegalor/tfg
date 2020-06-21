@@ -302,7 +302,7 @@ En primer lugar mostraremos que \(\lambda\) determina las posiciones con un erro
 
 Por tanto, una vez que \(\lambda\) es conocido, las coordenadas del error pueden ser localizadas siguiendo la siguiente regla: \(d \in {0,1, \dots, n-1}\) es una posición de error si y solo si \(\sigma^{d-1}(\beta{-1})\) es una raiz a la izquierda de \(\lambda\). En realidad,  \(\lambda\) puede ser sustituido por cualquier otro polinomio en \(R\) asociado a la derecha a \(\lambda\), es decir, cualquier polinomio que difiera de \(\lambda\) en la multiplicación a la derecha por un elemento no nulo de \(\F\).
 
-Para cualquier \(1 \leq j \leq \nu\), \(\lambda = (1 - \sigma^{k_j}(\beta)x)p_j\) para algún \(p_j \in R\) con \(\deg p_j = \nu - 1\). Definimos entonces el polinomio \textit{evaluador de errores} como \(\omega = \sum_{j=1}^\nu e_j \sigma^{k_j}(\alpha)p_j\). Es directo que \(\deg \omega < \nu\).
+Para cualquier \(1 \leq j \leq \nu\), \(\lambda = (1 - \sigma^{k_j}(\beta)x)p_j\) para algún \(p_j \in R\) con \(\deg p_j = \nu - 1\). Definimos entonces el polinomio \textit{evaluador de errores} como \(\omega = \sum_{j=1}^\nu e_j \sigma^{k_j}(\alpha)p_j\). Así, si conocemos el polinimio localizador de errores \(\lambda\) y el polinomio evaluador de errores \(\omega\), podremos calcular los valores \(e_1, e_2, \ldots, e_{\nu}\) resolviendo un sistema lineal dado por \(\omega = \sum_{j=1}^{\nu} e_j \sigma^{k_j}(\alpha)p_j\). Además, es directo comprobar que \(\deg \omega < \nu\), pues, como ya dijimos, \(\deg(p_j) = \nu -1\) para todo \(1 \le j \le \nu\).
 
 Finalmente, para cada \(0 \leq i \leq n-1\), el \(i\)-ésimo síndrome \(S_i\) del polinomio recibido  \(y = \sum_{j=0}^{n-1} y_j x^j\) se define como el resto de la división a la derecha de  \(y\) por  \(x - \sigma^i(\beta)\). Este \(S_i\) es la evaluación a la derecha de \(y\) en  \(\sigma^i(\beta)\). Siempre que \(0 \leq i \leq 2\tau -1 = \delta -2\), las evaluaciónes a la derecha en \(c\) son cero, y por tanto
  \[
@@ -368,6 +368,7 @@ S\lambda + x^{2\tau} u &= \sum_{j=1}^{\nu} e_j \left( \sum_{i = 0}^{2\tau-1} \si
 Ahora intentaremos resolver esta ecuación, para lo que utilizaremos el Algoritmo Euclídeo Extendido a la derecha presentado en \ref{alg:right_ext_euc_alg}. Recordemos que, para cualesquiera $f,g \in R$, cada paso $i$ del algoritmo proporciona coeficientes $\{u_{i}, v_{i}, r_{i}\}$ tales que $fu_{i} + fv_{i} = r_{i}$, donde ${(f,g)}_l = r_h$ y $\deg r_{i+1} < \deg r_{i}$ para cualquier $0 \le i \le h-1$.
 
 \begin{theorem}
+\label{th:mult_key_eq}
     La ecuación clave no conmutativa
     \begin{equation}
     \label{eq:key_equation}
@@ -378,7 +379,7 @@ Ahora intentaremos resolver esta ecuación, para lo que utilizaremos el Algoritm
     \label{eq:key_equation_div}
         x^{2\tau}u_{I} + Sv_{I} = r_{I},
     \end{equation}
-    donde $u_{I}, v_{I}$ y $r_{I}$ son los coeficientes de Bezout devueltos por el Algoritmo Euclídeo Extendido a la derecha con entrada $x^{2\tau}$ y \(S\), e \(I\) es el índice determinado por las condiciones \(\deg r_{I-1} \ge \tau\) y \(\deg r_{I} < \tau\). En particular, \(\lambda = v_{I}g\) y \(\omega = r_{I}g\) para algún \(g \in R\).
+    donde $u_{I}, v_{I}$ y $r_{I}$ son los coeficientes de Bezout dados por el Algoritmo Euclídeo Extendido a la derecha con entrada $x^{2\tau}$ y \(S\), e \(I\) es el índice determinado por las condiciones \(\deg r_{I-1} \ge \tau\) y \(\deg r_{I} < \tau\). En particular, \(\lambda = v_{I}g\) y \(\omega = r_{I}g\) para algún \(g \in R\).
 \end{theorem}
 
 \begin{proof}
@@ -397,3 +398,5 @@ y
 
     Sea \({[a,b]}_l = a'a = b'b\). Por ser \([\lambda, v_{I}]_r\) un múltiplo a la izquierda de \(a\) y \(b\), existe \(m \in R\) tal que \({[\lambda, v_{I}]}_{r} = m{[a,b]}_{l}\), es decir, \(\lambda a = v_{I}b = ma'a = mb'b\). Por esto, \(\lambda = ma'\) y \(v_{I} = mb'\) y, por minimalidad, \({(\lambda, v_{I})}_l = m\). Podemos utilizar argumentos similares para probar que existen \(m', m'' \in R\) tales que \(u_{I} = m'b'\) y  \(u = m'a'\), y  \(r_{I} = m''b'\) y \(\omega = m''a'\). Por el lema \ref{lem:reea} \textit{V)} \({(u_{I}, v_{I})} _r = 1\), luego \(b' = 1\). Esto completa la prueba, pues tenemos \(b = b b' = a a'\), y por tanto  \(\lambda = v_{I}a'\), \(\omega = r_{I}a'\) y \(u = u_{I}a'\).
 \end{proof}
+
+Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores, y por tanto, un método de decodificación para códigos CCS\@.
