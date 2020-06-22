@@ -51,19 +51,15 @@
 % Texto en negrita en modo matemática: \bm{}
 \newcommand{\bm}[1]{\boldsymbol{#1}}
 
-% Línea horizontal.
-\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
-
 % Letras de conjuntos
-\newcommand{\R}{\mathbb{R}} \newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\C}{\mathcal{C}}
 
 % Sucesiones
 \newcommand{\xn}{\{x_n\}}
 \newcommand{\fn}{\{f_n\}}
-
-% Máximo
-\let\max\relax
-\DeclareMathOperator{\max}{\text{máx}}
 
 % Letra griega "chi" en línea con el texto
 \DeclareRobustCommand{\rchi}{{\Large \mathpalette\irchi\relax}}
@@ -76,13 +72,11 @@
 % Conjunto vacío
 \renewcommand{\O}{\emptyset}
 
+% Coeficiente Lider
+\newcommand{\lc}{\operatorname{lc}}
+
 % Listas ordenadas con números romanos (i), (ii), etc.
 \newenvironment{nlist}
 {\begin{enumerate}
     \renewcommand\labelenumi{(\emph{\roman{enumi})}}}
   {\end{enumerate}}
-
-% División por casos con llave a la derecha.
-\newenvironment{rcases}
-{\left.\begin{aligned}}
-    {\end{aligned}\right\rbrace}

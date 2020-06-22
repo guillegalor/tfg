@@ -1,4 +1,4 @@
-main.pdf: main.tex titlepage.tex
+main.pdf: main.tex titlepage.tex src/Maths/*
 	pdflatex --shell-escape main.tex
 	bibtex main
 	pdflatex --shell-escape main.tex

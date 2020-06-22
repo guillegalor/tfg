@@ -79,7 +79,7 @@ es distinto de cero. Utilizando que \(\beta = \sigma(c)c^{-1}\) por la proposici
 
 sea distinto de cero o, equivalentemente, que \(\{c, \sigma(c), \dots, \sigma^{n-1}(c)\}\) sea una base normal de la extensión de cuerpos \(F^\sigma \subset \F\) \cite{turing1936a}. Recordamos que \(F^\sigma = \F[t]\), donde \(t \in \F\), que puede calcularse como se muestra en \cite{turing1936a}. En nuestro caso particular, el grupo que escogemos es el grupo cíclico \(\{1, \sigma, \dots, \sigma^{n-1}\}\), de manera que el elemento \(t \in \F\) puede obtenerse elegiendo cualquier  (\dots TODO). La existencia de un \(c \in \F\) que genere dicha base está asegurada por el Teorema de la Base Normal. \(\dots\)
 
-Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados}. El siguiente resultado, que es un caso particulas de \cite{turing1936a}, será importante en resultados posteriores. Mostraremos una prueba elemental de este.
+Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados} o \textit{códigos RS sesgados} para abreviar. El siguiente resultado, que es un caso particulas de \cite{turing1936a}, será importante en resultados posteriores. Mostraremos una prueba elemental de este.
 
 \begin{lemma}
 \label{lem:det_0}
@@ -156,7 +156,7 @@ tienen grado \(m\). Además, si \(x - \sigma^s(\beta) |_r g^l\ \) o \(\ x - \sig
 \end{lemma}
 
 \begin{proof}
-    Supongamos que \(\deg g^l < m\), así que \(g^l = \sum_{i=0}^{m-1} g_i x^i\). Como \(g\) es un múltiplo a la izquierda de \(x - \sigma^{t_j}(\beta)\) para todo \(1 \leq j \leq m\), por el lema \ref{lem:reea} tenemos que
+    Supongamos que \(\deg g^l < m\), así que \(g^l = \sum_{i=0}^{m-1} g_i x^i\). Como \(g\) es un múltiplo a la izquierda de \(x - \sigma^{t_j}(\beta)\) para todo \(1 \leq j \leq m\), por el lema~\ref{lem:eval} tenemos que
 
 \begin{equation}
 \label{linear_system_1}
@@ -399,4 +399,39 @@ y
     Sea \({[a,b]}_l = a'a = b'b\). Por ser \([\lambda, v_{I}]_r\) un múltiplo a la izquierda de \(a\) y \(b\), existe \(m \in R\) tal que \({[\lambda, v_{I}]}_{r} = m{[a,b]}_{l}\), es decir, \(\lambda a = v_{I}b = ma'a = mb'b\). Por esto, \(\lambda = ma'\) y \(v_{I} = mb'\) y, por minimalidad, \({(\lambda, v_{I})}_l = m\). Podemos utilizar argumentos similares para probar que existen \(m', m'' \in R\) tales que \(u_{I} = m'b'\) y  \(u = m'a'\), y  \(r_{I} = m''b'\) y \(\omega = m''a'\). Por el lema \ref{lem:reea} \textit{V)} \({(u_{I}, v_{I})} _r = 1\), luego \(b' = 1\). Esto completa la prueba, pues tenemos \(b = b b' = a a'\), y por tanto  \(\lambda = v_{I}a'\), \(\omega = r_{I}a'\) y \(u = u_{I}a'\).
 \end{proof}
 
-Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores, y por tanto, un método de decodificación para códigos CCS\@.
+Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores. Como ya dijimos, estos dos polinomios nos permiten calcular el error al recibir un polinomio \(y = c + e\), con \(c\) y \(e\) cumpliendo las hipótesis previamente mencionadas, por tanto, podemos describir un algoritmo de decodificación para códigos RS sesgados (vease el algoritmo~\ref{alg:decoding_1}) que será válido siempre que \({(\lambda, \omega)}_{r} = 1\).
+
+\begin{algorithm}[H]
+ \label{alg:decoding_1}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{Un polinomio \(y = \sum_{i=0}^{n-1}y_i x^{i}\) obtenido de la transmisión de una palabra código \(c\) perteneciente a un código RS sesgado \(C\) generado por \(g = {[\{x-\sigma^{i}(\beta)\}_{i=0,\ldots,\delta-2}]}_{l}\) con capacidad para corregir \(\tau = \lfloor (\delta -1)/2 \rfloor\) errores.}
+ \KwOut{Una palabra código \(c'\) o un \textit{error de ecuación clave}.}
+ \For{\(0 \le i \le 2\tau -1\)}{
+    \(S_i \gets \sum_{j=0}^{n-1} y_j N_{j}(\sigma^{i}(\beta))\)
+ }
+ \(S \gets \sum_{i=0}^{2\tau -1} \sigma^{i}(\alpha)S_{i}x^{i}\)\\
+ \If{\(S = 0\)}{
+    \Return{\(y\)}
+ }
+ \({\{u_{i}, v_{i}, r_{i}\}}_{i=0,\ldots,l} \gets \text{REEA}(x^{2\tau}, S)\)\\
+ \(I \gets \text{ primera iteración en REEA tal que } \deg r_{i} < \tau\)\\
+ \(pos \gets \emptyset\)\\
+ \For{\(0 \le i \le n-1\)}{
+     \If{ \(\sigma^{i-1}(\beta^{-1}) \text{ es una raiz a la izquierda de } v_{I}\) }{
+        \(pos = pos \cup \{i\}\)
+     }
+ }
+\If{\(\deg v_{I} > \operatorname{Cardinal}(pos)\) }{
+    \Return{ error en ecuación clave }
+}
+\For{ \(j \in pos\) }{
+    \(p_j \gets \operatorname{rquot}(v_{I}, 1 - \sigma^{j}(\beta)x)\)
+}
+
+Resolver el sistema lineal \(r_I = \sum_{j\in pos} e_{j}\sigma^{j}(\alpha)p_{j}\)\\
+\(e \gets \sum_{j\in pos}e_{j}x^{j}\)\\
+\Return{\(y - e\)}
+ \caption{Algoritmo de decodificación para códigos RS sesgados}
+\end{algorithm}
