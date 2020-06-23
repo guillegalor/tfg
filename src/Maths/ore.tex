@@ -61,7 +61,7 @@ El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse 
  \caption{División Euclídea a la derecha}
 \end{algorithm}
 
-Mostramos a continuación la demostración que justifica estos algoritmos.
+Mostramos a continuación una demostración que justifica estos algoritmos, cuya versión original puede encontrarse en~\cite[Th. 4.34]{bueso2003algorithmic}
 
 \begin{theorem}
 Sea \(\F\) un cuerpo finito de \(q\) elementos siendo \(q\) una potencia de un primo,  \(\sigma\) un autormorfismo de \(\F\) no nulo, y \(R = \F[x;\sigma]\) la extensión de Ore correspondiente. Entonces, dados \(f, g \in R\) exiten \(q, r \in R\) únicos tales que:
@@ -176,8 +176,8 @@ Antes de pasar con la demostración del algoritmo probaremos un resultado que no
     .\]
 \end{proof}
 
-\begin{theorem}
-    El algoritmo  \ref{alg:right_ext_euc_alg} es correcto.
+\begin{theorem}[\cite{algI}]
+    El algoritmo~\ref{alg:right_ext_euc_alg} es correcto.
 \end{theorem}
 \begin{proof}
     En primer lugar, vemos que siempre que \(r_i \neq 0\) se tiene que \(\deg(r_{i+1}) < \deg(r_i)\), por tanto existe  \(h \geq 1\) tal que \(r_h \neq 0\) pero \(r_{h+1} = 0\).
