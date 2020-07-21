@@ -141,7 +141,7 @@ Tanto \((f,g)_r\) como \([f,g]_l\) se pueden calcular utilizando el Algoritmo Ex
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
  \KwIn{\(f,g \in \F[x;\sigma] \text{ con } f \neq 0,\ g \neq 0\)}
- \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = fu_i + gv_i \text{ para todo  } i, r_h = (f,g)_l, \text{ y } u_{h+1}f = [f,g]_r.\)}
+ \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = fu_i + gv_i \text{ para todo  } i, r_h = (f,g)_l, \text{ y } fu_{h+1} = [f,g]_r.\)}
  \Initialization{\\
  \(r_0 \leftarrow f, r_1 \leftarrow g\) \\
  \(u_0 \leftarrow 1, u_1 \leftarrow 0\) \\
@@ -153,30 +153,15 @@ Tanto \((f,g)_r\) como \([f,g]_l\) se pueden calcular utilizando el Algoritmo Ex
   \(q,\ rem \leftarrow \operatorname{rquot-rem}(r_{i-1}, r_i)\) \\
   \(r_{i+1} \leftarrow rem\) \\
   \(u_{i+1} \leftarrow u_{i-1} - u_i q\) \\
-  \(v_{i+1} \leftarrow v_{i-1} - v_{i} q\)
+  \(v_{i+1} \leftarrow v_{i-1} - v_{i} q\) \\
   \(i \leftarrow i +1\) \\
  \Return{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1}\)}
  }
  \caption{Algoritmo extendido de Euclides a la derecha}
 \end{algorithm}
 
-Antes de pasar con la demostración del algoritmo probaremos un resultado que nos será necesario para esta.
-
-\begin{proposition}
-    Sean \(u,v,f,g \in R\) tales que \(fu = gv\). Entonces,  \({(u,v)}_{l} = 1 \implies {[f,g]}_r = fu\).
-\end{proposition}
-
-\begin{proof}
-    La identidad de Bezout nos proporciona coeficientes \(a, b\) tales que \(1 = ua + vb\). Entonces, dado \(h \in fR \cap gR\), veamos que \(fu |_{l} h\). Sean \(u', v'\) tales que \(h = fu' = gv'\),
-    \[
-    \begin{aligned}
-        fu' &= fu'ua + fu'vb \\
-        gv' &= gv'ua + gv'vb
-    \end{aligned}
-    .\]
-\end{proof}
-
-\begin{theorem}[\cite{algI}]
+La prueba de este teorema es una adaptación de la demostración del teorema original para dominios euclideos conmutativos que se encuentra en \cite{algI}, a excepción del último resultado (el que calcula el mínimo común múltiplo) cuya demostración se encuentra en \cite{bueso2003algorithmic}.
+\begin{theorem}
     El algoritmo~\ref{alg:right_ext_euc_alg} es correcto.
 \end{theorem}
 \begin{proof}
@@ -193,11 +178,11 @@ De aquí obtenemos que los divisores a la izquierda comunes de \(r_{i-1}\) y de 
 r_h = (0, r_h)_l = (r_{h+1}, r_h)_l = (r_h, r_{h-1-})_l = \cdots = (r_1, r_0)_l = (g,f)_l
 .\]
 
-Ahora vamos a definir \(u_i, v_i \in R\) con \(i = 0,1, \dots, h, h+1\). En primer lugar, tomamos
+A continuación vamos a definir \(u_i, v_i \in R\) con \(i = 0,1, \dots, h, h+1\). En primer lugar, tomamos
 \[
-u_0 = 1,\ v_0 = 0,\ u_1 = 0,\ v_1 = 1.
+u_0 = 1,\ v_0 = 0,\ u_1 = 0,\ v_1 = 1
 .\]
-Una vez dados \(u_{i-1}, v_{i-1}, u_i, v_i\) para \(1 \leq i \leq h\) definimos
+Entonces, para \(1 \leq i \leq h\) definimos
 \[
 u_{i+1} = u_{i-1} - u_iq_{i+1}, \quad
 v_{i+1} = v_{i-1} - v_iq_{i+1}
@@ -205,23 +190,54 @@ v_{i+1} = v_{i-1} - v_iq_{i+1}
 
 Aplicaremos un argumento por inducción para comprobar que \(r_i = fu_i + gv_i\). Es inmediato comprobar que para \(i = 0,1\) se cumple, así que supongamos que se cumple para \(i-1,\ i\) y veamos que se cumple para \(i+1\). En efecto
 \[
-f u_{i+1} + g v_{i+1j} = f(u_{i-1} - u_iq_{i+1}) + g(v_{i-1} - v_iq_{i+1}) =
-\]
-\[
-f u_{i-1} + g v_{i-1} - (f u_i + g v_i)q_{i+1} = r_{i-1} - r_iq_{i+1} = r_{i+1}
+\begin{aligned}
+f u_{i+1} + g v_{i+1} =& f(u_{i-1} - u_iq_{i+1}) + g(v_{i-1} - v_iq_{i+1}) = \\
+&f u_{i-1} + g v_{i-1} - (f u_i + g v_i)q_{i+1} = r_{i-1} - r_iq_{i+1} = r_{i+1}
+\end{aligned}
 .\]
 
-TODO-*-*-*
-Veamos para concluir que \(u_{h+1}f = [f,g]_r\). Observemos que \(0 = r_{h+1} = fu_{h+1} + gv_{h+1}\), luego \(fu_{h+1} = -gv_{h+1}\) es un múltiplo a la derecha común de \(f\) y \(g\). Para terminar y ver que \(f u_{h+1} = [f,g]_r\) demostremos primero que
-\[-u_{i+1}v_i + u_iv_{i+1} = 1\quad \forall 0 \leq i \leq h.\]
-Esta igualdad es clara para \(i = 0\). Si \(1 \leq i \leq h\), supuesta la igualdad para \(i-1\), tenemos
+Para concluir veamos que \(u_{h+1}f = [f,g]_r\). Observemos en primer lugar que \(0 = r_{h+1} = fu_{h+1} + gv_{h+1}\), luego \(fu_{h+1} = -gv_{h+1}\) es un múltiplo a la derecha común de \(f\) y \(g\). Supongamos \(fu' = -gv'\) un múltiplo común a la derecha de \(f\) y \(g\) cualquiera. Entonces, definimos
 \[
--u_{i+1}v_i + u_iv_{i+1} = -(u_{i-1} - u_iq_{i+1})v_i + u_i(v_{i-1} - v_iq_{i+1}) =
+\begin{aligned}
+    c_0 &= -v' \\
+    c_1 &= u' \\
+    &\ldots \\
+    c_{i+1} &= c_{i-1} - q_{i+1}c_i\quad \text{para}\quad 1 \le i \le h  \\
+\end{aligned}
+.\]
+Así, las siguientes igualdades se cumplen
+\[
+\begin{aligned}
+    r_{i+1}c_{i} - r_{i}c_{i+1} &= 0 \\
+    u_{i+1}c_{i} - u_{i}c_{i+1} &= (-1)^{i+1}u' \\
+    v_{i+1}c_{i} - v_{i}c_{i+1} &= (-1)^{i+1}v' \\
+\end{aligned}
+.\]
+para \(1 \le i \le h\). Para demostrarlas realizamos una inducción sencilla. Para \(i = 0\), tenemos que
+\[
+\begin{aligned}
+    r_{1}c_{0} - r_{0}c_{1} &= -gv' - fu' =  0 \\
+    u_{1}c_{0} - u_{0}c_{1} &= -c_{1} =  -u' \\
+    v_{1}c_{0} - v_{0}c_{1} &= c_{0} = -v' \\
+\end{aligned}
+.\]
+
+Supuestas las tres igualdades ciertas para \(i-1\),
+ \[
+\begin{aligned}
+    r_{i+1}c_{i} - r_{i}c_{i+1} &= (r_{i-1} - r_{i}q_{i+1})c_i - r_i(c_{i-1} - q_{i+1}c_i) = 0 \\
+    u_{i+1}c_{i} - u_{i}c_{i+1} &= (u_{i-1} - u_{i}q_{i+1})c_i - u_i(c_{i-1} - q_{i+1}c_i) = u_{i-1}c_i - u_ic_{i-1}= -((-1)^{i}u')  \\
+    v_{i+1}c_{i} - v_{i}c_{i+1} &= (v_{i-1} - v_{i}q_{i+1})c_i - v_i(c_{i-1} - q_{i+1}c_i) = v_{i-1}c_i - v_ic_{i-1}= -((-1)^{i}v')  \\
+
+\end{aligned}
+.\]
+Ahora, por \(r_{h+1} = 0 \neq r_{h}\), sabemos que \(c_{h+1} = 0\), y por tanto \(u_{h+1}\) y \(v_{h+1}\) dividen a la izquierda a \(u'\) y \(v'\) respectivamente. Luego,
+\[
+f u_{h+1} = -g v_{h+1} = {[f, g]_r}
 .\]
 \end{proof}
--*-*-*-*
 
-Veamos ahora un lema que nos será útil posteriormente.
+Veamos un lema que nos será útil posteriormente.
 
 \begin{lemma}
 \label{lem:reea}
