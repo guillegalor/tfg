@@ -7,7 +7,7 @@ A lo largo de este capítulo mostraremos los resultados inmediatamente necesario
 
 En este capítulo seguiremos la notación introducida en el capítulo anterior, por tanto \(\F\) será un cuerpo cualquiera,  \(\sigma\) un autormorfismo de  \(\F\) de orden finito  \(n\), y \(R = \F[x;\sigma]\) el anillo de polinomio sesgados correspondiente.
 
-En primer lugar comprobemos que el polinomio \(x^n -1\) es central en \(R\). Efectivamente, dado \(f = f_m x^m + \ldots + f_1x + f_0 \in \F\), tenemos que
+En primer lugar, utilizaremos la identificación análoga a la descrita en~\ref{sec:códigos_cíclicos} entre vectores \(c = c_0 c_1\cdots c_{n-1}\) de \(\F^n\) y polinomios \(c(x) = c_0 + c_1x + \cdots + c_{n-1}x^{n-1}\) de \(\F[x;\sigma]\). Ahora, si queremos seguir los pasos que utilizamos en dicha sección, queremos construir el anillo cociente \(F[x;\sigma]/\langle x^{n}-1\rangle\), y para ello necesitamos que el polinomio \(x^{n} - 1\) sea central en \(R\). Efectivamente, dado \(f = f_m x^m + \ldots + f_1x + f_0 \in \F\), tenemos que
 
 \[
 \begin{aligned}
@@ -22,21 +22,13 @@ Por tanto el ideal por la izquierda que genera es también un ideal por la derec
 
 Recordemos la proposición TODO que nos dice que el centro de \(\F[x;\sigma]\) es el anillo de polinomios conmutativo  \(\F^\sigma[x^n]\), donde  \(\F^\sigma\) denota el subcuerpo invariante por  \(\sigma\), es decir, los elementos  \(a \in \F\) tales que  \(\sigma(a) = a\). Para continuar necesitamos conocer mejor la estructura de nuestro anillo \(\mathcal{R}\), y para demostraremos el siguiente teorema.
 
-% Notas
+% Notas Isomorfía con Anillo de Matrices
 % R(x-1) \in R
 % R/R(x-1) ann as R-module = <x^n -1> // Haces cociente sobre el anulador y sigue siendo simple
 % R/Rx^n-1
 % El anillo cociente por el anulador es un algebra sobre los invariantes.
 
 % ---
-
-\begin{theorem}\label{th:matrix_iso}
-    El anillo \(\mathcal{R}\) es isomorfo al anillo de matrices \(\mathcal{M}_n(\F^\sigma)\). Como consecuencia, para cada \(k \leq n\) existe un CCS de dimensión \(k\). Mas aún, cada CCS se puede ver como el ideal a la izquierda generado por un elemento idempotente.
-\end{theorem}
-
-\begin{proof}
-
-\end{proof}
 
 Veamos a continuación un método para construir CCSs. Sabemos que todo ideal a la izquierda de \(\mathcal{R}\) es principal, pues ya dijimos que los anillos de polinomios sesgados son dominios de ideales principales a la izquierda, así que todo CCS está generado por un divisor a la derecha de \(x^n - 1\). Por tanto, de forma análoga a como se hace para polinomios cíclicos, necesitaremos encontrar factores a la derecha de este. El problema que nos encontramos es que, hasta donde sabemos, no existe un algoritmo de factorización completa para polinomios de Ore sobre un cuerpo cualquier. Por tanto construiremos un procedimiento específico para \(x^n - 1\). Veamos primero un método para encontrar divisores lineales a la derecha.
 
@@ -541,4 +533,45 @@ luego podemos escribir \(s\) de la forma \(\sum_{i=1}^{m} a_ip_i'\) para ciertos
 \end{equation}
 
 Ahora, volviendo a aplicar el lema~\ref{lem:direct-sum} (IV), pero esta vez sobre todas las posiciones de error y el polinomio localizador, obtenemos que \(\{p_1, \ldots, p_{\nu}\}\) es una base de \(R / R\lambda\) como  \(\F\)-espacio vectorial. Así, como \(e_i\sigma^{k_i} \neq 0\) para cada \(i \le \nu\), la ecuación~\ref{eq:m_nu} nos dice que \(m = \nu\), y por tanto, \(\deg g = 0\).
+\end{proof}
+
+Como ya dijimos, lo recién demostrado nos será de utilidad para saber si hemos encontrado todas las posiciones del error. Por tanto, el siguiente paso será construir el algoritmo que nos permita, en caso de existir, encontrar una posición nueva del error. De esta forma, en caso de que se produzca un error en la ecuación clave en el algoritmo~\ref{alg:decoding_1}, podremos hallar nuevas posiciones del error hasta que sepamos que las tenemos todas.
+
+\begin{algorithm}[H]
+ \label{alg:find_a_position}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{Un polinomio no constante \(p\) tal que \(\lambda = pg\) para algún \(g \in R\), \(pos = \{i \ge 0 \text{ tales que } (1 - \sigma^{i}(\beta)x) {|}_l p \}\), con \(\deg p > \operatorname{Cardinal}(pos)\).}
+ \KwOut{\(d \not \in pos\) tal que \((1 - \sigma^{d}(\beta)x)\) divide a la izquierda a \(\lamda\).}
+ \(f \gets p\),  \(e \gets \deg f\) \\
+ \For{\(0 \le i \le n-1\)}{
+     \If{\(i \not \in pos\)}{
+        \(f \gets {[f, 1 - \sigma^{i}(\beta)x]}_r\) \\
+        \If{\(\deg f = e\)}{
+            \Return{i}
+        }
+        \Else{
+            \(e \gets e + 1\)
+        }
+     }
+ }
+ \caption{Encuentra-una-posición}
+\end{algorithm}
+
+\begin{proposition}
+    El algoritmo~\ref{alg:find_a_position} encuentra una nueva posición del error correctamente.
+\end{proposition}
+\begin{proof}
+    Sea \(T = \{t_1, \ldots, t_r\} = \{0, 1, ..., n-1\} \setminus pos\). Definimos ahora
+\[
+\begin{aligned}
+&\lambda_0 = \lambda, \quad \lambda_i = {[\lambda _{i-1}, 1 - \sigma^{t_i}(\beta)x]}_r\quad \text{para } 1 \le i \le r \\
+&f_0 = p, \quad f_i = {[f _{i-1}, 1 - \sigma^{t_i}(\beta)x]}_r\quad \text{para } 1 \le i \le r
+\end{aligned}
+.\]
+
+Veamos que \(f_i {|}_l \lambda_i\) para cualquier \(i = 0, \ldots, r\). En efecto, para \(i = 0\) el resultado es cierto por hipótesis, y supuesto que se cumple para \(i-1\), \(f_{i-1}\) divide a la izquierda a \(\lambda_i\) por dividir a \(\lambda_{i-1}\), y \(1- \sigma^{t_i}(\beta)x\) lo divide también de forma trivial, luego por definición el mínimo común múltiplo a la derecha de estos divide a \(\lambda_i\). Dicho esto, probaremos en primer lugar que el algoritmo devuelve una posición del error.
+
+Supongamos que la secuencia \(\{\deg f_i\}_{0 \le i \le r}\) es estrictamente creciente. Por esto, \(\deg f_r = r + \deg p > n - \operatorname{Cardinal}(pos) + \deg p > n\). (TODO No entiendo) Esto sin embargo no es posible, pues \(f_r\ {|}_l\ \lambda_r = x^{n} - 1\). Por tanto, existe un \(d \le 0\) mínimo tal que \(\deg f_{d-1} = \deg f_{d}\). Entonces, \(1 - \sigma^{t_d}(\beta)x \ {|}_l\ f_{d-1}\ {|}_l\ \lambda_{d-1} = {[\lambda, 1 - \sigma^{t_1}(\beta)x, \ldots, 1 - \sigma^{t_{d-1}}(\beta)x]}_r \). Como \(t_{d} \neq t_1, \ldots, t_{d-1}\),  \(1 - \sigma^{t_d}(\beta)x \) divide a la izquierda \(\lambda\) concluyendo la prueba.
 \end{proof}
