@@ -1,3 +1,6 @@
+import math
+import numpy as np
+
 from sage.coding.linear_code import (AbstractLinearCode)
 from sage.coding.cyclic_code import _to_complete_list
 from sage.coding.encoder import Encoder
@@ -40,6 +43,17 @@ def left_lcm(pols):
         llcm = llcm.left_lcm(p)
 
     return llcm
+
+def norm(sigma, j, gamma):
+    '''
+    TODO
+    '''
+    if j > 0:
+        return np.prod([(sigma**k)(gamma) for k in range(j)])
+    elif j < 0:
+        return np.prod([(sigma**-k)(gamma) for k in range(-j)])
+    else:
+        raise ValueError("The second argument must be non zero")
 
 class SkewCyclicCode(AbstractLinearCode):
     r"""
@@ -159,7 +173,7 @@ class SkewRSCyclicCode(SkewCyclicCode):
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, generator_pol=None, b_roots=None):
+    def __init__(self, generator_pol=None, hamming_dist=None ,b_roots=None):
         r"""
         TESTS:
 
@@ -189,10 +203,17 @@ class SkewRSCyclicCode(SkewCyclicCode):
             ...
             ValueError:
         """
-        if (generator_pol is not None and b_roots is None):
+        if (generator_pol is not None and hamming_dist is not None
+                and b_roots is None):
+            if hamming_dist is not generator_pol.degree() + 1:
+                raise ValueError("The Hamming distance of a SkewRSCyclicCode coincides"
+                    "with the degree of its generator polynomial plus one")
+
+            _hamming_dist = hamming_dist
             super(SkewCyclicCode, self).__init__(generator_pol)
 
-        elif (b_roots is not None and generator_pol is None):
+        elif (b_roots is not None and generator_pol is None
+                and hamming_dist is None):
             if not b_roots:
                 raise ValueError("Provided b-roots list must not be empty")
 
@@ -213,6 +234,7 @@ class SkewRSCyclicCode(SkewCyclicCode):
             self._dimension = length - deg
             self._ring_automorphism = R.twist_map()
             self._generator_polynomial = generator_pol
+            self._hamming_dist = len(b_roots) + 1
 
             # TODO Add proper enconder and decoder
             super(SkewRSCyclicCode, self).__init__(F, length, "SkewCyclicCodeVectorEncoder", "Syndrome")
@@ -237,6 +259,12 @@ class SkewRSCyclicCode(SkewCyclicCode):
         return ("[%s, %s] Skew Reed Solomon Cyclic Code over %s"
                 % (self.length(), self.dimension(),
                    self.base_field()))
+
+    def hamming_dist(self):
+        r"""
+        TODO
+        """
+        return self._hamming_dist
 
 class SkewCyclicCodeVectorEncoder(Encoder):
     r"""
@@ -424,6 +452,19 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
             sage: D.decode_to_code(y) in C
             True
         """
+
+        C = self.code()
+        k = C.dimension()
+        n = C.length()
+        R = C._skew_polynomial_ring
+        sigma = R.twist_map()
+        generator_pol = C.generator_polynomial()
+        tau = self.decoding_radius()
+
+        S = 0
+        for i in range(2*tau - 1):
+            S_i = sum([R(y[j]*norm(sigma, j, (sigma**i)(beta))) for j in range(n)])
+
         return self.bch_code().decode_to_code(y)
 
     def decoding_radius(self):
@@ -437,4 +478,4 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
             sage: D.decoding_radius()
             1
         """
-        return self._bch_decoder.decoding_radius()
+        return (self.code().hamming_dist() - 1) // 2
