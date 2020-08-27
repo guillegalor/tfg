@@ -71,27 +71,6 @@ def norm(sigma, j, gamma):
     else:
         raise ValueError("The second argument must be non zero")
 
-def vector_to_poly(skew_polynomial_ring, word):
-    r"""
-    Returns de polynomial with coefficients given, supposed that
-    the last element is the lineal term, and so on.
-
-    INPUT:
-    - ``skew_polynomial_ring`` -- skew polynomial ring to which returned polynomial belongs
-    - ``word`` -- vector of coefficients
-
-    OUTPUT
-    -- ``poly`` -- the polynomial with such coefficients
-    """
-    R = skew_polynomial_ring
-    x = R.gen()
-    poly = R(0)
-
-    for i, a_i in enumerate(word[::-1]):
-        poly = poly + R(a_i * (x**i))
-
-    return poly
-
 class KeyEquationError(Exception):
     pass
 
