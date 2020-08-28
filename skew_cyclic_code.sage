@@ -202,17 +202,47 @@ class SkewCyclicCode(AbstractLinearCode):
         """
         return self._generator_polynomial
 
-r"""
-TODO
-"""
 class SkewRSCyclicCode(SkewCyclicCode):
-    _registered_encoders = {}
-    _registered_decoders = {}
+    r"""
+    Representation of a skew RS cyclic code.
 
+    A skew RS cyclic code can be constructed by providing,
+
+    - a normal generator of the field extension of the fixed field of sigma into
+    the skew polynomial ring base field
+
+    INPUT:
+
+    - ``r`` -- (default: ``None``) the initial exponent to compute the first b-root.
+    - ``hamming_dist`` -- (default: ``None``) the desired hamming distance of the code.
+    - ``skew_polynomial_ring`` -- (default: ``None``) the base skew polynomial ring.
+    - ``alpha`` -- (default: ``None``) a normal generator of the field extension given by sigma.
+
+    EXAMPLES:
+
+        sage: F.<t> = GF(3^10)
+        sage: sigma = F.frobenius_endomorphism()
+        sage: R.<x> = F['x', sigma]
+        sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+        sage: RS_C
+        [10, 7] Skew Reed Solomon Cyclic Code over Finite Field in t of size 3^10
+    """
     def __init__(self, r=None, hamming_dist=None, skew_polynomial_ring=None, alpha=None):
         r"""
         TESTS:
 
+        We check that, if `beta = alpha^(-1)*sigma(alpha)`, the left least common multiple of
+        the set `[x - beta, x - sigma(beta), ..., x - sigma^(n-1)(beta)]` is `x^n - 1` where
+        `n` is the length of the code::
+
+        EXAMPLES:
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+
+            TODO
         """
 
         if (r is not None and hamming_dist is not None
@@ -223,16 +253,17 @@ class SkewRSCyclicCode(SkewCyclicCode):
             length = sigma.order()
             beta = alpha**(-1) * sigma(alpha)
             delta = hamming_dist
+            x = R.gen()
 
-            factors = [R(R.gen() - (sigma**k)(beta)) for k in range(r, r + delta - 1)]
-            for f in factors:
-                if not f.right_divides(R(R.gen() ** length - 1)):
+            factors = [R(x - (sigma**k)(beta)) for k in range(length)]
+
+            if left_lcm(factors) is not R(x**length - 1):
                     raise ValueError("Provided alpha must be an element of the underlying field F of"
                             "the skew polynomial ring provided such that the set "
                             "{alpha, sigma(alpha), ..., sigma^{n-1}(alpha)} is a base "
                             "of F seen as a F^sigma vector space")
 
-            generator_pol = left_lcm(factors)
+            generator_pol = left_lcm(factors[r:r+delta-1])
             deg = generator_pol.degree()
 
             self._skew_polynomial_ring = R
@@ -243,8 +274,8 @@ class SkewRSCyclicCode(SkewCyclicCode):
             self._alpha = alpha
             self._beta = beta
 
-            # TODO Add proper enconder and decoder
-            super(SkewRSCyclicCode, self).__init__(F, length, "SkewCyclicCodeVectorEncoder", "Syndrome")
+            # TODO Add proper decoder
+            super(SkewCyclicCode, self).__init__(F, length, "Vector", "Syndrome")
 
         else:
             raise AttributeError("You must provide an initial exponent, the desired"
@@ -254,23 +285,15 @@ class SkewRSCyclicCode(SkewCyclicCode):
     def _repr_(self):
         r"""
         Returns a string representation of ``self``.
-
-        EXAMPLES::
-
-            sage: F.<t> = GF(3^10)
-            sage: sigma = F.frobenius_endomorphism()
-            sage: R.<x> = F['x', sigma]
-            ...
-            TODO
-            ...
         """
+
         return ("[%s, %s] Skew Reed Solomon Cyclic Code over %s"
                 % (self.length(), self.dimension(),
                    self.base_field()))
 
     def hamming_dist(self):
         r"""
-        TODO
+        Returns the hamming distance of ``self``
         """
         return self._hamming_dist
 
@@ -282,11 +305,8 @@ class SkewCyclicCodeVectorEncoder(Encoder):
     `F[x, \sigma]`, and let `g` be its generator polynomial.
 
     Let `m = (m_1, m_2, \dots, m_k)` be a vector in `F^{k}`.
-    This codeword can be seen as a polynomial over `F[x]`, as follows:
-    `P_m = \Sigma_{i=0}^{k-1} m_i \times x^i`.
-
-    To encode `m`, this encoder does the following multiplication:
-    `P_m \times g`.
+    To encode `m`, this encoder computes the generator matrix of `C`,
+    let say `G`, so the codeword will be `mG`
 
     INPUT:
 
@@ -300,7 +320,8 @@ class SkewCyclicCodeVectorEncoder(Encoder):
         sage: g = x**5 - 1
         sage: C = SkewCyclicCode(generator_pol=g)
         sage: E = SkewCyclicCodeVectorEncoder(C)
-        Vector-style encoder for [10, 5] Skew Cyclic Code over Finite Field in t of size 3^10
+        sage: E.encode(vector(F, [0,1,1,2,t]))
+        (0, 2, 2, 1, 2*t, 0, 1, 1, 2, t)
     """
 
     def __init__(self, code):
@@ -364,16 +385,22 @@ class SkewCyclicCodeVectorEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            ...
-            TODO
-            ...
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: E = SkewCyclicCodeVectorEncoder(C)
+            sage: E.generator_matrix()
+            [2 0 0 0 0 1 0 0 0 0]
+            [0 2 0 0 0 0 1 0 0 0]
+            [0 0 2 0 0 0 0 1 0 0]
+            [0 0 0 2 0 0 0 0 1 0]
+            [0 0 0 0 2 0 0 0 0 1]
         """
         C = self.code()
         k = C.dimension()
         n = C.length()
         sigma = C._ring_automorphism
         l = _to_complete_list(C.generator_polynomial(), n)
-        M = matrix([(sigma**i)(l[-i:]) + (sigma**i)(l[:-i]) for i in range(k)])
+        M = matrix([map(sigma**i, l[-i:]) + map(sigma**i,l[:-i]) for i in range(k)])
         M.set_immutable()
         return M
 
