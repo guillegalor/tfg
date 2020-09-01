@@ -5,19 +5,19 @@ from sage.coding.linear_code import (AbstractLinearCode)
 from sage.coding.cyclic_code import _to_complete_list
 from sage.coding.encoder import Encoder
 from sage.coding.decoder import Decoder
-from sage.matrix.constructor import matrix
+
+from sage.rings.polynomial.skew_polynomial_element import ConstantSkewPolynomialSection
+from sage.coding.linear_code import (AbstractLinearCode, LinearCodeSyndromeDecoder)
 
 def right_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
     '''
     Implementation of the right extended euclidean algorithm.
 
     INPUT:
-
     - ``f`` -- one skew polynomial.
     - ``g`` -- another skew polynomial.
 
     OUTPUT:
-
     - ``(n, (u, v, r))`` --  with u, v, r arrays of skew polynomials
     such that f*u[i] + g*v[i] = r[i] for all 0 <= i <= n
     '''
@@ -42,7 +42,6 @@ def left_lcm(pols):
     Computes the left least common multiple for a list of skew polynomials
 
     INPUT:
-
     - ``pols`` -- a list of skew polynomials
 
     OUTPUT:
@@ -60,7 +59,6 @@ def norm(sigma, j, gamma):
     Computes the ``j``-th norm of ``gamma``.
 
     INPUT:
-
     - ``sigma`` -- field automorphism of the field where ``gamma`` is defined
     - ``j`` -- an integer
     - ``gamma`` -- a field element
@@ -68,12 +66,12 @@ def norm(sigma, j, gamma):
     OUTPUT
     -- ``a`` -- an element from the same field as gamma
     '''
-    if j > 0:
+    if j == 0:
+        return 1
+    elif j > 0:
         return np.prod([(sigma**k)(gamma) for k in range(j)])
-    elif j < 0:
-        return np.prod([(sigma**-k)(gamma) for k in range(-j)])
     else:
-        raise ValueError("The second argument must be non zero")
+        return np.prod([(sigma**-k)(gamma) for k in range(-j)])
 
 class KeyEquationError(Exception):
     pass
@@ -141,7 +139,6 @@ class SkewCyclicCode(AbstractLinearCode):
             else:
                 self._generator_polynomial = generator_pol
 
-            # TODO Add proper enconder and decoder
             super(SkewCyclicCode, self).__init__(F, length, "Vector", "Syndrome")
 
         else:
@@ -205,6 +202,24 @@ class SkewCyclicCode(AbstractLinearCode):
             x^5 + 2
         """
         return self._generator_polynomial
+
+    def skew_polynomial_ring(self):
+        r"""
+        Returns the underlying skew polynomial ring of ``self``.
+
+        EXAMPLES::
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: C.skew_polynomial_ring()
+            Skew Polynomial Ring in x over Finite Field in t of
+            size 3^10 twisted by t |--> t^3
+        """
+
+        return self._skew_polynomial_ring
 
 class SkewRSCyclicCode(SkewCyclicCode):
     r"""
@@ -274,7 +289,7 @@ class SkewRSCyclicCode(SkewCyclicCode):
             self._dimension = length - deg
             self._ring_automorphism = sigma
             self._generator_polynomial = generator_pol
-            self._hamming_dist = len(factors) + 1
+            self._hamming_dist = delta
             self._alpha = alpha
             self._beta = beta
 
@@ -407,6 +422,155 @@ class SkewCyclicCodeVectorEncoder(Encoder):
         M.set_immutable()
         return M
 
+class SkewCyclicCodePolynomialEncoder(Encoder):
+    r"""
+    An encoder encoding polynomials into codewords.
+
+    Let `C` be a skew cyclic code over some field `F` with twist
+    map `sigma`, and let `g` be its generator polynomial.
+
+    This encoder encodes any polynomial `p \in F[x;sigma]_{<k}` by computing
+    `c = p \times g` and returning the vector of its coefficients.
+
+    INPUT:
+
+    - ``code`` -- The associated code of this encoder
+
+    EXAMPLES::
+
+        sage: F.<t> = GF(3^10)
+        sage: sigma = F.frobenius_endomorphism()
+        sage: R.<x> = F['x', sigma]
+        sage: g = x**5 - 1
+        sage: C = SkewCyclicCode(generator_pol=g)
+        sage: E = SkewCyclicCodePolynomialEncoder(C)
+        sage: E
+        Polynomial-style encoder for [10, 5] Skew Cyclic
+        Code over Finite Field in t of size 3^10
+    """
+
+    def __init__(self, code):
+        r"""
+        Basic constructor for this encoder
+        """
+        if not isinstance(code, SkewCyclicCode):
+            raise ValueError("code has to be a SkewCyclicCode")
+        self._skew_polynomial_ring = code._skew_polynomial_ring
+        super(SkewCyclicCodePolynomialEncoder, self).__init__(code)
+
+    def __eq__(self, other):
+        r"""
+        Tests equality between SkewCyclicCodePolynomialEncoder objects.
+
+        EXAMPLES::
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: E1 = SkewCyclicCodePolynomialEncoder(C)
+            sage: E2 = SkewCyclicCodePolynomialEncoder(C)
+            sage: E1 == E2
+            True
+        """
+        return (isinstance(other, SkewCyclicCodePolynomialEncoder) and
+                self.code() == other.code())
+
+    def _repr_(self):
+        r"""
+        Returns a string representation of ``self``.
+        """
+        return "Polynomial-style encoder for %s" % self.code()
+
+    def _latex_(self):
+        r"""
+        Returns a latex representation of ``self``.
+        """
+        return ("\\textnormal{Polynomial-style encoder for }%s" %
+                self.code()._latex_())
+
+    def encode(self, p):
+        r"""
+        Transforms ``p`` into an element of the associated code of ``self``.
+
+        INPUT:
+
+        - ``p`` -- A polynomial from ``self`` message space
+
+        OUTPUT:
+
+        - A codeword in associated code of ``self``
+
+        EXAMPLES::
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: E = SkewCyclicCodePolynomialEncoder(C)
+            sage: m = x + t + 1
+            sage: E.encode(m)
+            (2*t + 2, 2, 0, 0, 0, t + 1, 1, 0, 0, 0)
+        """
+        C = self.code()
+        k = C.dimension()
+        n = C.length()
+        if p.degree() >= k:
+            raise ValueError("Degree of the message must be at most %s" % k - 1)
+        res = _to_complete_list(p * C.generator_polynomial(), n)
+        return vector(C.base_field(), res)
+
+    def unencode_nocheck(self, c):
+        r"""
+        Returns the message corresponding to ``c``.
+        Does not check if ``c`` belongs to the code.
+
+        INPUT:
+
+        - ``c`` -- A vector with the same length as the code
+
+        OUTPUT:
+
+        - An element of the message space
+
+        EXAMPLES::
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: E = SkewCyclicCodePolynomialEncoder(C)
+            sage: m = x + t + 1
+            sage: w = E.encode(m)
+            sage: E.unencode_nocheck(w)
+            x + t + 1
+        """
+        R = self.message_space()
+        g = self.code().generator_polynomial()
+        p = R(c.list())
+        return p // g
+
+    def message_space(self):
+        r"""
+        Returns the message space of ``self``
+
+        EXAMPLES::
+
+            sage: F.<t> = GF(3^10)
+            sage: sigma = F.frobenius_endomorphism()
+            sage: R.<x> = F['x', sigma]
+            sage: g = x**5 - 1
+            sage: C = SkewCyclicCode(generator_pol=g)
+            sage: E = SkewCyclicCodePolynomialEncoder(C)
+            sage: E.message_space()
+            Skew Polynomial Ring in x over Finite Field in t
+            of size 3^10 twisted by t |--> t^3
+        """
+        return self._skew_polynomial_ring
+
 class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
     r"""
     A decoder which decodes through a algorithm similar to the classic Sugiyama
@@ -420,6 +584,7 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
 
     EXAMPLES::
 
+        TODO
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
@@ -431,7 +596,7 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
     """
     def __init__(self, code, **kwargs):
         r"""
-        Constructor for this decoder
+        Basic constructor for this decoder
         """
         super(SkewRSCyclicCodeSugiyamaDecoder, self).__init__(
             code, code.ambient_space(), "SkewCyclicCodeVectorEncoder")
@@ -441,7 +606,7 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
         Tests equality between SkewRSCyclicCodeSugiyamaDecoder objects.
 
         EXAMPLES::
-
+            TODO
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
@@ -473,9 +638,8 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
         Decodes ``y`` to an element in :meth:`sage.coding.encoder.Encoder.code`.
 
         EXAMPLES::
-
             TODO
-            True
+
         """
         C = self.code()
 
@@ -491,18 +655,15 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
         tau = self.decoding_radius()
         x = R.gen()
 
-        # Step 1: compute the syndrome polynomial
         S = R(0)
+
         for i in range(2*tau):
             S_i = sum([R(y[j]*norm(sigma, j, (sigma**i)(beta))) for j in range(n)])
             S = S + (sigma**i)(alpha) * S_i * x**i
 
-        # If the syndrome polynomial is zero, the received word is in the code
         if S.is_zero():
             return vector(_to_complete_list(y, n))
 
-        # Step 2: compute the coefficients from right extended euclidean algorithm
-        # and find the first index such that deg(r_i) < tau
         l, (u,v,r) = right_extended_euclidean_algorithm(R, R(x**(2*tau)), S)
 
         I = 0
@@ -511,117 +672,28 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
                 I = i
                 break
         if not I:
-            raise RuntimeError("Unexpected error while computing I")
+            raise RuntimeError("Error al calcular I")
 
-        # Step 3: create the set of error positions and obtain the error locator(lambda)
-        # and error evaluator(omega) polynomials.
         pos = []
+
         for i in range(n):
             if (R(x - (sigma**(i-1))(beta**(-1)))).left_divides(v[I]):
                 pos.append(i)
 
-        error_locator_pol = v[I]
-        error_evaluator_pol = r[I]
-
-        # If a key equation error occurs (deg(v_i) > Cardinal(pos)), compute the set
-        # of error positions and these polynomials using the failure solver algorithm
         if v[I].degree() > len(pos):
-            error_locator_pol, error_evaluator_pol, pos = _failure_solver(v[I], r[I], pos)
+            raise KeyEquationError
 
-        # Step 4: compute polynomials p_j such that lambda = (1 - sigma^(k_j)(beta)x)p_j
         p = {}
         for j in pos:
-            p[j] = (error_locator_pol.left_quo_rem(R(1 - (sigma**j)(beta)*x)))[0]
+            p[j] = (v[I].left_quo_rem(R(1 - (sigma**j)(beta)*x)))[0]
 
-        # Step 5: solve the linear system: omega = \sum_{j \in pos} e_j sigma^j(alpha) p_j
-        omega = _to_complete_list(error_evaluator_pol, tau)
+        omega = _to_complete_list(r[I], tau)
         Sigma = matrix([[(sigma**j)(alpha) * p[j][i] for j in pos] for i in range(tau)])
-        E = Sigma.transpose().solve_left(vector(omega))
 
-        # Step 6: compute the error, and substract if from the received word, obtaining the
-        # decoded codeword
+        E = Sigma.transpose().solve_left(vector(omega))
         e = sum([E[j] * x**(pos[j]) for j in range(len(pos))])
 
         return vector(_to_complete_list(y - e, n))
-
-    def _find_a_position(self, p, pos)
-        r"""
-        Return a new error position that is not in `pos`.
-
-        INPUT:
-
-        - ``p`` -- non constant polynomial from ``self.skew_polynomial_ring``such that
-        the error locator polynomial equals p*g for some g in ``self._skew_polynomial_ring``
-        - ``pos`` -- a list of integers such that (1 - sigma^d (beta)x)
-        left divides p
-
-        OUTPUT:
-
-        - ``i`` -- an integer representing the new error position
-
-        """
-        C = self.code()
-
-        R = C._skew_polynomial_ring
-        n = C.length()
-        sigma = C._ring_automorphism
-        beta = C._beta
-        x = R.gen()
-
-        f = p
-        epsilon = f.degree()
-
-        for i in range(n):
-            if i not in pos:
-                f = f._right_lcm(R(1 - (sigma**i)(beta) * x))
-                if f.degree() = epsilon:
-                    return i
-                else:
-                    epsilon = epsilon + 1
-
-        raise RuntimeError("Unexpected error while computing a new error position")
-
-    def _failure_solver(self, vI, rI, pos)
-        r"""
-        Computes the error locator polynomial, the error evaluator polynomial and the
-        set of error positions
-
-        INPUT:
-
-        - ``vI`` -- a skew polynomial from ``self._skew_polynomial_ring`` such that the
-        error locator pol equals vI*g for some g
-        - ``rI`` -- a skew polynomial from ``self._skew_polynomial_ring`` such that the
-        error evaluator pol equals rI*g for the same g as for vI
-        --``pos`` -- a list of integers containing the positions i such that
-        (1 - sigma^i(beta)x) left divides v_I
-
-        OUTPUT:
-        - ``lambda`` -- error locator polynomial
-        - ``omega`` -- error evaluator polynomial
-        - ``err_pos`` -- a list contaning all the error positions
-        """
-        C = self.code()
-
-        R = C._skew_polynomial_ring
-        n = C.length()
-        sigma = C._ring_automorphism
-        beta = C._beta
-        x = R.gen()
-        err_pos = copy(pos)
-
-        f = vI
-
-        while len(err_pos) < f.degree():
-            d = _find_a_err_position(f, err_pos)
-            f = f.right_lcm(R(1 - (sigma**d)(beta) * x))
-
-            for i in range(n):
-                if i not in err_pos and f.is_left_divisible_by(R(1 - (sigma**i)(beta) * x)):
-                    err_pos.append(i)
-
-        g = f.left_quo_rem(vI)
-
-        return f, rI*g, err_pos
 
     def decoding_radius(self):
         r"""
