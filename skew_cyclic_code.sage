@@ -710,6 +710,7 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
 
 ####################### registration ###############################
 SkewCyclicCode._registered_encoders["Vector"] = SkewCyclicCodeVectorEncoder
+SkewCyclicCode._registered_encoders["Polynomial"] = SkewCyclicCodePolynomialEncoder
 SkewCyclicCode._registered_decoders["Syndrome"] = LinearCodeSyndromeDecoder
 
 SkewRSCyclicCode._registered_decoders["Sugiyama"] = SkewRSCyclicCodeSugiyamaDecoder

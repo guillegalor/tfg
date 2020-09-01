@@ -7,7 +7,7 @@ from sage.coding.encoder import Encoder
 from sage.coding.decoder import Decoder
 from sage.matrix.constructor import matrix
 
-def right_extended_euclidean_algorithm(f, g):
+def right_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
     '''
     Implementation of the right extended euclidean algorithm.
 
@@ -20,8 +20,9 @@ def right_extended_euclidean_algorithm(f, g):
     such that f*u[i] + g*v[i] = r[i] for all 0 <= i <= n
     '''
     # Initialization
-    u = [1, 0]
-    v = [0, 1]
+    R = skew_polynomial_ring
+    u = [R(1), R(0)]
+    v = [R(0), R(1)]
     r = [f, g]
 
     i = 1
@@ -54,6 +55,9 @@ def norm(sigma, j, gamma):
         return np.prod([(sigma**-k)(gamma) for k in range(-j)])
     else:
         raise ValueError("The second argument must be non zero")
+
+class KeyEquationError(Exception):
+    pass
 
 class SkewCyclicCode(AbstractLinearCode):
     r"""
@@ -169,79 +173,54 @@ class SkewCyclicCode(AbstractLinearCode):
         """
         return self._generator_polynomial
 
+r"""
+TODO
+"""
 class SkewRSCyclicCode(SkewCyclicCode):
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, generator_pol=None, hamming_dist=None ,b_roots=None):
+    def __init__(self, r=None, hamming_dist=None, skew_polynomial_ring=None, alpha=None):
         r"""
         TESTS:
 
-        If a generator polynomial is provided, the same checkings as in
-        SkewCyclicCode are made
-
-            sage: F.<t> = GF(3^10)
-            sage: sigma = F.frobenius_endomorphism()
-            sage: R.<x> = F['x', sigma]
-            ...
-            TODO
-            ...
-            Traceback (most recent call last):
-            ...
-            ValueError:
-
-        Otherwise, we check that each of the polynomials `x - b_roots[i]`
-        right divides `x^n - 1`
-
-            sage: F.<t> = GF(3^10)
-            sage: sigma = F.frobenius_endomorphism()
-            sage: R.<x> = F['x', sigma]
-            ...
-            TODO
-            ...
-            Traceback (most recent call last):
-            ...
-            ValueError:
         """
-        if (generator_pol is not None and hamming_dist is not None
-                and b_roots is None):
-            if hamming_dist is not generator_pol.degree() + 1:
-                raise ValueError("The Hamming distance of a SkewRSCyclicCode coincides"
-                    "with the degree of its generator polynomial plus one")
 
-            _hamming_dist = hamming_dist
-            super(SkewCyclicCode, self).__init__(generator_pol)
+        if (r is not None and hamming_dist is not None
+                and alpha is not None and skew_polynomial_ring is not None):
+            F = skew_polynomial_ring.base_ring()
+            R = skew_polynomial_ring
+            sigma = R.twist_map()
+            length = sigma.order()
+            beta = alpha**(-1) * sigma(alpha)
+            delta = hamming_dist
 
-        elif (b_roots is not None and generator_pol is None
-                and hamming_dist is None):
-            if not b_roots:
-                raise ValueError("Provided b-roots list must not be empty")
-
-            F = b_roots[0].base_ring()
-            R = b_roots[0].parent()
-            length = R.twist_map()
-
-            factors = [R(R.gen() - b_root) for b_root in b_roots]
+            factors = [R(R.gen() - (sigma**k)(beta)) for k in range(r, r + delta - 1)]
             for f in factors:
                 if not f.right_divides(R(R.gen() ** length - 1)):
-                    raise ValueError("Provided b-roots must divide x^n - 1, "
-                                 "where n is the order of the ring automorphism.")
+                    raise ValueError("Provided alpha must be an element of the underlying field F of"
+                            "the skew polynomial ring provided such that the set "
+                            "{alpha, sigma(alpha), ..., sigma^{n-1}(alpha)} is a base "
+                            "of F seen as a F^sigma vector space")
 
             generator_pol = left_lcm(factors)
             deg = generator_pol.degree()
 
             self._skew_polynomial_ring = R
             self._dimension = length - deg
-            self._ring_automorphism = R.twist_map()
+            self._ring_automorphism = sigma
             self._generator_polynomial = generator_pol
-            self._hamming_dist = len(b_roots) + 1
+            self._hamming_dist = len(factors) + 1
+            self._alpha = alpha
+            self._beta = beta
 
             # TODO Add proper enconder and decoder
             super(SkewRSCyclicCode, self).__init__(F, length, "SkewCyclicCodeVectorEncoder", "Syndrome")
 
         else:
-            raise AttributeError("You must provide either a generator polynomial,"
-                                 "or a list of b-roots")
+            raise AttributeError("You must provide an initial exponent, the desired"
+                    " hamming distance, a skew polynomial ring and an element of the"
+                    " underlying field")
 
     def _repr_(self):
         r"""
@@ -452,20 +431,54 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
             sage: D.decode_to_code(y) in C
             True
         """
-
         C = self.code()
-        k = C.dimension()
-        n = C.length()
-        R = C._skew_polynomial_ring
-        sigma = R.twist_map()
-        generator_pol = C.generator_polynomial()
-        tau = self.decoding_radius()
 
-        S = 0
+        n = C.length()
+        k = C._dimension
+        R = C._skew_polynomial_ring
+        sigma = C._ring_automorphism
+        g = C.generator_polynomial()
+        delta = C._hamming_dist
+        alpha = C._alpha
+        beta = C._beta
+        tau = self.decoding_radius()
+        x = R.gen()
+
+        S = R(0)
+
         for i in range(2*tau - 1):
             S_i = sum([R(y[j]*norm(sigma, j, (sigma**i)(beta))) for j in range(n)])
+            S = S + S_i
 
-        return self.bch_code().decode_to_code(y)
+        if S.is_zero():
+            return y
+
+        l, (u,v,r) = right_extended_euclidean_algorithm(R, R(x**(2*tau)), S)
+
+        I = 0
+        for (i, r_i) in enumerate(r):
+            if r_i.degree() < tau:
+                I = i
+                break
+        if not I:
+            raise RuntimeError("Error al calcular I")
+
+        pos = []
+
+        for i in range(n):
+            if (R(x - (sigma**(i-1))(beta**(-1)))).left_divides(v[I]):
+                pos.append(i)
+
+        if v[I].degree() > len(pos):
+            raise KeyEquationError
+
+        p = []
+        for j in pos:
+            p.append(v[I].left_quo_rem(R(1 - (sigma**j)(beta)*x)))
+
+        # TODO Resolver sistema lineal
+
+        return None
 
     def decoding_radius(self):
         r"""
