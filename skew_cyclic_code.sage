@@ -2,6 +2,7 @@ import math
 import numpy as np
 
 from sage.coding.linear_code import (AbstractLinearCode)
+
 from sage.coding.cyclic_code import _to_complete_list
 from sage.coding.encoder import Encoder
 from sage.coding.decoder import Decoder
@@ -221,7 +222,7 @@ class SkewCyclicCode(AbstractLinearCode):
 
         return self._skew_polynomial_ring
 
-class SkewRSCyclicCode(SkewCyclicCode):
+class SkewRSCode(SkewCyclicCode):
     r"""
     Representation of a skew RS cyclic code.
 
@@ -242,7 +243,7 @@ class SkewRSCyclicCode(SkewCyclicCode):
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
-        sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+        sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
         sage: RS_C
         [10, 7] Skew Reed Solomon Cyclic Code over Finite Field in t of size 3^10
     """
@@ -259,7 +260,7 @@ class SkewRSCyclicCode(SkewCyclicCode):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+            sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
 
             TODO
         """
@@ -571,7 +572,7 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
         """
         return self._skew_polynomial_ring
 
-class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
+class SkewRSCodeSugiyamaDecoder(Decoder):
     r"""
     A decoder which decodes through a algorithm similar to the classic Sugiyama
     algorithm for BCH codes.
@@ -588,8 +589,8 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
-        sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
-        sage: D = SkewRSCyclicCodeSugiyamaDecoder(RS_C)
+        sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+        sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
         sage: D
         Decoder through the Sugiyama like algorithmc of the [10, 7] Skew Reed Solomon Cyclic
         Code over Finite Field in t of size 3^10
@@ -598,25 +599,25 @@ class SkewRSCyclicCodeSugiyamaDecoder(Decoder):
         r"""
         Basic constructor for this decoder
         """
-        super(SkewRSCyclicCodeSugiyamaDecoder, self).__init__(
+        super(SkewRSCodeSugiyamaDecoder, self).__init__(
             code, code.ambient_space(), "SkewCyclicCodeVectorEncoder")
 
     def __eq__(self, other):
         r"""
-        Tests equality between SkewRSCyclicCodeSugiyamaDecoder objects.
+        Tests equality between SkewRSCodeSugiyamaDecoder objects.
 
         EXAMPLES::
             TODO
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: RS_C = SkewRSCyclicCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
-            sage: D1 = SkewRSCyclicCodeSugiyamaDecoder(RS_C)
-            sage: D2 = SkewRSCyclicCodeSugiyamaDecoder(RS_C)
+            sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+            sage: D1 = SkewRSCodeSugiyamaDecoder(RS_C)
+            sage: D2 = SkewRSCodeSugiyamaDecoder(RS_C)
             sage: D1 == D2
             True
         """
-        return (isinstance(other, SkewRSCyclicCodeSugiyamaDecoder) and
+        return (isinstance(other, SkewRSCodeSugiyamaDecoder) and
                 self.code() == other.code())
 
     def _repr_(self):
@@ -713,4 +714,4 @@ SkewCyclicCode._registered_encoders["Vector"] = SkewCyclicCodeVectorEncoder
 SkewCyclicCode._registered_encoders["Polynomial"] = SkewCyclicCodePolynomialEncoder
 SkewCyclicCode._registered_decoders["Syndrome"] = LinearCodeSyndromeDecoder
 
-SkewRSCyclicCode._registered_decoders["Sugiyama"] = SkewRSCyclicCodeSugiyamaDecoder
+SkewRSCode._registered_decoders["Sugiyama"] = SkewRSCodeSugiyamaDecoder
