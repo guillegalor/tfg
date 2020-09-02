@@ -10,17 +10,51 @@ from sage.coding.decoder import Decoder
 from sage.rings.polynomial.skew_polynomial_element import ConstantSkewPolynomialSection
 from sage.coding.linear_code import (AbstractLinearCode, LinearCodeSyndromeDecoder)
 
+def left_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
+    '''
+    Implementation of the left extended euclidean algorithm.
+
+    INPUT:
+
+    - ``f`` -- one skew polynomial.
+
+    - ``g`` -- another skew polynomial.
+
+    OUTPUT:
+
+    - ``(u, v, r)`` --  with u, v, r arrays of skew polynomials
+    such that u[i]*f + v[i]*f = r[i] for all i
+    '''
+    # Initialization
+    R = skew_polynomial_ring
+    u = [R(1), R(0)]
+    v = [R(0), R(1)]
+    r = [f, g]
+
+    i = 1
+    while r[i] != 0:
+        q, rem = r[i-1].right_quo_rem(r[i])
+        u.append(u[i-1] - q*u[i])
+        v.append(v[i-1] - q*v[i])
+        r.append(rem)
+
+        i = i+1
+    return u, v, r
+
 def right_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
     '''
     Implementation of the right extended euclidean algorithm.
 
     INPUT:
+
     - ``f`` -- one skew polynomial.
+
     - ``g`` -- another skew polynomial.
 
     OUTPUT:
-    - ``(n, (u, v, r))`` --  with u, v, r arrays of skew polynomials
-    such that f*u[i] + g*v[i] = r[i] for all 0 <= i <= n
+
+    - ``(u, v, r)`` --  with u, v, r arrays of skew polynomials
+    such that f*u[i] + g*v[i] = r[i] for all i
     '''
     # Initialization
     R = skew_polynomial_ring
@@ -36,16 +70,18 @@ def right_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
         r.append(rem)
 
         i = i+1
-    return (i, (u, v, r))
+    return u, v, r
 
 def left_lcm(pols):
     '''
     Computes the left least common multiple for a list of skew polynomials
 
     INPUT:
+
     - ``pols`` -- a list of skew polynomials
 
     OUTPUT:
+
     - ``llcm`` --  a skew polynomial which is one left least common multiple
 
     '''
@@ -60,11 +96,15 @@ def norm(sigma, j, gamma):
     Computes the ``j``-th norm of ``gamma``.
 
     INPUT:
+
     - ``sigma`` -- field automorphism of the field where ``gamma`` is defined
+
     - ``j`` -- an integer
+
     - ``gamma`` -- a field element
 
     OUTPUT
+
     -- ``a`` -- an element from the same field as gamma
     '''
     if j == 0:
@@ -234,7 +274,9 @@ class SkewRSCode(SkewCyclicCode):
     INPUT:
 
     - ``hamming_dist`` -- (default: ``None``) the desired hamming distance of the code.
+
     - ``skew_polynomial_ring`` -- (default: ``None``) the base skew polynomial ring.
+
     - ``alpha`` -- (default: ``None``) a normal generator of the field extension given by sigma.
 
     EXAMPLES:
@@ -587,14 +629,14 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
 
 class SkewRSCodeSugiyamaDecoder(Decoder):
     r"""
-    A decoder which decodes through a algorithm similar to the classic Sugiyama
-    algorithm for BCH codes.
+    A decoder for skew RS codes which decodes through a algorithm similar to
+    the classic Sugiyama algorithm for BCH codes.
 
     INPUT:
 
     - ``code`` -- The associated code of this decoder.
 
-    - ``**kwargs`` -- All extra arguments are forwarded to the BCH decoder
+    - ``**kwargs`` -- All extra arguments are forwarded to the decoder
 
     EXAMPLES::
 
@@ -649,7 +691,11 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
 
     def decode_to_code(self, word):
         r"""
-        Decodes ``y`` to an element in :meth:`sage.coding.encoder.Encoder.code`.
+        Decodes ``word`` to an element in :meth:`sage.coding.encoder.Encoder.code`.
+
+        INPUT:
+
+        - `word` -- Vector of `self.code().length()` elements of the field of this code
 
         EXAMPLES::
 
@@ -691,7 +737,7 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
         if S.is_zero():
             return vector(_to_complete_list(y, n))
 
-        l, (u,v,r) = right_extended_euclidean_algorithm(R, R(x**(2*tau)), S)
+        u, v, r = right_extended_euclidean_algorithm(R, R(x**(2*tau)), S)
 
         I = 0
         for (i, r_i) in enumerate(r):
@@ -724,7 +770,7 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
 
     def decoding_radius(self):
         r"""
-        Returns maximal number of errors that ``self`` can decode.
+        Returns maximum number of errors that ``self`` can correct.
 
         EXAMPLES::
 
