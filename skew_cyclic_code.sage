@@ -240,13 +240,15 @@ class SkewRSCode(SkewCyclicCode):
 
     EXAMPLES:
 
-        sage: F.<t> = GF(3^10)
-        sage: sigma = F.frobenius_endomorphism()
+        sage: F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+        sage: sigma = (F.frobenius_endomorphism())**10
         sage: R.<x> = F['x', sigma]
-        sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+        sage: alpha = t
+        sage: RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
         sage: RS_C
-        [10, 7] Skew Reed Solomon Cyclic Code over Finite Field in t of size 3^10
+        [6, 2] Skew Reed Solomon Code over Finite Field in t of size 2^12
     """
+
     def __init__(self, r=None, hamming_dist=None, skew_polynomial_ring=None, alpha=None):
         r"""
         TESTS:
@@ -261,8 +263,9 @@ class SkewRSCode(SkewCyclicCode):
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
             sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
-
-            TODO
+            ValueError: Provided alpha must be an element of the underlying field F of the
+            skew polynomial ring provided such that the set {alpha, sigma(alpha), ..., sigma^{n-1}(alpha)}
+            is a base of F seen as a F^sigma vector space
         """
 
         if (r is not None and hamming_dist is not None
@@ -270,14 +273,25 @@ class SkewRSCode(SkewCyclicCode):
             F = skew_polynomial_ring.base_ring()
             R = skew_polynomial_ring
             sigma = R.twist_map()
-            length = sigma.order()
+
+            length = 0
+            try:
+                length = sigma.order()
+            except AttributeError:
+                i = 1
+                while length == 0:
+                    if (sigma**i).is_one():
+                        length = i
+                    else:
+                        i = i+1
+
             beta = alpha**(-1) * sigma(alpha)
             delta = hamming_dist
             x = R.gen()
 
             factors = [R(x - (sigma**k)(beta)) for k in range(length)]
 
-            if left_lcm(factors) is not R(x**length - 1):
+            if left_lcm(factors) != R(x**length - 1):
                     raise ValueError("Provided alpha must be an element of the underlying field F of"
                             "the skew polynomial ring provided such that the set "
                             "{alpha, sigma(alpha), ..., sigma^{n-1}(alpha)} is a base "
@@ -306,7 +320,7 @@ class SkewRSCode(SkewCyclicCode):
         Returns a string representation of ``self``.
         """
 
-        return ("[%s, %s] Skew Reed Solomon Cyclic Code over %s"
+        return ("[%s, %s] Skew Reed Solomon Code over %s"
                 % (self.length(), self.dimension(),
                    self.base_field()))
 
@@ -585,15 +599,15 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
 
     EXAMPLES::
 
-        TODO
-        sage: F.<t> = GF(3^10)
-        sage: sigma = F.frobenius_endomorphism()
+        sage: F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+        sage: sigma = (F.frobenius_endomorphism())**10
         sage: R.<x> = F['x', sigma]
-        sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+        sage: alpha = t
+        sage: RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
         sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
         sage: D
-        Decoder through the Sugiyama like algorithmc of the [10, 7] Skew Reed Solomon Cyclic
-        Code over Finite Field in t of size 3^10
+        Decoder through the Sugiyama like algorithm of the [6, 2] Skew Reed Solomon
+        Code over Finite Field in t of size 2^12
     """
     def __init__(self, code, **kwargs):
         r"""
@@ -607,11 +621,11 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
         Tests equality between SkewRSCodeSugiyamaDecoder objects.
 
         EXAMPLES::
-            TODO
-            sage: F.<t> = GF(3^10)
-            sage: sigma = F.frobenius_endomorphism()
+            sage: F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+            sage: sigma = (F.frobenius_endomorphism())**10
             sage: R.<x> = F['x', sigma]
-            sage: RS_C = SkewRSCode(r=0, hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+            sage: alpha = t
+            sage: RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
             sage: D1 = SkewRSCodeSugiyamaDecoder(RS_C)
             sage: D2 = SkewRSCodeSugiyamaDecoder(RS_C)
             sage: D1 == D2
@@ -639,8 +653,21 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
         Decodes ``y`` to an element in :meth:`sage.coding.encoder.Encoder.code`.
 
         EXAMPLES::
-            TODO
 
+            sage: F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+            sage: sigma = (F.frobenius_endomorphism())**10
+            sage: R.<x> = F['x', sigma]
+            sage: alpha = t
+            sage: RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
+            sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
+            sage: P_E = SkewCyclicCodePolynomialEncoder(RS_C)
+            sage: m = x + t
+            sage: codeword = P_E.encode(m)
+            sage: noisy_codeword = copy(codeword)
+            sage: noisy_codeword[3] = t**671
+            sage: decoded_word = D.decode_to_code(noisy_codeword)
+            sage: codeword == decoded_word
+            True
         """
         C = self.code()
 
@@ -702,10 +729,14 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
 
         EXAMPLES::
 
-            sage: C = codes.CyclicCode(field=GF(16), length=15, D=[14, 1, 2, 11, 12])
-            sage: D = codes.decoders.CyclicCodeSurroundingBCHDecoder(C)
+            sage: F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+            sage: sigma = (F.frobenius_endomorphism())**10
+            sage: R.<x> = F['x', sigma]
+            sage: alpha = t
+            sage: RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
+            sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
             sage: D.decoding_radius()
-            1
+            2
         """
         return (self.code().hamming_dist() - 1) // 2
 
