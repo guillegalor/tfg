@@ -1,31 +1,47 @@
 load("skew_cyclic_code.sage")
 
+#####################
+# Skew Cyclic Codes #
+#####################
+
 F.<t> = GF(3^10)
 sigma = F.frobenius_endomorphism()
-n = sigma.order()
-
 R.<x> = F['x', sigma]
 
 # Sample polynomials
 a = t + x + 1;
 b = R([t^2,t+1,1])
-
 f = a*b
 g = x**5 - 1
 
 C = SkewCyclicCode(generator_pol=g)
-E = SkewCyclicCodeVectorEncoder(C)
-E1 = SkewCyclicCodePolynomialEncoder(C)
+V_E = SkewCyclicCodeVectorEncoder(C)
+P_E = SkewCyclicCodePolynomialEncoder(C)
+
+#################
+# Skew RS Codes #
+#################
+
+F.<t> = GF(2^12, modulus=x**12 + x**7 + x**6 + x**5 + x**3 + x +1)
+sigma = (F.frobenius_endomorphism())**10
+R.<x> = F['x', sigma]
 
 alpha = t
+beta = sigma(t)* t**(-1)
+b_roots = [(sigma**i)(beta) for i in range(6)]
+pols = [x - b_root for b_root in b_roots]
 
-RS_C = SkewRSCyclicCode(r=0, hamming_dist=7, skew_polynomial_ring=R, alpha=alpha)
-D = SkewRSCyclicCodeSugiyamaDecoder(RS_C)
+RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 
-codeword = RS_C.encode(vector(F, [t,1,t**2,1]))
+P_E = SkewCyclicCodePolynomialEncoder(RS_C)
+D = SkewRSCodeSugiyamaDecoder(RS_C)
+m = x + t
+
+codeword = P_E.encode(m)
 codeword == D.decode_to_code(codeword)
 
 noisy_codeword = copy(codeword)
-noisy_codeword[3] = 1
+noisy_codeword[3] = t**671
+
 decoded_word = D.decode_to_code(noisy_codeword)
 codeword == decoded_word
