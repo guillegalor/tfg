@@ -32,7 +32,7 @@ beta = sigma(t)* t**(-1)
 b_roots = [(sigma**i)(beta) for i in range(6)]
 pols = [x - b_root for b_root in b_roots]
 
-RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
+RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 
 P_E = SkewCyclicCodePolynomialEncoder(RS_C)
 D = SkewRSCodeSugiyamaDecoder(RS_C)
@@ -54,7 +54,7 @@ sigma = F.hom((t +a)/t)
 R.<x> = F['x', sigma]
 
 alpha = t
-RS_C = SkewRSCode(r=0, hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
+RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 P_E = SkewCyclicCodePolynomialEncoder(RS_C)
 D = SkewRSCodeSugiyamaDecoder(RS_C)
 
