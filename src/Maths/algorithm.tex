@@ -139,11 +139,11 @@ Para cada \(j = 0, \dots, t-1\), restamos en (\ref{linear_system}) la ecuación 
 Por la hipótesis de inducción la matriz de coeficientes de (\ref{hom_liner_system}) es no singular, de forma que para todo \(j = 0, \dots, t-1\), tenemos que \(a_j - \sigma^{-1}(a_j) = 0\), y por tanto \(a_0, \dots, a_{t-1} \in K\). Como consecuencia, la ecuación (\ref{linear_system}) establece una dependencia lineal sobre  \(K\) de la  \(K\)-base  \(\{\alpha_0, \dots, \alpha_{n-1}\}\), creando una contradicción. Por tanto, \(|\Delta| \neq 0\) y el resultado queda demostrado.
 \end{proof}
 
-A continuación comenzaremos a estudiar los divisores a la derecha de \(x^{n} -1\). En la siguiente proposición mostramos la forma de todos los posibles divisores lineales de dicho polinomio.
+A continuación comenzaremos a estudiar los divisores a la derecha de \(x^{n} -1\), empezando por dar un método para hallar divisores a la derecha lineales.
 
 \begin{proposition}
 \label{prop:linear_div}
-    Sea \(\beta \in \F\), entonces \(x - \beta\) divide por la derecha a \(x^{n}-1\) si y solo si \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\) no nulo.
+    Sea \(\beta \in \F\) tal que \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\). Entonces \(x - \beta\) divide por la derecha a \(x^{n}-1\).
 \end{proposition}
 \begin{proof}
 Si \(x - \beta\) divide por la derecha a  \(x^{n} -1\), entonces \(R / R(x - \beta) \equiv R / R(x-1)\) como \(R\)-módulos a la izquierda. Entonces, por~\cite[Proposición 2.4]{Leroy95pseudolinear}, \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\) no nulo.
@@ -245,7 +245,9 @@ x^{n} - 1 = {[x - \beta, x - \sigma(\beta), \ldots, x - \sigma^{n-1}(\beta)]}_l 
 \end{corollary}
 \begin{proof}
     % Por ser \(x^{n} - 1\) central, probando la primera igualdad el resultado estará demostrado, y por el lema~\ref{lem:deg_lcm} solo necesitamos ver que \(x - \sigma^{k}(\beta)\) divide a \(x^{n} -1\) para todo \(0 \le k \le n-1\).
-    Para ver la primera igualdad, por el lema~\ref{lem:deg_lcm} solo necesitamos ver que \(x - \sigma^{k}(\beta)\) divide a \(x^{n} -1\) para todo \(0 \le k \le n-1\). Realizando un argumento similar al que hicimos para una de las implicaciones de la proposición~\ref{prop:linear_div}, tenemos que, por la proposición~\ref{prop:norm_properties},
+    Por ser \(x^{n} - 1\) central, el lema~\ref{lem:central_decomposition} nos dice que cualquier divisor a la izquierda lo es también a la derecha, y por tanto nos basta con probar solo una de las dos igualdades.
+
+    Para ver la primera igualdad, por el lema~\ref{lem:deg_lcm}, solo necesitamos ver que \(x - \sigma^{k}(\beta)\) divide a \(x^{n} -1\) para todo \(0 \le k \le n-1\). Realizando un argumento similar al que hicimos para la prueba de las proposición~\ref{prop:linear_div}, tenemos que, por la proposición~\ref{prop:norm_properties},
     \[
 N_n(\sigma^{k}(\beta)) = \sigma^{k}(\alpha^{-1})\sigma^{k+n}(\alpha) = \sigma^{k}(\alpha^{-1})\sigma^{k}(\alpha) = 1
     .\]
@@ -254,7 +256,7 @@ Entonces, por el lema~\ref{lem:eval}, el resto de dividir \(x^{n} -1\) por \(x -
 N_n(\sigma^{k}(\beta)) - N_0(\sigma^{k}(\beta)) = 1 - 1 = 0
 ,\]
 
-concluyendo la demostración de la primera igualdad.
+concluyendo la demostración de la primera igualdad, y por tanto del corolario.
 \end{proof}
 
 Con esto, ya tenemos los resultados suficientes para definir los códigos sobre los que estarán definidos nuestros algoritmos.
@@ -285,7 +287,7 @@ un generador de \(\C\) como ideal a la izquierda de \(\mathcal{R}\). Entonces, u
 \end{pmatrix}
 .\]
 
-pues sus filas dan la evaluación a la derecha de las raices de \(g\). Entonces, por el corolario \ref{cor:distance_parity_matrix}, nos basta con probar no existe ningún conjunto de \(\delta -1\) columnas linealmente dependientes. Para ello procedemos de forma similar a la demostración del lema \ref{lem:deg_lcm}. Como ya utilizamos antes, \(N_i(\sigma^k(\beta)) = \sigma^k(N_i(\beta)) = \sigma^k(\alpha^{-1})\sigma^{i+k}(\alpha)\) para cualesquiera enteros \(i\) y \(k\). Por tanto, dado cualquier conjunto de columnas de tamaño \(\delta -1\), podemos verlo como la matriz M
+pues sus filas dan la evaluación a la derecha de las raíces de \(g\). Entonces, por el corolario \ref{cor:distance_parity_matrix}, nos basta con probar no existe ningún conjunto de \(\delta -1\) columnas linealmente dependientes. Para ello procedemos de forma similar a la demostración del lema \ref{lem:deg_lcm}. Como ya utilizamos antes, \(N_i(\sigma^k(\beta)) = \sigma^k(N_i(\beta)) = \sigma^k(\alpha^{-1})\sigma^{i+k}(\alpha)\) para cualesquiera enteros \(i\) y \(k\). Por tanto, dado cualquier conjunto de columnas de tamaño \(\delta -1\), podemos verlo como la matriz M
 
 \[
 \begin{pmatrix}
@@ -296,7 +298,7 @@ pues sus filas dan la evaluación a la derecha de las raices de \(g\). Entonces,
 \end{pmatrix}
 ,\]
 
-con \(\{k_1 < k_2 < \cdots < k_{\delta-1} \subset \{0, 1, \dots, n-1\}\). Ahora, \(|M| = 0\), si y solo \(|M'| =0\), donde \(M'\) es la matriz
+con \(\{k_1 < k_2 < \cdots < k_{\delta-1}\} \subset \{0, 1, \dots, n-1\}\). Ahora, \(|M| = 0\), si y solo \(|M'| =0\), donde \(M'\) es la matriz
 
 \[
 \begin{pmatrix}
@@ -324,7 +326,7 @@ Por ser \(\{\alpha, \sigma(\alpha), \dots, \sigma^{n-1}(\alpha)\) una base de la
 
 De aquí en adelante \(\C\) denotará un código RS sesgado de distancia fijada \(\delta\) generado, como ideal a la izquierda de  \(\mathcal{R}\), por  \(g = {[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \dots, x - \sigma^{r+\delta - 2}(\beta)]}_l\), para algún \(r \geq 0 \), donde \(\beta\) lo elegimos como en la definición~\ref{def:RS_code}. Sabemos que la distancia mínima de \(\C\) es exactamente \(\delta\) por el teorema~\ref{th:distance}. Sea \(\tau = \lfloor (\delta -1)/2 \rfloor\) que es el máximo número de errores que nuestro código puede corregir. Por simplicidad, supondremos que \(r = 0\). Esto no es una restricción, pues siempre podemos escribir  \(\beta' = \sigma^r(\beta)\). Entonces, \(\beta' = {(\alpha')}^{-1} \sigma(\alpha')\), donde \(\alpha' = \sigma^r(\alpha)\), y es claro que \(\alpha'\) también proporciona una base normal. Por tanto, \(g = [x - \beta', x - \sigma(\beta'), \dots, x - \sigma^{\delta - 2}(\beta')]\).
 
-Sea \(c \in \C\) una palabra que es transmitida a través de un canal ruidoso y el polinomio \(y = c + e\) es recibido, donde \(e = e_1 x^k + \cdots + e_\nu x^{k_\nu}\) con \(\nu \leq \tau\). Definimos el polinomio \textit{localizador de errores} como
+Sea \(c \in \C\) una palabra que es transmitida a través de un canal binario simétrico y el polinomio \(y = c + e\) es recibido, donde \(e = e_1 x^k + \cdots + e_\nu x^{k_\nu}\) con \(\nu \leq \tau\). Definimos el polinomio \textit{localizador de errores} como
 \[
 \lambda = {\left[1 - \sigma^{k_1}(\beta)x, 1 - \sigma^{k_2}(\beta)x, \dots, 1 - \sigma^{k_\nu}(\beta)x\right]}_r
 .\]
@@ -442,7 +444,7 @@ Ahora intentaremos resolver esta ecuación, para lo que utilizaremos el Algoritm
 \begin{proof}
     Recordemos que \(\deg S < 2\tau\), \(\deg \lambda \le \nu \le \tau\) y que \(\deg \omega < \nu \le \tau\). Entonces, \(\deg u < \tau\), pues en otro caso \(\deg x^{2\tau}u \ge 3\tau > \deg S\lambda\), y por tanto \(\deg \omega \ge 3\lambda\) que es contradicción. Por otro lado, por el lema \ref{lem:reea} \textit{VI)}, \(\deg v_{I} + \deg r_{I-1} = 2\tau\), y utilizando la hipótesis \(\deg r_{I-1} \ge \tau\) tenemos que \(\deg v_{I} \le \tau\).
 
-    Consideremos ahora el mínimo común múltiplo a la derecha \({[\lambda, v_{I}]}_{r} = \lambda a = v_{I}b\), donde \(a, b \in R\) con \(\deg a \le \deg v_{I} \le \tau\) y \(\deg b \le \deg \lambda \le \tau\). Entonces  \({(a,b)}_{r} = 1\). Entonces, multiplicando \ref{eq:key_equation} a la derecha por \(a\), y \ref{eq:key_equation_div} a la derecha por \(b\), obtenemos
+    Consideremos ahora el mínimo común múltiplo a la derecha \({[\lambda, v_{I}]}_{r} = \lambda a = v_{I}b\), donde \(a, b \in R\) con \(\deg a \le \deg v_{I} \le \tau\) y \(\deg b \le \deg \lambda \le \tau\). Entonces  \({(a,b)}_{r} = 1\). Entonces, multiplicando~\eqref{eq:key_equation} a la derecha por \(a\), y~\eqref{eq:key_equation_div} a la derecha por \(b\), obtenemos
     \begin{equation}
         x^{2\tau} u a + S \lambda a = \omega a
     \end{equation}
@@ -572,7 +574,7 @@ Con este lema ya estamos en posición de enunciar y probar el teorema para saber
 \begin{proof}
     En primer lugar mencionemos que los elementos de \(T\) son en realidad posiciones del error. Esto se cumple ya que dividen por la izquiera a p, y por \(\lambda = pg\), también a \(\lambda\), así que podemos aplicar la proposición~\ref{prop:root_error_position}. Dicho esto, reordenamos el conjunto de las posiciones del error de forma que \(T = \{k_1, k_2, \ldots, k_m\}\).
 
-    Si \(\deg g = 0\), entonces las raices de \(p\) coinciden con las de  \(\lambda\), y por tanto, por el lema~\ref{lem:deg_lcm}, \(m = \deg p = \deg \lambda = \nu\). Supongamos ahora que \(m = \deg p\). Por el lema~\ref{lem:deg_lcm} sabemos que \( [x - \sigma^{k_1}(\beta^{-1}), \ldots, x - \sigma^{k_m}(\beta^{-1})]_r \) tiene grado \(m\), y por tanto tiene el mismo grado que \(p\). Por esto
+    Si \(\deg g = 0\), entonces las raíces de \(p\) coinciden con las de  \(\lambda\), y por tanto, por el lema~\ref{lem:deg_lcm}, \(m = \deg p = \deg \lambda = \nu\). Supongamos ahora que \(m = \deg p\). Por el lema~\ref{lem:deg_lcm} sabemos que \( [x - \sigma^{k_1}(\beta^{-1}), \ldots, x - \sigma^{k_m}(\beta^{-1})]_r \) tiene grado \(m\), y por tanto tiene el mismo grado que \(p\). Por esto
 \(
 p = [x - \sigma^{k_1-1}(\beta^{-1}), x - \sigma^{k_2-1}(\beta^{-1}), \dots, x - \sigma^{k_m-1}(\beta^{-1})]_r
 \)
@@ -677,7 +679,7 @@ Para concluir esta sección analizaremos con que frecuencia ocurre un error en l
     \end{enumerate}
 \end{proposition}
 \begin{proof}
-    La equivalencia entre 1 y 2 es una consequencia directa de la identidad de bezout, ya que \({(\lambda, \w)}_r = 1\) si y solo si \(R\w + R\lambda = R\). Para terminar la prueba de la proposición veremos la equivalencia entre 2 y 3. Es claro que \(\w + R\lambda\) genera el \(R\)-módulo a la izquierda \(R / R\lambda\) si y solo si  \( \{x^{i}(\w + R\lambda)  \mid 0 \le i \le \nu\} \) genera \(R / R\lambda\) como un  \(\F\)-espacio vectorial. Como la dimensión como \(\F\)-espacio vectorial de \(R / R\lambda\) es \(\nu\), la equivalencia entre 2 y 3 es clara.
+    La equivalencia entre 1 y 2 es una consequencia directa de la identidad de Bezout, ya que \({(\lambda, \w)}_r = 1\) si y solo si \(R\w + R\lambda = R\). Para terminar la prueba de la proposición veremos la equivalencia entre 2 y 3. Es claro que \(\w + R\lambda\) genera el \(R\)-módulo a la izquierda \(R / R\lambda\) si y solo si  \( \{x^{i}(\w + R\lambda)  \mid 0 \le i \le \nu\} \) genera \(R / R\lambda\) como un  \(\F\)-espacio vectorial. Como la dimensión como \(\F\)-espacio vectorial de \(R / R\lambda\) es \(\nu\), la equivalencia entre 2 y 3 es clara.
 \end{proof}
 
 \begin{lemma}
@@ -716,6 +718,7 @@ e_1 & e_2 & \cdots & e_{\nu} \\
 \vdots &\vdots &\ddots &\vdots \\
 \sigma^{\nu-1}(e_1) & \sigma^{\nu-1}(e_2) & \cdots & \sigma^{\nu-1}(e_{\nu}) \\
 \end{vmatrix}
+\neq 0
 \end{equation}
 
 \end{proposition}
