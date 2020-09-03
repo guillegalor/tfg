@@ -1,5 +1,24 @@
 load("skew_cyclic_code.sage")
 
+###################################
+# Examples of auxiliary functions #
+###################################
+
+F.<t> = GF(3^10)
+sigma = F.frobenius_endomorphism()
+R.<x> = F['x', sigma]
+
+a = x + t +1;
+b = t^2 * x**2 + (t+1)*x +1
+f = a*b
+g = b
+h = a
+
+left_extended_euclidean_algorithm(R, f, g)
+right_extended_euclidean_algorithm(R, f, h)
+left_lcm((a,b))
+norm(2, sigma, t**2 + t)
+
 #####################
 # Skew Cyclic Codes #
 #####################
@@ -9,9 +28,6 @@ sigma = F.frobenius_endomorphism()
 R.<x> = F['x', sigma]
 
 # Sample polynomials
-a = t + x + 1;
-b = R([t^2,t+1,1])
-f = a*b
 g = x**5 - 1
 
 C = SkewCyclicCode(generator_pol=g)

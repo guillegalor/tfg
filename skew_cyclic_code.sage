@@ -22,10 +22,25 @@ def left_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
 
     OUTPUT:
 
-    - ``(u, v, r)`` --  with u, v, r arrays of skew polynomials
-    such that u[i]*f + v[i]*f = r[i] for all i
+    - ``u, v, r`` --  with u, v, r arrays of skew polynomials
+    such that u[i]*f + v[i]*g = r[i] for all i
+
+    EXAMPLES:
+
+        sage: F.<t> = GF(3^10)
+        sage: sigma = F.frobenius_endomorphism()
+        sage: R.<x> = F['x', sigma]
+        sage: a = x + t +1;
+        sage: b = t^2 * x**2 + (t+1)*x +1
+        sage: f = a*b
+        sage: g = b
+        sage: left_extended_euclidean_algorithm(R, f, g)
+        ([1, 0, 1],
+         [0, 1, 2*x + 2*t + 2],
+         [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 + (t^2 + 2*t + 2)*x + t + 1,
+          t^2*x^2 + (t + 1)*x + 1,
+          0])
     '''
-    # Initialization
     R = skew_polynomial_ring
     u = [R(1), R(0)]
     v = [R(0), R(1)]
@@ -53,8 +68,22 @@ def right_extended_euclidean_algorithm(skew_polynomial_ring, f, g):
 
     OUTPUT:
 
-    - ``(u, v, r)`` --  with u, v, r arrays of skew polynomials
+    - ``u, v, r`` --  with u, v, r arrays of skew polynomials
     such that f*u[i] + g*v[i] = r[i] for all i
+
+    EXAMPLES:
+
+        sage: F.<t> = GF(3^10)
+        sage: sigma = F.frobenius_endomorphism()
+        sage: R.<x> = F['x', sigma]
+        sage: a = x + t +1;
+        sage: b = t^2 * x**2 + (t+1)*x +1
+        sage: f = a*b
+        sage: g = a
+        sage: right_extended_euclidean_algorithm(R, f, g)
+        ([1, 0, 1],
+         [0, 1, 2*t^2*x^2 + (2*t + 2)*x + 2],
+         [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 + (t^2 + 2*t + 2)*x + t + 1, x + t + 1, 0])
     '''
     # Initialization
     R = skew_polynomial_ring
@@ -83,7 +112,6 @@ def left_lcm(pols):
     OUTPUT:
 
     - ``llcm`` --  a skew polynomial which is one left least common multiple
-
     '''
     llcm = pols[0]
     for p in pols[1:]:
@@ -91,7 +119,7 @@ def left_lcm(pols):
 
     return llcm
 
-def norm(sigma, j, gamma):
+def norm(j, sigma, gamma):
     '''
     Computes the ``j``-th norm of ``gamma``.
 
@@ -731,7 +759,7 @@ class SkewRSCodeSugiyamaDecoder(Decoder):
         S = R(0)
 
         for i in range(2*tau):
-            S_i = sum([R(y[j]*norm(sigma, j, (sigma**i)(beta))) for j in range(n)])
+            S_i = sum([R(y[j]*norm(j, sigma, (sigma**i)(beta))) for j in range(n)])
             S = S + (sigma**i)(alpha) * S_i * x**i
 
         if S.is_zero():
