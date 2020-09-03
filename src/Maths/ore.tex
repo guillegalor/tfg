@@ -1,7 +1,11 @@
 \chapter{Introducción a extensiones de Ore}%
 \label{chap:conceptos_básicos_sobre_extensiones_ore}
+
+A continuación introduciremos los conceptos principales sobre extensiones de Ore que utilizaremos como base para el siguiente capítulo. Las definiciones y principales resultados de este capítulo siguen el desarrollo realizado en~\cite{factoring_ore}.
+
 \section{Conceptos básicos sobre extensiones de Ore}
-En esta sección introduciremos algunos conceptos básicos necesarios para continuar. Aunque las definiciones que realizamos a continuación se pueden hacer más generales, nosotros las haremos en función a lo que necesitaremos para la siguiente sección. Dicho esto, nuestro algoritmo trabajará sobre polinomios de Ore no conmutativos, con una única indeterminada \(x\), con coeficientes en un cuerpo cualquiera. Precisando, nuestros polinomios serán elementos de un anillo asociativo \(R = \F[x;\sigma]\), donde
+
+Aunque las definiciones que realizamos a continuación se pueden hacer más generales, en este caso nos restringiremos al caso más particular necesario para continuar. Dicho esto, nuestro algoritmo trabajará sobre polinomios de Ore no conmutativos, con una única indeterminada \(x\), con coeficientes en un cuerpo cualquiera. Precisando, nuestros polinomios serán elementos de un anillo asociativo \(R = \F[x;\sigma]\), donde
 
 \begin{itemize}
     \item \(\F\) es un cuerpo cualquiera.
@@ -10,29 +14,35 @@ En esta sección introduciremos algunos conceptos básicos necesarios para conti
 
 La construcción de \(R = \F[x;\sigma]\) sigue de la siguiente forma:
 \begin{itemize}
-    \item \(R\) es un \(\F\)-espacio vectorial a la izquierda sobre la base  \(\{x^n: n \geq 0\). Entonces, los elementos de  \(R\) son polinomios a la izquierda de la forma \(a_0 + a_1 x + \cdots + a_n x^n\) con \(a_i \in \F\).
+    \item \(R\) es un \(\F\)-espacio vectorial a la izquierda sobre la base  \(\{x^n: n \geq 0\}\). Entonces, los elementos de  \(R\) son polinomios a la izquierda de la forma \(a_0 + a_1 x + \cdots + a_n x^n\) con \(a_i \in \F\).
     \item La suma de polimios es la usual.
     \item El producto de \(R\) está basado en las siguientes reglas: \(x^n x^m = x^{n+m}\), para \(m, n \in \mathbb{N}\), y \(xa = \sigma(a)x\) para  \(a \in \F\). Este producto se extiende recursivamente a \(R\).
 \end{itemize}
 
-El grado \(\deg (f)\) de un polinomio no nulo \(f \in R\), al igual que su coeficiente lider se definen de la manera usual, tal que
+Ahora que hemos definido formalmente las extensiones de Ore, introduciremos varios conceptos análogos a los anillos de polinomios conmutativos comunes.
+
+El grado \(\deg (f)\) de un polinomio no nulo \(f \in R\), al igual que su coeficiente líder, se definen de la manera usual, de forma que
 \[
-f = \lc(f)x^{\deg(f)} + f_{\downarrow}, \text{ con } \deg(f_{\downarrow}) < \deg(f) \text{ y } \lc(f) \neq 0
+f = \lc(f)x^{\deg(f)} + f_{\downarrow}
+,\]
+donde \(f_{\downarrow}\) es un polinomio de grado menor que \(\deg(f)\), y el coeficiente líder  \(\operatorname{lc}(f)\) es no nulo. Siguiendo las convenciones usuales para el polinomio nulo diremos que \(\deg(0) = -\infty\), y que \(\lc(0) = 0\).
+
+Al igual que ocurre para polinomios conmutativos, directamente de la definición del producto de polinomios, dados \(f, g \in R\):
+\[
+\deg(fg) = \deg(f) + \deg(g)
 .\]
 
-Escribimos \(\deg(0) = -\infty\), con las convenciones usuales para este símbolo, y \(\lc(0) = 0\).
-
-Es facil comprobar que, dados \(f, g \in R\):
+Además, de la misma definición obtenemos también que
 \[
-\deg(fg) = \deg(f) + \deg(g), \quad \lc(fg) = \lc(f)\sigma^{\deg(f)}(\lc(g))
-.\]
+\lc(fg) = \lc(f)\sigma^{\deg(f)}(\lc(g))
+,\]
 
-Esto nos dice que \(R\) es un dominio de integridad no conmutativo.
+y por tanto \(R\) es un dominio de integridad no conmutativo.
 
-El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse los algoritmos \ref{left_euclidean_div} y \ref{right_euclidean_div}).
+El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse los algoritmos~\ref{alg:left_euclidean_div} y~\ref{alg:right_euclidean_div}).
 
 \begin{algorithm}[H]
- \label{left_euclidean_div}
+ \label{alg:left_euclidean_div}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
@@ -47,7 +57,7 @@ El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse 
 \end{algorithm}
 
 \begin{algorithm}[H]
- \label{right_euclidean_div}
+ \label{alg:right_euclidean_div}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
@@ -64,17 +74,17 @@ El anillo \(R\) tiene algoritmos de división a la izquierda y derecha (veánse 
 Mostramos a continuación una demostración que justifica estos algoritmos, cuya versión original puede encontrarse en~\cite[Th. 4.34]{bueso2003algorithmic}
 
 \begin{theorem}
-Sea \(\F\) un cuerpo finito de \(q\) elementos siendo \(q\) una potencia de un primo,  \(\sigma\) un autormorfismo de \(\F\) no nulo, y \(R = \F[x;\sigma]\) la extensión de Ore correspondiente. Entonces, dados \(f, g \in R\) exiten \(q, r \in R\) únicos tales que:
-\begin{nlist}
+Sea \(\F\) un cuerpo finito de \(q\) elementos siendo \(q\) una potencia de un primo,  \(\sigma\) un autormorfismo de \(\F\) no nulo, y \(R = \F[x;\sigma]\) la extensión de Ore correspondiente. Entonces, dados \(f, g \in R\) existen \(q, r \in R\) únicos tales que:
+\begin{enumerate}
     \item \(f = qg + r\).
     \item \(\deg(r) < \deg(g)\).
-\end{nlist}
+\end{enumerate}
 
 Bajo las mismas hipótesis, existen también \(q, r \in R\) únicos tales que:
-\begin{nlist}
+\begin{enumerate}
     \item \(f = gq + r\)
     \item \(\deg(r) < \deg(g)\).
-\end{nlist}
+\end{enumerate}
 \end{theorem}
 
 \begin{proof}
@@ -123,25 +133,52 @@ La prueba de la división a la derecha es completamente análoga, tomando \(a = 
 
 \end{proof}
 
-Los polinomios \(r\) y \(q\) obtenidos como salida del algoritmo \ref{left_euclidean_div} los llamaremos \textit{resto a la izquierda} y  \textit{cociente a la izquierda}, respectivamente, de la división a la izquierda de \(f\) por \(g\). Utilizaremos la notación \(r = \operatorname{lrem}(f,g)\) y \(q = \operatorname{lquo}(f,g)\). Asumimos convenciones y notaciones análogas para el algoritmo de división a la derecha.
+Los polinomios \(r\) y \(q\) obtenidos como salida del algoritmo \ref{alg:left_euclidean_div} los llamaremos \textit{resto a la izquierda} y  \textit{cociente a la izquierda}, respectivamente, de la división a la izquierda de \(f\) por \(g\). Utilizaremos la notación \(r = \operatorname{lrem}(f,g)\) y \(q = \operatorname{lquo}(f,g)\). Asumimos convenciones y notaciones análogas para el algoritmo de división a la derecha.
 
-Como consecuencia del algoritmo de división a la izquierda, dado un ideal a la izquierda \(I\) de \(R\), y cualquier polinomio no nulo  \(f \in I\) de grado mínimo, obtenemos que  \(f\) es un generador de  \(I\). Notaremos en este caso \(I = Rf\). Análogamente, cualquier ideal a la derecha de \(R\) es principal.  Por tanto \(R\) es un dominio de ideales principales no conmutativo.
+Un polinomio \(f \in R\) se dice \textit{central} si para cualquier otro polinomio \(g \in R\), se tiene que \(fg = gf\).
 
-Dados \(f,g \in R\), \(Rf \subset Rg\) implica que \(g\) es un \textit{divisor a la derecha} de \(f\), simbólicamente \(g|_{r} f\), o que \(f\) es \textit{múltiplo a la izquierda} de \(g\).
+\begin{lemma}
+\label{lem:central_decomposition}
+    Sea \(f \in R\) un polinomio central y \(g,h \in R\) tales que \(f = gh\). Entonces también se cumple la igualdad \(f = hg\)
+\end{lemma}
 
-Por ser \(R\) un DIP sabemos que \(Rf + Rg = Rd\) para algún \(d \in R\), y es inmediato comprobar que \(d |_r f\) y  \(d |_r g\). Además, si tenemos \(d'\) con \(d' |_r f\), \(d' |_r g\), entonces \(Rf + Rg \subset Rd'\), luego \(Rd \subset Rd'\) y por tanto  \(d |_r d'\). En este caso diremos que \(d\) es un máximo común divisor a la derecha de \(f\) y \(g\), estando unívocamente determinado salvo múltiplicación a la izquierda por una unidad de \(R\). Utilizaremos la notación \(d = {(f,g)}_r\). Además de aquí obtenemos directamente la \textbf{identidad de Bezout}.
+\begin{proof}
+    Multiplicando \(f\) a la derecha por \(g\) y usando que \(f\) es central tenemos que, \( fg = ghg = ggh\), y por tanto \(hg = gh = f.\)
+\end{proof}
 
-Similarmente  \(Rf \cap Rg = Rm\) si y solo si \(m\) es un mínimo común múltiplo a la izquierda de \(f\) y \(g\), notado por \(m = {[f,g]}_l\). Este también es único salvo multiplicación a la izquierda por una unidad de \(R\).
+\section{Máximo común divisor y mínimo común multiplo}%
+\label{sec:máximo_común_divisor_y_mínimo_común_multiplo}
 
-Tanto \((f,g)_r\) como \([f,g]_l\) se pueden calcular utilizando el Algoritmo Extendido de Euclides a la izquierda. La versión a la derecha de estas definiciones y propiedades puede establecerse análogamente. Más adelante utilizaremos el Algoritmo Extendido de Euclides a la derecha, que nos proporciona los coeficientes de Bezout en cada etapa del algoritmo, por esto es la que demostramos a continuación y describimos explícitamente en el algoritmo \(\ref{alg:right_ext_euc_alg}\).
+Veamos ahora que, como consecuencia del algoritmo de división a la izquierda, dado un ideal a la izquierda \(I\) de \(R\), y cualquier polinomio no nulo  \(f \in I\) de grado mínimo, \(f\) es un generador de  \(I\). Notaremos en este caso \(I = Rf\).
 
-\begin{algorithm}[H]
- \label{alg:right_ext_euc_alg}
+En efecto, para cualquier \(g \in I\), utilizando el algoritmo~\ref{alg:left_euclidean_div} tenemos que \(g = q*f + r\) con \(\deg(r) < \deg(f)\). Pero \(g\) y \(q*f\) pertenecen a \(I\), y por tanto  \(r\) también. Como \(f\) era de grado mínimo en \(I\),  \(r = 0\).
+
+Análogamente se prueba que cualquier ideal a la derecha de \(R\) es principal.  Por tanto \(R\) es un dominio de ideales principales no conmutativo.
+
+Dados \(f,g \in R\), \(Rf \subset Rg\) significa que \(g\) es un \textit{divisor a la derecha} de \(f\), simbólicamente \(g|_{r} f\), o que \(f\) es \textit{múltiplo a la izquierda} de \(g\).
+
+Por ser \(R\) un dominio de ideales principales sabemos que \(Rf + Rg = Rd\) para algún \(d \in R\), y es inmediato comprobar que \(d |_r f\) y  \(d |_r g\). Además, si tenemos \(d'\) con \(d' |_r f\), \(d' |_r g\), entonces \(Rf + Rg \subset Rd'\), luego \(Rd \subset Rd'\) y por tanto  \(d |_r d'\). En este caso diremos que \(d\) es un \textit{máximo común divisor a la derecha} de \(f\) y \(g\), estando unívocamente determinado salvo múltiplicación a la izquierda por una unidad de \(R\). Utilizaremos la notación \(d = {(f,g)}_r\). Además de aquí obtenemos directamente la \textbf{identidad de Bezout}.
+
+\begin{proposition}[Identidad de bezout]
+Sean \(f \text{ y } g\) dos polinomios en \(R\), y  \(d = {( f,g )_r}\), entonces existen \(u, v \in R\) tales que
+\[
+uf + vg = d
+.\]
+\end{proposition}
+
+Similarmente  \(Rf \cap Rg = Rm\) si y solo si \(m\) es un \textit{mínimo común múltiplo a la izquierda} de \(f\) y \(g\), notado por \(m = {[f,g]}_l\). Este también es único salvo multiplicación a la izquierda por una unidad de \(R\).
+
+La versión a la derecha de todas estas definiciones y propiedades puede establecerse de forma completamente análoga.
+
+A continuación mostramos las respectivas versiones del Algoritmo Extendido de Euclides a derecha e izquierda (algoritmos~\ref{alg:right_ext_euc_alg} y~\ref{alg:left_ext_euc_alg} respectivamente). Estas nos permiten calcular el máximo común divisor y el mínimo común multiplo tanto a izquierda como a derecha.
+En particular, para nuestro algoritmo principal utilizaremos la versión a la derecha de este algoritmo para obtener los coeficientes de Bezout.
+
+\begin{algorithm}[H]\label{alg:right_ext_euc_alg}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
  \KwIn{\(f,g \in \F[x;\sigma] \text{ con } f \neq 0,\ g \neq 0\)}
- \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = fu_i + gv_i \text{ para todo  } i, r_h = (f,g)_l, \text{ y } fu_{h+1} = [f,g]_r.\)}
+ \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = fu_i + gv_i \text{ para todo  }\) \(0 \le i \le h+1, r_h = (f,g)_l, \text{ y } fu_{h+1} = [f,g]_r.\)}
  \Initialization{\\
  \(r_0 \leftarrow f, r_1 \leftarrow g\) \\
  \(u_0 \leftarrow 1, u_1 \leftarrow 0\) \\
@@ -160,14 +197,41 @@ Tanto \((f,g)_r\) como \([f,g]_l\) se pueden calcular utilizando el Algoritmo Ex
  \caption{Algoritmo extendido de Euclides a la derecha}
 \end{algorithm}
 
-La prueba de este teorema es una adaptación de la demostración del teorema original para dominios euclideos conmutativos que se encuentra en \cite{algI}, a excepción del último resultado (el que calcula el mínimo común múltiplo) cuya demostración se encuentra en \cite{bueso2003algorithmic}.
-\begin{theorem}
-    El algoritmo~\ref{alg:right_ext_euc_alg} es correcto.
-\end{theorem}
-\begin{proof}
-    En primer lugar, vemos que siempre que \(r_i \neq 0\) se tiene que \(\deg(r_{i+1}) < \deg(r_i)\), por tanto existe  \(h \geq 1\) tal que \(r_h \neq 0\) pero \(r_{h+1} = 0\).
+\begin{algorithm}[H]\label{alg:left_ext_euc_alg}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{\(f,g \in \F[x;\sigma] \text{ con } f \neq 0,\ g \neq 0\)}
+ \KwOut{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1} \text{ tales que } r_i = u_i f + v_i g \text{ para todo  }\) \(0 \le i \le h+1, r_h = (f,g)_r, \text{ y } fu_{h+1} = [f,g]_l.\)}
+ \Initialization{\\
+ \(r_0 \leftarrow f, r_1 \leftarrow g\) \\
+ \(u_0 \leftarrow 1, u_1 \leftarrow 0\) \\
+ \(v_0 \leftarrow 0, v_1 \leftarrow 1\) \\
+ \(q \leftarrow 0, rem \leftarrow 0\) \\
+ \(i \leftarrow 1\) \\
+ }
+ \While{\(r_i \neq 0\)}{
+  \(q,\ rem \leftarrow \operatorname{rquot-rem}(r_{i-1}, r_i)\) \\
+  \(r_{i+1} \leftarrow rem\) \\
+  \(u_{i+1} \leftarrow u_{i-1} - u_i q\) \\
+  \(v_{i+1} \leftarrow v_{i-1} - v_{i} q\) \\
+  \(i \leftarrow i +1\) \\
+ \Return{\(\{u_i, v_i, r_i\}_{i = 0, \dots, h, h+1}\)}
+ }
+ \caption{Algoritmo extendido de Euclides a la izquierda}
+\end{algorithm}
 
-Para \(i \leq h\) tenemos que \(r_i \neq 0\), y por tanto podemos utilizar la división a la derecha de \(r_{i-1}\) entre \(r_i\) para obtener
+La prueba del teorema sobre estos algoritmos es una adaptación de la demostración del teorema original para dominios euclideos conmutativos que se encuentra en~\cite{algI}, a excepción del último resultado (el que calcula el mínimo común múltiplo) cuya demostración se encuentra en~\cite{bueso2003algorithmic}.
+\begin{theorem}
+    Los algoritmos~\ref{alg:right_ext_euc_alg} y~\ref{alg:left_ext_euc_alg} son correctos.
+\end{theorem}
+
+\begin{proof}
+    Realizaremos únicamente la demostración para el algoritmo~\ref{alg:right_ext_euc_alg}, pues la demostración de la versión a la izquierda es análoga.
+
+    En primer lugar mencionemos que siempre que \(r_i \neq 0\) se tiene que \(\deg(r_{i+1}) < \deg(r_i)\), por tanto existe  \(h \geq 1\) tal que \(r_h \neq 0\) pero \(r_{h+1} = 0\).
+
+Para cada \(i \leq h\) tenemos que \(r_i \neq 0\), y por tanto podemos utilizar la división a la derecha de \(r_{i-1}\) entre \(r_i\) para obtener
 
 \[
 r_{i-1} = r_i q_{i+1} + r_{i+1}
@@ -228,7 +292,6 @@ Supuestas las tres igualdades ciertas para \(i-1\),
     r_{i+1}c_{i} - r_{i}c_{i+1} &= (r_{i-1} - r_{i}q_{i+1})c_i - r_i(c_{i-1} - q_{i+1}c_i) = 0 \\
     u_{i+1}c_{i} - u_{i}c_{i+1} &= (u_{i-1} - u_{i}q_{i+1})c_i - u_i(c_{i-1} - q_{i+1}c_i) = u_{i-1}c_i - u_ic_{i-1}= -((-1)^{i}u')  \\
     v_{i+1}c_{i} - v_{i}c_{i+1} &= (v_{i-1} - v_{i}q_{i+1})c_i - v_i(c_{i-1} - q_{i+1}c_i) = v_{i-1}c_i - v_ic_{i-1}= -((-1)^{i}v')  \\
-
 \end{aligned}
 .\]
 Ahora, por \(r_{h+1} = 0 \neq r_{h}\), sabemos que \(c_{h+1} = 0\), y por tanto \(u_{h+1}\) y \(v_{h+1}\) dividen a la izquierda a \(u'\) y \(v'\) respectivamente. Luego,
@@ -243,25 +306,24 @@ Veamos un lema que nos será útil posteriormente.
 \label{lem:reea}
     Sean \(f, g \in \F[x; \sigma] \) y \(  {\{u_{i}, v_{i}, r_{i}\}}_i = 0, \ldots, h\) los coeficientes obtenido al aplicar el Algoritmo Extendido de Euclides a la derecha a \(f\) y \(g\). Notemos \(R_{0} =
     \begin{pmatrix}
-    u_0 & v_0 \\
-    u_1 & v_1
+    u_0 & u_1 \\
+    v_0 & v_1
     \end{pmatrix},\)
     \(Q_i =
     \begin{pmatrix}
         0 & 1 \\
-        1 & -q_i
+        1 & -q_{i+1}
     \end{pmatrix}
     \)
     y \(R_i =  R_0 Q_1 \cdots Q_i\) para cualquier \(i = 0, \ldots, h\). Por tanto, para todo \(i = 0, \ldots, h\) se cumplen las siguientes afirmaciones:
 
-    \begin{enumerate}[label=\roman*)]
-        \item \((fg)R_i = (r_{i-1} r_i)\).
+    \begin{enumerate}
+        \item \((fg)R_i = (r_{i} r_{i+1})\).
         \item \(R_i =
             \begin{pmatrix}
-            u_i & u_{i+1} \\
+            u_i &  u_{i+1} \\
             v_{i} & v_{i+1}
             \end{pmatrix}\).
-        \item \(f u_i + g v_i = r_i\).
         \item \(R_i\) tiene inverso a izquierda y derecha.
         \item \((u_i, v_i)_r = 1\).
         \item \(\deg f = \deg r_{i-1} + \deg v_{i}\).
@@ -269,7 +331,45 @@ Veamos un lema que nos será útil posteriormente.
     \end{enumerate}
 \end{lemma}
 \begin{proof}
-    TODO
+Veamos primero las dos primeras afirmaciones, pues probando 2 la afirmación 1 es inmediata por la demostración del algoritmo~\ref{alg:right_ext_euc_alg}. Razonando por inducción, la propiedad es cierta para \(i = 0\), así que supongamos que fijo \(i\) lo es para  \(i-1\). Entonces tenemos que
+\[
+R_i =
+\begin{pmatrix}
+    u_{i-1} & u_{i} \\
+    v_{i-1} & v_{i}
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+    0 & 1 \\
+    1 & -q_{i+1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+    u_i & u_{i-1} - u_{i}q_{i+1} \\
+    v_i & v_{i-1} - v_{i}q_{i+1} \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+    u_{i} & u_{i+1} \\
+    v_{i} & v_{i+1}
+\end{pmatrix}
+,\]
+
+quedando demostrados las afirmaciones 1 y 2. De nuevo si probamos 3 obtenemos 4 inmediatamente. Observemos que \[T_i =
+\begin{pmatrix}
+q_{i+1} & 1 \\
+1 & 0
+\end{pmatrix} \]
+es una inversa a la izquierda y derecha de \(Q_i\). Por tanto, \(S_i = T_i \cdots T_1 R_0\) es una inversa a izquierda y derecha de \(R_i\) y 3 y 4 quedan probadas.
+
+Veamos 5. Para \(i = 1\),  \(r_0 = f\) y  \(v_1 = 1\) cumpliéndose la igualdad, así que razonemos por inducción. Mencionemos que \(\deg r_i < \deg r_{i-1}\) y que \(\deg v_{i-1} < \deg v_i\) para cualquier \(i > 1\). Entonces, como \(r_{i+1} = r_{i-1} - r_{i}q_{i+1}\) y \(v_{i+1} = v_{i-1} - v_{i}q_{i+1} \) para cualquier \(i\),
+ \[
+\begin{aligned}
+    \deg r_{i-1} = \deg r_{i} + \deg q_{i+1} \\
+    \deg v_{i+1} = \deg v_i + \deg q_{i+1}.
+\end{aligned}
+\]
+Ahora, por la hipótesis de inducción, \(\deg f = \deg r_{i-1} + \deg v_{i} = \deg r_{i} + \deg q_{i+1} + \deg v_{i+1} - \deg q_{i+1} = \deg r_i + \deg v_{i+1}\)
 \end{proof}
 
 Ahora, con el objetivo de poder definir la evaluación de nuestro polinomios, dado \(j \geq 0\), definimos la \textit{norma j-ésima} para cualquier \(\gamma \in \F\) de forma recursiva como sigue:
@@ -283,16 +383,47 @@ La noción de norma j-ésima admite también una versión para índices negativo
 \[
 N_{-j-1}(\gamma) = \gamma \sigma^{-1}(N_{-j}(\gamma)) =  \gamma \sigma^{-1}(\gamma) \cdots \sigma^{-j}(\gamma)
 .\]
-La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) en un \(a \in \F\) se define como el resto de la división a la izquierda de \(f\) por  \(x - a\), y de forma similar para la  \textit{evaluación a la derecha}. Estas evaluaciones nos permiten hablar de raíces a izquierda y derecha de estos polinomios.
+
+En la siguiente proposición se muestran dos propiedades de esta norma que nos serán de utilidad más adelante.
+
+\begin{proposition}
+\label{prop:norm_properties}
+Sean \(\gamma, \alpha, \beta \in \F\) tales que \(\beta = \alpha^{-1}\sigma(\alpha)\), entonces
+\[
+\begin{aligned}
+&N_i(\sigma^{k}(\gamma)) = \sigma^{k}(N_i(\gamma)),\\
+&N_i(\sigma^k(\beta)) = \sigma^{k}(\alpha)^{-1} \sigma^{k+i}(\alpha).
+\end{aligned}\]
+\end{proposition}
+
+\begin{proof}
+La primera igualdad se prueba de forma inmediata usando la propia definición de la norma, pues
+\[
+\begin{aligned}
+N_i(\sigma^{k}(\gamma)) &= \sigma^{k}(\gamma) \sigma(\sigma^{k}(\gamma))\cdots \sigma^{i-1}(\sigma^{k}(\gamma)) \\
+&= \sigma^{k}(\gamma) \sigma^{k}(\sigma(\gamma))\cdots \sigma^{k}(\sigma^{i-1}(\gamma)) = \sigma^{k}(N_i(\gamma)).
+\end{aligned}
+\]
+
+Para la segunda igualdad, utilizando la igualdad anterior y de nuevo la definición de norma tenemos que
+\[
+\begin{aligned}
+N_i(\sigma^{k}(\beta)) &= \sigma^{k}(N_i(\beta)) = \sigma^{k}\left(\alpha^{-1}\sigma(\alpha)\sigma(\alpha^{-1})\sigma^{2}(\alpha)\sigma^{2}(\alpha^{-1}) \ldots \sigma^{i}(\alpha) \right) \\
+   &= \sigma^{k}(\alpha)^{-1} \sigma^{k+i}(\alpha).
+\end{aligned}
+.\]
+\end{proof}
+
+La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) en un \(a \in \F\) se define como el resto de la división a la derecha de \(f\) por  \(x - a\), y de forma análoga para la  \textit{evaluación a la derecha}. Estas evaluaciones nos permiten hablar de raíces a izquierda y derecha de estos polinomios. Las propiedades en general de estas son estudiadas en \cite{Lam_1988}, donde se encuentra en esencia la prueba que presentamos del siguiente lema.
 
 \begin{lemma}
 \label{lem:eval}
     Sea \(\gamma \in \F\) y  \(f = \sum_{i=0}^n f_ix^i \in R\). Entonces:
-    \begin{nlist}
+    \begin{enumerate}
     \item El resto de la división a la izquerda de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{n} f_i N_i(\gamma)\).
     \item El resto de la división a la derecha de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{n}\sigma^{-i}(f_i)N_{-i}(\gamma)\).
     \item \(N_j(\sigma^k(\gamma)) = \sigma^k(N_j(\gamma))\) para todo \(i,k\).
-    \end{nlist}
+    \end{enumerate}
 \end{lemma}
 \begin{proof}
     Para demostrar \textit{i)} observamos primero un caso especial de este resultado:
