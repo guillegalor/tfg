@@ -476,7 +476,92 @@ Resolver el sistema lineal \(r_I = \sum_{j\in pos} e_{j}\sigma^{j}(\alpha)p_{j}\
  \caption{Algoritmo de decodificación para códigos RS sesgados}
 \end{algorithm}
 
-Como dijimos, si \({(\lambda, \omega)}_r = 1\) el algoritmo no es válido pues \(v_I\) y  \(r_I\) no serían los polinomios localizador y evaluador de errores respectivamente. Por el lema~\ref{lem:eval} es directo ver que si se cumple la condición que presentamos para devolver un error entonces \({(\lambda, \omega)}_r = 1\). Para el caso en que se de la igualdad \(\deg v_I = \operatorname{Cardinal}(pos)\), aunque a priori no podemos descartar que ocurra un error, en la siguiente sección vemos un resultado (teorema~\ref{th:failure_cond}) que nos dice que si se da la igualdad entonces no puede ocurrir un error. Por tanto, solo puede ocurrir un error en la ecuación clave si se cumple dicha condición.
+\begin{exampleth}
+En este ejemplo mostraremos la ejecución de este algoritmo utilizando la implementación que ha sido realizada en SageMath.
+
+Sea \(\F = \F_2(t)\) el cuerpo finito con  \(2^{12}\) elementos, donde \(x^{12} + x^{7} + x^{6} + x^{5} + x^{3} + x + 1 = 0\). Escribiremos los elementos de \(\F\) como potencias de \(t\) excepto el \(0\) y el \(1\). Consideremos entonces \(\sigma = \tau^{10}\) donde  \(\tau\) es el endomorfismo de Frobenius, por ejemplo \(sigma(t) = t^{1024}\). El orden de \(\sigma\) es 6, luego un código cíclico sesgado sobre \(\F\) será un ideal a la izquierda del álgebra cociente  \( \mathcal{R} = \F[x;\sigma] / \langle x^{6} - 1\rangle\).
+
+Tomemos ahora \(\alpha = t\), que proporciona una base normal de \(\F\) como \(\F^{\sigma}\)-espacio vectorial, y \(\beta = \sigma(t)t^{-1} = t^{1023}\). Consideramos entonces el código RS sesgado generado por
+\[
+    g = [x - \beta, x - \sigma(\beta), x - \sigma^{2}(\beta), x - \sigma^{3}(\beta)]
+.\]
+
+Por el teorema~\ref{th:distance} + tiene distancia Hamming \(5\) + y por tanto puede corregir hasta \(2\) errores. Supongamos que queremos mandar el mensaje \(m = tx +1\) + así que el polinomio codificado que transmitiremos será \(c = mg =  tx^{5} + t^{2715}x^{4} + t^{1452}x^{3} + t^{2080}x^{2} + t^{3786}x + t^{759} \). Después de la transmisión, recibimos el polinomio \(y = tx^{5} + t^{2715}x^{4} + t^{1452}x^{3} + t^{333}x^{2} + t^{3786}x + t\) por ejemplo, donde hay errores en las posiciones \(0\) y \(2\).
+
+\begin{lstlisting}
+sage: m = t*x + 1
+sage: c = m*g
+sage: y = copy(c)
+sage: y[0] = t
+sage: y[2] = t**333
+\end{lstlisting}
+
+En primer lugar calculamos el polinomio síndrome \(S\).
+\begin{lstlisting}
+sage: for i in range(2*tau):
+sage:   S_i = sum([R(y[j]*norm(j, sigma, (sigma**i)(beta)))
+          for j in range(n)])
+sage:   S = S + (sigma**i)(alpha) * S_i * x**i
+sage: S
+(t^10 + t^9 + t^8 + t^7 + t^5 + 1)*x^3 + ...
+    + t^8 + t^5 + t^4 + t^3 + 1
+\end{lstlisting}
+
+Como \(S\) es distinto de \(0\), el polinomio \(y\) no pertenece al código y han ocurrido errores en la transmisión. Aplicamos el algoritmo extendido de Euclides a la derecha sobre \(x^{2\tau}\) y \(S\), y buscamos la primera posición en la que se cumpla que \(\deg r_i < \tau\).
+
+\begin{lstlisting}
+sage: u, v, r = right_extended_euclidean_algorithm(R,
+        R(x**(2*tau)), S)
+sage: I = 0
+sage: for (i, r_i) in enumerate(r):
+sage:    if r_i.degree() < tau:
+sage:        I = i
+sage:        break
+sage: I
+3
+\end{lstlisting}
+
+A continuación calculamos las posiciones del error, y comprobamos que no se dé un error en la ecuación clave.
+\begin{lstlisting}
+sage: pos = []
+
+sage: for i in range(n):
+sage:     if (R(x - (sigma**(i-1))(beta**(-1))))
+            .left_divides(v[I]):
+sage:           pos.append(i)
+
+sage: v[I].degree() > len(pos):
+False
+\end{lstlisting}
+
+En efecto, no se da un error, luego sabemos que los polinomios \(v_I\) y  \(r_I\) (en el código \texttt{v[I]} y \texttt{r[I]}) son respectivamente los polinomios localizador (\(\lambda\)) y evaluador de errores (\(\w\)). El siguiente paso entonces es calcular los polinomios \(p_j\) de forma que \(\lambda = (1 - \sigma^{j}(\beta)x)p_j \) para cada \(j \in pos\).
+
+\begin{lstlisting}
+sage: p = {}
+sage: for j in pos:
+sage:     p[j] = (v[I].left_quo_rem(
+            R(1 - (sigma**j)(beta)*x)))[0]
+\end{lstlisting}
+
+Ya tenemos todos los ingredientes necesarios para construir el sistema lineal y resolverlo, lo que nos proporcionará el error que ha ocurrido durante la transmisión.
+
+\begin{lstlisting}
+sage: omega = _to_complete_list(r[I], tau)
+sage: Sigma = matrix([[(sigma**j)(alpha) * p[j][i]
+        for j in pos] for i in range(tau)])kj,,kjj
+sage: E = Sigma.transpose().solve_left(vector(omega))
+sage: e = sum([E[j] * x**(pos[j]) for j in range(len(pos))])
+\end{lstlisting}
+
+Por último solo tenemos que restarle el error a la palabra recibida, y comprobamos que coincide con la palabra código transmitida concluyendo el ejemplo.
+
+\begin{lstlisting}
+sage: y - e == c
+True
+\end{lstlisting}
+\end{exampleth}
+
+En caso de que se dé \({(\lambda, \omega)}_r = 1\), el algoritmo no es válido pues \(v_I\) y  \(r_I\) no serían los polinomios localizador y evaluador de errores respectivamente. Por el lema~\ref{lem:eval} es directo ver que si se cumple la condición que presentamos para devolver un error entonces \({(\lambda, \omega)}_r = 1\). Para el caso en que se de la igualdad \(\deg v_I = \operatorname{Cardinal}(pos)\), aunque a priori no podemos descartar que ocurra un error, en la siguiente sección vemos un resultado (teorema~\ref{th:failure_cond}) que nos dice que si se da la igualdad entonces no puede ocurrir un error. Por tanto, solo puede ocurrir un error en la ecuación clave si se cumple dicha condición.
 
 \section{Errores en la ecuación clave}%
 \label{sec:errores_en_ecuación_clave}
