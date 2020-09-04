@@ -17,15 +17,15 @@
 %------------------------
 \theoremstyle{plain}
 \newtheorem{theorem}{Teorema}
-\newtheorem{proposition}{Proposición}
-\newtheorem{lemma}{Lema}
-\newtheorem{corollary}{Corolario}
+\newtheorem{proposition}[theorem]{Proposición}
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{corollary}[theorem]{Corolario}
 \theoremstyle{definition}
-\newtheorem{definition}{Definición}
+\newtheorem{definition}[theorem]{Definición}
 \newtheorem{proofs}{Demostración}
 \theoremstyle{remark}
-\newtheorem{remark}{Comentario}
-\newtheorem{exampleth}{Ejemplo}
+\newtheorem{remark}[theorem]{Comentario}
+\newtheorem{exampleth}[theorem]{Ejemplo}
 
 \begingroup\makeatletter\@for\theoremstyle:=definition,remark,plain\do{\expandafter\g@addto@macro\csname th@\theoremstyle\endcsname{\addtolength\thm@preskip\parskip}}\endgroup
 
