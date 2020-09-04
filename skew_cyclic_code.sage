@@ -360,7 +360,9 @@ class SkewRSCode(SkewCyclicCode):
 
             factors = [R(x - (sigma**k)(beta)) for k in range(length)]
 
-            if left_lcm(factors) != R(x**length - 1):
+            basis = [(sigma**i)(alpha) for i in range(length)]
+            M = matrix([basis[i:] + basis[:i] for i in range(length)])
+            if M.det() == 0:
                     raise ValueError("Provided alpha must be an element of the underlying field F of"
                             "the skew polynomial ring provided such that the set "
                             "{alpha, sigma(alpha), ..., sigma^{n-1}(alpha)} is a base "
