@@ -1,7 +1,7 @@
 \chapter{Introducción a extensiones de Ore}%
 \label{chap:conceptos_básicos_sobre_extensiones_ore}
 
-A continuación introduciremos los conceptos principales sobre extensiones de Ore que utilizaremos como base para el siguiente capítulo. Las definiciones y principales resultados de este capítulo siguen el desarrollo realizado en~\cite{factoring_ore}.
+A continuación introduciremos los conceptos principales sobre extensiones de Ore que utilizaremos como base para el siguiente capítulo. Las definiciones y principales resultados de este capítulo siguen el desarrollo realizado en~\cite{gomez-torrecillas_factoring_2020}.
 
 \section{Conceptos básicos sobre extensiones de Ore}
 
@@ -151,13 +151,13 @@ Un polinomio \(f \in R\) se dice \textit{central} si para cualquier otro polinom
 
 Veamos ahora que, como consecuencia del algoritmo de división a la izquierda, dado un ideal a la izquierda \(I\) de \(R\), y cualquier polinomio no nulo  \(f \in I\) de grado mínimo, \(f\) es un generador de  \(I\). Notaremos en este caso \(I = Rf\).
 
-En efecto, para cualquier \(g \in I\), utilizando el algoritmo~\ref{alg:left_euclidean_div} tenemos que \(g = q*f + r\) con \(\deg(r) < \deg(f)\). Pero \(g\) y \(q*f\) pertenecen a \(I\), y por tanto  \(r\) también. Como \(f\) era de grado mínimo en \(I\),  \(r = 0\).
+En efecto, para cualquier \(g \in I\), utilizando el algoritmo~\ref{alg:left_euclidean_div} tenemos que \(g = qf + r\) con \(\deg(r) < \deg(f)\). Pero \(g\) y \(qf\) pertenecen a \(I\), y por tanto  \(r\) también. Como \(f\) era de grado mínimo en \(I\),  \(r = 0\).
 
 Análogamente se prueba que cualquier ideal a la derecha de \(R\) es principal.  Por tanto \(R\) es un dominio de ideales principales no conmutativo.
 
-Dados \(f,g \in R\), \(Rf \subset Rg\) significa que \(g\) es un \textit{divisor a la derecha} de \(f\), simbólicamente \(g|_{r} f\), o que \(f\) es \textit{múltiplo a la izquierda} de \(g\).
+Dados \(f,g \in R\), \(Rf \subset Rg\) significa que \(g\) es un \textit{divisor a la derecha} de \(f\), simbólicamente \(g \mid_{r} f\), o que \(f\) es \textit{múltiplo a la izquierda} de \(g\).
 
-Por ser \(R\) un dominio de ideales principales sabemos que \(Rf + Rg = Rd\) para algún \(d \in R\), y es inmediato comprobar que \(d |_r f\) y  \(d |_r g\). Además, si tenemos \(d'\) con \(d' |_r f\), \(d' |_r g\), entonces \(Rf + Rg \subset Rd'\), luego \(Rd \subset Rd'\) y por tanto  \(d |_r d'\). En este caso diremos que \(d\) es un \textit{máximo común divisor a la derecha} de \(f\) y \(g\), estando unívocamente determinado salvo múltiplicación a la izquierda por una unidad de \(R\). Utilizaremos la notación \(d = {(f,g)}_r\). Además de aquí obtenemos directamente la \textbf{identidad de Bezout}.
+Por ser \(R\) un dominio de ideales principales sabemos que \(Rf + Rg = Rd\) para algún \(d \in R\), y es inmediato comprobar que \(d \mid_r f\) y  \(d  \mid_r g\). Además, si tenemos \(d'\) con \(d'  \mid_r f\), \(d'  \mid_r g\), entonces \(Rf + Rg \subset Rd'\), luego \(Rd \subset Rd'\) y por tanto  \(d  \mid_r d'\). En este caso diremos que \(d\) es un \textit{máximo común divisor a la derecha} de \(f\) y \(g\), estando unívocamente determinado salvo múltiplicación a la izquierda por una unidad de \(R\). Utilizaremos la notación \(d = {(f,g)}_r\). Además de aquí obtenemos directamente la \textbf{identidad de Bezout}.
 
 \begin{proposition}[Identidad de bezout]
 Sean \(f \text{ y } g\) dos polinomios en \(R\), y  \(d = {( f,g )_r}\), entonces existen \(u, v \in R\) tales que
@@ -168,7 +168,7 @@ uf + vg = d
 
 Similarmente  \(Rf \cap Rg = Rm\) si y solo si \(m\) es un \textit{mínimo común múltiplo a la izquierda} de \(f\) y \(g\), notado por \(m = {[f,g]}_l\). Este también es único salvo multiplicación a la izquierda por una unidad de \(R\).
 
-La versión a la derecha de todas estas definiciones y propiedades puede establecerse de forma completamente análoga.
+La versión a la derecha de todas estas definiciones y propiedades puede establecerse de forma completamente análoga. En particular, si tenemos que \(g  \mid_r f\) y \(g  \mid_l f\), entonces diremos que \(g\) divide a \(f\) y lo notaremos por \(g  \mid f\).
 
 A continuación mostramos las respectivas versiones del Algoritmo Extendido de Euclides a derecha e izquierda (algoritmos~\ref{alg:right_ext_euc_alg} y~\ref{alg:left_ext_euc_alg} respectivamente). Estas nos permiten calcular el máximo común divisor y el mínimo común multiplo tanto a izquierda como a derecha.
 En particular, para nuestro algoritmo principal utilizaremos la versión a la derecha de este algoritmo para obtener los coeficientes de Bezout.
@@ -304,7 +304,7 @@ Veamos un lema que nos será útil posteriormente.
 
 \begin{lemma}
 \label{lem:reea}
-    Sean \(f, g \in \F[x; \sigma] \) y \(  {\{u_{i}, v_{i}, r_{i}\}}_i = 0, \ldots, h\) los coeficientes obtenido al aplicar el Algoritmo Extendido de Euclides a la derecha a \(f\) y \(g\). Notemos \(R_{0} =
+    Sean \(f, g \in \F[x; \sigma] \) y \(  {\{u_{i}, v_{i}, r_{i}\}}_i = 0, \ldots, h\) los coeficientes obtenidos al aplicar el Algoritmo Extendido de Euclides a la derecha a \(f\) y \(g\). Notemos \(R_{0} =
     \begin{pmatrix}
     u_0 & u_1 \\
     v_0 & v_1
@@ -414,7 +414,7 @@ N_i(\sigma^{k}(\beta)) &= \sigma^{k}(N_i(\beta)) = \sigma^{k}\left(\alpha^{-1}\s
 .\]
 \end{proof}
 
-La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) en un \(a \in \F\) se define como el resto de la división a la derecha de \(f\) por  \(x - a\), y de forma análoga para la  \textit{evaluación a la derecha}. Estas evaluaciones nos permiten hablar de raíces a izquierda y derecha de estos polinomios. Las propiedades en general de estas son estudiadas en \cite{Lam_1988}, donde se encuentra en esencia la prueba que presentamos del siguiente lema.
+La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) en un \(a \in \F\) se define como el resto de la división a la derecha de \(f\) por  \(x - a\), y de forma análoga para la  \textit{evaluación a la derecha}. Estas evaluaciones nos permiten hablar de raíces a izquierda y derecha de estos polinomios. Las propiedades en general de estas son estudiadas en \cite{lam_vandermonde_1988}, donde se encuentra en esencia la prueba que presentamos del siguiente lema.
 
 \begin{lemma}
 \label{lem:eval}
@@ -422,7 +422,6 @@ La \textit{evaluación la izquierda} de un polinomio no conmutativo \(f \in R\) 
     \begin{enumerate}
     \item El resto de la división a la izquerda de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{n} f_i N_i(\gamma)\).
     \item El resto de la división a la derecha de \(f\) por  \(x - \gamma\) es  \(\sum_{i=0}^{n}\sigma^{-i}(f_i)N_{-i}(\gamma)\).
-    \item \(N_j(\sigma^k(\gamma)) = \sigma^k(N_j(\gamma))\) para todo \(i,k\).
     \end{enumerate}
 \end{lemma}
 \begin{proof}
@@ -469,12 +468,4 @@ f - \sum_{i=0}^n \sigma^{-i}(f_i) N_{-i}(\gamma) = \sum_{i=0}^n x^i\sigma^{-i}(f
 = \sum_{i=0}^n (x^i - N_{-i}(\gamma))\sigma^{-i}(f_i) \in (x - \gamma)R
 .\]
 Así que por la unicidad del resto queda probado \textit{ii)}.
-
-Para probar \textit{iii)},
-    \[
-    N_j(\sigma^k(\gamma)) = \sigma^k(\gamma)\sigma^{k+1}(\gamma)\cdots\sigma^{k+j-1}(\gamma)
-\]
-\[
-    = \sigma^k(\gamma \sigma(\gamma)\dots\sigma^{j-1}(\gamma)) = \sigma^k(N_j(\gamma))
-    .\]
 \end{proof}
