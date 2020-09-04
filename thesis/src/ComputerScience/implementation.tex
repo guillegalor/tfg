@@ -1,0 +1,457 @@
+\chapter{Implementación en SageMath del Algoritmo de Sugiyama para códigos cíclicos sesgados}%
+\label{chap:implementación_en_sagemath_del_algoritmo_de_sugiyama_para_códigos_cíclicos_sesgados}
+
+Se ha desarrollado una implementación en SageMath del algoritmo de Sugiyama para códigos cíclicos sesgados, junto con la estructura necesaria para representar estos códigos.
+
+Para ello hemos seguido las directrices de SageMath presentes en
+\begin{center}
+\url{https://doc.sagemath.org/html/en/thematic_tutorials/structures_in_coding_theory.html}.
+\end{center}
+ Para realizar dicha implementación hemos utilizado varias clases abstractas de Sage cuya finalidad es servir de base para implementar nuevas familias de códigos, junto con los algoritmos asociados de codificación y decodificación. Además Sage contiene una implementación de anillos de polinomios sesgados, la cual también se usa a lo largo de todo el desarrollo del algoritmo y de las clases para represetnar la estructura.
+
+La primera clase que se ha implementado es \texttt{SkewCyclicCode} para representar cualquier código cíclico sesgado, la cual hereda de la clase abstracta \texttt{AbstractLinearCode}. Para poder codificar mensajes en palabras código de este tipo de códigos se han diseñado las clases \texttt{SkewCyclicCodeVectorEncoder} y \texttt{SkewCyclicCodePolynomialEncoder}, ambas heredando de la clase de Sage \texttt{Encoder}. A continuación, heredando de la clase \texttt{SkewCyclicCode} se implementó la clase \texttt{SkewRSCode} que almacena la estructura necesaria para trabajar con códigos Reed-Solomon sesgados. Por último, la clase \texttt{SkewRSCodeSugiyamaDecoder}, que hereda de la clase \texttt{Decoder}, contiene la implementación del algoritmo de decodificación desarrollado en este trabajo.
+
+A continuación mostramos la documentación junto con ejemplos de uso de cada una de las estructuras y funciones implementadas.
+
+\newpage
+\section{Clase de códigos cíclicos sesgados}%
+\label{sec:clase_de_códigos_cíclicos_sesgados}
+
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[class SkewCyclicCode(self, generator\_pol=None)]
+
+    Clase para representar un código cíclico sesgado. Hereda de \texttt{AbstractLinearCode}.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[generator\_pol] Polinomio generador para construir el código.
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: C
+[10, 5] Skew Cyclic Code over Finite Field in
+t of size 3^10
+    \end{lstlisting}
+
+    \textsc{Métodos}
+    \begin{description}[font=\ttfamily, style=nextline]
+    \item[generator\_pol(self)]
+    Devuelve el polinomio generador de \texttt{self}.
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: C.generator_polynomial()
+x^5 + 2
+    \end{lstlisting}
+
+    \end{description}
+
+    \begin{description}[font=\ttfamily, style=nextline]
+    \item[skew\_polynomial\_ring(self)]
+    Devuelve el anillo de polinomios de sesgados de \texttt{self}.
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: C.generator_polynomial()
+Skew Polynomial Ring in x over Finite Field in t of
+size 3^10 twisted by t |--> t^3
+    \end{lstlisting}
+
+    \end{description}
+
+\end{description}
+
+\section{Clases de codificadores para códigos cíclicos sesgados}
+
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[class SkewCyclicCodeVectorEncoder(self, code)]
+    Clase para codificar un vector como palabras código. Hereda de \texttt{Encoder}.
+
+    \textsc{Argumentos}
+
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[code]
+        Código sobre el que codificaremos los vectores.
+
+    \end{description}
+
+    \textsc{Ejemplos}
+
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodeVectorEncoder(C)
+sage: E
+Vector-style encoder for [10, 5] Skew Cyclic
+Code over Finite Field in t of size 3^10
+    \end{lstlisting}
+
+    \textsc{Métodos}
+
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[generator\_matrix(self)]
+        Construye una matriz generatriz asociada al código asociado a este codificador
+
+        \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodeVectorEncoder(C)
+sage: E.generator_matrix()
+[2 0 0 0 0 1 0 0 0 0]
+[0 2 0 0 0 0 1 0 0 0]
+[0 0 2 0 0 0 0 1 0 0]
+[0 0 0 2 0 0 0 0 1 0]
+[0 0 0 0 2 0 0 0 0 1]
+    \end{lstlisting}
+    \end{description}
+
+\end{description}
+
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[class SkewCyclicCodePolynomialEncoder(self, code)]
+    Clase para codificar polinomios en palabras código. Hereda de \texttt{Encoder}.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[code]
+        Código sobre el que codificaremos los vectores.
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodePolynomialEncoder(C)
+sage: E
+Polynomial-style encoder for [10, 5] Skew Cyclic
+Code over Finite Field in t of size 3^10
+    \end{lstlisting}
+
+    \textsc{Métodos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[encode(self, p)]
+        Transforma el polinomio \texttt{p} en un elemento del código asociado a \texttt{self}.
+
+        \textsc{Argumentos}
+        \begin{description}[font=\ttfamily, style=nextline]
+            \item[p]
+            Polinomio que será codificado.
+        \end{description}
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodePolynomialEncoder(C)
+sage: m = x + t + 1
+sage: E.encode(m)
+(2*t + 2, 2, 0, 0, 0, t + 1, 1, 0, 0, 0)
+        \end{lstlisting}
+
+        \item[unencode\_nocheck(self, c)]
+        Devuelve el mensaje en forma de polinomio asociado a \texttt{c} sin comprobar si \texttt{c} pertenece al código
+
+        \textsc{Argumentos}
+        \begin{description}[font=\ttfamily, style=nextline]
+            \item[c]
+            Un vector de la misma longitud del código asociado a \texttt{self}
+        \end{description}
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodePolynomialEncoder(C)
+sage: m = x + t + 1
+sage: w = E.encode(m)
+sage: E.unencode_nocheck(w)
+x + t + 1
+        \end{lstlisting}
+
+        \item[message\_space(self)]
+        Devuelve el espacio de mensajes asociado a \texttt{self}.
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**5 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+sage: E = SkewCyclicCodePolynomialEncoder(C)
+sage: E.message_space()
+Skew Polynomial Ring in x over Finite Field in t
+of size 3^10 twisted by t |--> t^3
+        \end{lstlisting}
+    \end{description}
+
+\end{description}
+
+\section{Clase de Códigos Reed-Solomon Sesgados}
+
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[class SkewRSCode(self, hamming\_dist=None, \\skew\_polynomial\_ring=None, alpha=None)]
+
+    Clase para representar un código RS sesgado. Hereda de \texttt{SkewCyclicCode}.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[hamming\_dist] La distancia hamming de \texttt{self}.
+        \item[skew\_polynomial\_ring] El anillo de polinomios sesgados base.
+        \item[alpha] Un generador normal de la extensión de cuerpos sobre el cuerpo fijo por el automorfismo asociado a \texttt{skew\_polynomial\_ring}.
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
+              x**6 + x**5 + x**3 + x +1)
+sage: sigma = (F.frobenius_endomorphism())**10
+sage: R.<x> = F['x', sigma]
+sage: alpha = t
+sage: RS_C = SkewRSCode(hamming_dist=5,
+              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C
+[6, 2] Skew Reed Solomon Code over Finite
+Field in t of size 2^12
+    \end{lstlisting}
+
+    \textsc{Métodos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[hamming\_dist(self)]
+            Devuelve la distancia Hamming asociada a este código.
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
+              x**6 + x**5 + x**3 + x +1)
+sage: sigma = (F.frobenius_endomorphism())**10
+sage: R.<x> = F['x', sigma]
+sage: alpha = t
+sage: RS_C = SkewRSCode(hamming_dist=5,
+              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C.hamming_dist()
+2
+        \end{lstlisting}
+    \end{description}
+\end{description}
+
+\section{Clase del decodificador para códigos RS sesgados}
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[class SkewRSCodeSugiyamaDecoder(self, code)]
+    Clase para decodificar un vector recibido en una palabra del código asociado a \texttt{self}. Hereda de \texttt{Decoder}.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[code]
+        Código al que pertenecerá la palabra que devuelve el decodificador.
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
+              x**6 + x**5 + x**3 + x +1)
+sage: sigma = (F.frobenius_endomorphism())**10
+sage: R.<x> = F['x', sigma]
+sage: alpha = t
+sage: RS_C = SkewRSCode(hamming_dist=5,
+              skew_polynomial_ring=R, alpha=alpha)
+sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
+sage: D
+Decoder through the Sugiyama like algorithm of the
+[6, 2] Skew Reed Solomon Code over Finite Field in t
+of size 2^12
+    \end{lstlisting}
+
+    \textsc{Métodos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[decode\_to\_code(self, word)]
+        Decodifica el vector \texttt{word} en un elemento del código asociado a \texttt{self}.
+
+        \textsc{Argumentos}
+        \begin{description}[font=\ttfamily, style=nextline]
+            \item[word]
+            Vector de elemtos del mismo cuerpo sobre el que está construido el anillo de polinomios
+            sesgados del código asociado a \texttt{self}.
+        \end{description}
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
+              x**6 + x**5 + x**3 + x +1)
+sage: sigma = (F.frobenius_endomorphism())**10
+sage: R.<x> = F['x', sigma]
+sage: alpha = t
+sage: RS_C = SkewRSCode(hamming_dist=5,
+              skew_polynomial_ring=R, alpha=alpha)
+sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
+sage: P_E = SkewCyclicCodePolynomialEncoder(RS_C)
+sage: m = x + t
+sage: codeword = P_E.encode(m)
+sage: noisy_codeword = copy(codeword)
+sage: noisy_codeword[3] = t**671
+sage: decoded_word = D.decode_to_code(noisy_codeword)
+sage: codeword == decoded_word
+True
+        \end{lstlisting}
+
+        \item[decoding\_radius(self)]
+        Devuelve el número de errores que \texttt{self} es capaz de corregir.
+
+        \textsc{Ejemplos}
+        \begin{lstlisting}
+sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
+              x**6 + x**5 + x**3 + x +1)
+sage: sigma = (F.frobenius_endomorphism())**10
+sage: R.<x> = F['x', sigma]
+sage: alpha = t
+sage: RS_C = SkewRSCode(hamming_dist=5,
+              skew_polynomial_ring=R, alpha=alpha)
+sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
+sage: D.decoding_radius()
+2
+        \end{lstlisting}
+    \end{description}
+\end{description}
+
+\section{Funciones auxiliares}
+
+\begin{description}[font=\ttfamily, style=nextline]
+    \item[left\_extended\_euclidean\_algorithm(skew\_polynomial\_ring, f, g)]
+
+    Implementación del algoritmo extendido de Euclides a la izquierda.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily]
+        \item[skew\_polynomial\_ring] anillo de polinomios sesgados
+        \item[f] polinomio del anillo pasado como argumento
+        \item[g] polinomio del anillo pasado como argumento de grado menor que \texttt{f}
+    \end{description}
+
+    \textsc{Salida}
+    \begin{description}[font=\ttfamily]
+        \item[u, v r] vectores de polinomios sesgados tales que \texttt{u[i]*f + v[i]*g = r[i]} para cualquier posición \texttt{i}
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: a = x + t +1;
+sage: b = t^2 * x**2 + (t+1)*x +1
+sage: f = a*b
+sage: g = b
+sage: left_extended_euclidean_algorithm(R, f, g)
+([1, 0, 1],
+ [0, 1, 2*x + 2*t + 2],
+ [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 +
+    (t^2 + 2*t + 2)*x + t + 1, t^2*x^2 +
+    (t + 1)*x + 1, 0])
+    \end{lstlisting}
+
+    \item[right\_extended\_euclidean\_algorithm(skew\_polynomial\_ring, f, g)]
+
+    Implementación del algoritmo extendido de Euclides a la derecha.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily]
+        \item[skew\_polynomial\_ring] anillo de polinomios sesgados
+        \item[f] polinomio del anillo pasado como argumento
+        \item[g] polinomio del anillo pasado como argumento de grado menor que \texttt{f}
+    \end{description}
+
+    \textsc{Salida}
+    \begin{description}[font=\ttfamily]
+        \item[u, v r] vectores de polinomios sesgados tales que \texttt{f*u[i] + g*v[i] = r[i]} para cualquier posición \texttt{i}
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: a = x + t +1;
+sage: b = t^2 * x**2 + (t+1)*x +1
+sage: f = a*b
+sage: g = a
+sage: right_extended_euclidean_algorithm(R, f, g)
+([1, 0, 1],
+ [0, 1, 2*t^2*x^2 + (2*t + 2)*x + 2],
+ [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 +
+    (t^2 + 2*t + 2)*x + t + 1, x + t + 1, 0])
+    \end{lstlisting}
+
+    \item[left\_lcm(pols)]
+    Calcula el mínimo común múltiplo a la izquierda para una lista de polinomios sesgados
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily, style=nextline]
+        \item[pols] Lista de polinomios sesgados
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: a = x + t +1;
+sage: b = t^2 * x**2 + (t+1)*x +1
+sage: left_lcm((a,b))
+x^3 +
+(2*t^9 + 2*t^8 + 2*t^7 + t^6 + t^5 + 2*t^4 + t^2 + t)*x^2 +
+(2*t^9 + t^8 + 2*t^7 + 2*t^6 + 2*t^5 + 2*t^3 + t)*x +
+t^8 + t^6 + 2*t^4 + t^3 + 2*t + 2
+    \end{lstlisting}
+
+    \item[norm(j, sigma, gamma)]
+    Calcula la norma \texttt{j}-ésima de \texttt{gamma}.
+
+    \textsc{Argumentos}
+    \begin{description}[font=\ttfamily]
+        \item[j] Número entero
+        \item[sigma] Automorfismo del cuerpo donde esté definido \texttt{gamma}
+        \item[gamma] Un elemento de un cuerpo cualquiera
+    \end{description}
+
+    \textsc{Ejemplos}
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: norm(2, sigma, t**2 + t)
+t^8 + t^7 + t^5 + t^4
+    \end{lstlisting}
+
+\end{description}

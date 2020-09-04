@@ -1,0 +1,85 @@
+%------------------------
+% Bibliotecas para matemáticas de latex
+%------------------------
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{shapes,fit}
+\usepackage{bussproofs}
+\EnableBpAbbreviations{}
+\usepackage{mathtools}
+\usepackage{scalerel}
+\usepackage{stmaryrd}
+
+%------------------------
+% Estilos para los teoremas
+%------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}
+\newtheorem{proposition}[theorem]{Proposición}
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{corollary}[theorem]{Corolario}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definición}
+\newtheorem{proofs}{Demostración}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Comentario}
+\newtheorem{exampleth}[theorem]{Ejemplo}
+
+\begingroup\makeatletter\@for\theoremstyle:=definition,remark,plain\do{\expandafter\g@addto@macro\csname th@\theoremstyle\endcsname{\addtolength\thm@preskip\parskip}}\endgroup
+
+%------------------------
+% Macros
+% ------------------------
+
+% Aquí pueden añadirse abreviaturas para comandos de latex
+% frequentemente usados.
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+% Comandos tomados de la plantilla de libreim
+
+% Redefinir letra griega épsilon.
+\let\epsilon\upvarepsilon
+
+% Valor absoluto: \abs{}
+\providecommand{\abs}[1]{\lvert#1\rvert}
+
+% Fracción grande: \ddfrac{}{}
+\newcommand\ddfrac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+% Texto en negrita en modo matemática: \bm{}
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+
+% Letras de conjuntos
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\C}{\mathcal{C}}
+
+% Sucesiones
+\newcommand{\xn}{\{x_n\}}
+\newcommand{\fn}{\{f_n\}}
+
+% Letra griega "chi" en línea con el texto
+\DeclareRobustCommand{\rchi}{{\Large \mathpalette\irchi\relax}}
+\newcommand{\irchi}[2]{\raisebox{0.4\depth}{$#1\chi$}} % inner command, used by \rchi
+
+% Letra 'omega'
+\newcommand{\W}{\Omega}
+\newcommand{\w}{\omega}
+
+% Conjunto vacío
+\renewcommand{\O}{\emptyset}
+
+% Coeficiente Lider
+\newcommand{\lc}{\operatorname{lc}}
+
+% Probabilidad
+\newcommand{\prob}{\operatorname{prob}}
+
+% Listas ordenadas con números romanos (i), (ii), etc.
+\newenvironment{nlist}
+{\begin{enumerate}
+    \renewcommand\labelenumi{(\emph{\roman{enumi})}}}
+  {\end{enumerate}}

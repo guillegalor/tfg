@@ -1,0 +1,822 @@
+\chapter{Algoritmo para códigos Reed-Solomon sesgados}%
+\label{chap:algoritmo}
+
+Ya disponemos de la conceptos necesarios para construir los códigos cíclicos sesgados, que serán los que utilizará el algoritmo de decodificación principal. En este capítulo comenzaremos definiendo estos códigos, junto con los resultados que requiere nuestro algoritmo. Una vez hecho esto presentaremos dicho algoritmo, y acabaremos mostrando como solucionar un error que puede ocurrir durante la decodificación y discutiendo con qué frecuencia ocurren este tipo de errores. El desarrollo que hemos seguido se encuentra basado en~\cite{sugi}.
+
+\section{Introducción}
+
+A lo largo de este capítulo seguiremos la notación introducida en el capítulo anterior, por tanto \(\F\) será un cuerpo cualquiera,  \(\sigma\) un autormorfismo de  \(\F\) de orden finito  \(n\), y \(R = \F[x;\sigma]\) el anillo de polinomio sesgados correspondiente.
+
+Para introducir los nuevos códigos, intentaremos seguir parte del razonamiento que realizamos en la sección~\ref{sec:códigos_cíclicos}, pero ahora trabajando sobre un anillo de polinomios sesgados en lugar del caso conmutativo usual. En primer lugar, utilizaremos la identificación análoga a la descrita en~\ref{sec:códigos_cíclicos} entre vectores \(c = c_0 c_1\cdots c_{n-1}\) de \(\F^n\) y polinomios \(c(x) = c_0 + c_1x + \cdots + c_{n-1}x^{n-1}\) de \(\F[x;\sigma]\).
+
+El primer paso es construir el cociente \(F[x;\sigma]/\langle x^{n}-1\rangle\), y para que este sea un anillo necesitamos que ver que el polinomio \(x^{n} - 1\) es central en \(R\). Efectivamente, dado \(f = f_m x^m + \ldots + f_1x + f_0 \in \F\), tenemos que
+
+\[
+\begin{aligned}
+(x^n-1)f &= x^n f_m x^m - f_m x^m + \dots + x^n f_1 x - f_1 x + x^n f_0 - f_0 \\
+&= \sigma^n(f_m)x^{n+m} - f_m x^m + \dots + \sigma^n(f_1)x^{n+1} - f_1 + \sigma^n(f_0)x^n - f_0\\
+&= f_mx^{n+m} - f_m x^m + \dots + f_1x^{n+1} - f_1 + f_0x^n - f_0\\
+&= f(x^n -1).
+\end{aligned}
+\]
+
+Entonces el ideal por la izquierda generado por \(x^{n} - 1\) es también un ideal por la derecha, así que podemos considerar el anillo cociente \(\mathcal{R} = \F[x;\sigma] / \langle x^n -1 \rangle\).
+
+De forma análoga al caso de los códigos cíclicos usuales, cada ideal a la izquierda \(I \leq \mathcal{R}\) define un código \(\C =\mathfrak{v}(I)\) de longitud  \(n\), donde \(\mathfrak{v}:\mathcal{R} \rightarrow \F^n\) es el mapa de coordenadas asociado a la base \(\mathcal{B} = \{1, x, \dots, x^{n-1}\}\). Así, la longitud del código coincide con el orden de \(\sigma\). Como es usual en teoría de códigos, representaremos los elementos de \(\mathcal{R}\) por polinomios de grado menor que \(n\). De esta forma, cuando escribamos una palabra código como \(c(x)\), técnicamente nos referimos a la clase  \(c(x) + R(x^{n} - 1)\) en \( \mathcal{R}\). De aquí en adelante suponemos establecidas estas condiciones. Llamaremos a cualquier código de este tipo \textit{código cíclico sesgado}, o CCS para abreviar.
+
+Los códigos cíclicos sesgados también tienen una propiedad de ciclicidad similar a la que tienen los códigos cíclicos usuales. Sea \(\C\) un código cíclico sesgado, y  \(c = c_0 c_1\cdots c_{n-1} \in \C\) una palabra código cualquiera, entonces
+\[c' = \sigma(c_{n-1})\sigma(c_0) \cdots \sigma(c_{n-2}) \in \C .\]
+
+A continuación demostramos un teorema con varias propiedades que necesitaremos más adelante sobre los códigos cíclicos sesgados. El teorema es una adaptación al caso no conmutativo de un resultado del capítulo 4 de~\cite{foecc}, pero la demostración se ha realizado utilizando argumentos de módulos más generales.
+
+\begin{theorem}
+Sea \(\C\) un código cíclico sesgado en \(\mathcal{R}\). Entonces existe un polinomio \(g \in \C\) con las siguientes propiedades:
+
+\begin{enumerate}[label=\roman*.]
+    \item \(\C\) esta generado como ideal a la izquierda en \(R\) por \(g\).\label{it:1}
+    \item \(g \mid (x^{n} - 1) \).
+    \item la dimensión de \(\C\) es \(k = n - \deg g \).
+    \item
+    Sea \(g = \sum_{i=0}^{n-k}\ g_i x^{i}\). Entonces
+    \[
+    \begin{aligned}
+    G =&
+    \begin{bmatrix}
+        g_0 & g_1 & \ldots & g_{n-k} & & 0 \\
+        0 & \sigma(g_0) & \ldots & \sigma(g_{n-k-1}) & \sigma(g_{n-k}) & \\
+          & \ldots &  \ldots &  \ldots & \ldots &\\
+        0 &  & \sigma^{k-1}(g_0) & \ldots & \sigma^{k-1}(g_{n-k-1}) & \sigma^{k-1}(g_{n-k}) \\
+    \end{bmatrix} \\
+    \leftrightarrow &
+    \begin{bmatrix}
+       g & & & \\
+       & xg & & \\
+       & & \ldots & \\
+       & &  & x^{k-1}g \\
+    \end{bmatrix}
+    \end{aligned}
+    \]
+    es una matrix generadora de \(\C\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Por el tercer teorema del isomorfismo de Noether para \(R\)-módulos, tenemos que existe un \(R\)-submódulo \(Rg\) de \(R\) (\(R\) era un dominio de ideales principales) tal que \(\langle x^{n} - 1 \rangle \subseteq Rg \subset R\) y \(\C = Rg / \langle x^{n} - 1 \rangle\). Esto nos dice que \(g \mid_r x^{n} -1\), pero como \(x^{n} - 1\) es central, usando el lema~\ref{lem:central_decomposition} tenemos que \(g  \mid_l x^{n} - 1\), probando I y II.
+
+Ahora, por el mismo teorema, utilizando el resultado de este análogo al tercer teorema de isomorfía
+\[
+R / Rg \cong (R / \langle x^{n} -1 \rangle) / (Rg / \langle x^{n} -1 \rangle)
+\]
+como \(R\)-módulos, y por tanto también como  \(\F\)-espacios vectoriales. Entonces, como la dimensión de \(R / Rg\) como  \(\F\)-espacio vectorial es \(\deg g\), la dimensión de \(\C\) es \(n - \deg g = k\), probando III. Para concluir, el conjunto \(\{x^{i}g \mid 0 \le i \le k\}\) genera \(\C\), y por tanto se cumple IV.
+\end{proof}
+
+Dado un código cíclico sesgado \(\C\), al polinomio \(g(x)\) que nos proporciona el teorema anterior lo llamaremos el \textit{polinomio generador de} \(\C\). Entonces, gracias a este teorema, ya podemos codificar mensajes. Ya sea, multiplicando el polinomio asociado a dicho mensaje por el polinomio generador \(g(x)\), o de la forma usual utilizando la matriz generatriz.
+
+Al ser \(\R\) un dominio de ideales principales sabíamos, ya que todo código cíclico sesgado estaba generado por al menos un polinomio. Ahora, el teorema anterior nos dice que además está generado por un divisor a la derecha de \(x^{n} -1 \). Por esto nos será útil estudiar la descomposición en factores de \(x^{n} - 1\).
+\section{Códigos Reed-Solomon Sesgados}%
+\label{sec:códigos_reed_solomon_sesgados}
+
+Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados} o \textit{códigos RS sesgados} para abreviar. El siguiente resultado, que es un caso particular de~\cite[Corolario 4.13]{Lam_1988}, será importante en resultados posteriores. A continuación mostramos solo una prueba elemental de este.
+
+\begin{lemma}
+\label{lem:det_0}
+    Sea \(L\) un cuerpo, \(\sigma\) un automorfismo de \(L\) de orden finito \(n\), y \(K = L^\sigma\) el subcuerpo invariante bajo \(\sigma\). Sea  \(\{a_0, \dots, a_{n-1}\}\) una \(K\)-base de \(L\). Entonces, para todo \(t \leq n\), y cada subconjunto \(k_0 < k_1 < \dots < k_{t-1} \subset \{0, 1, \dots, n-1\}\)
+    \[
+    \begin{vmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
+        \sigma(\alpha_{k_0}) & \sigma(\alpha_{k_1}) & \dots & \sigma(\alpha_{k_{t-1}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t-1}(\alpha_{k_0}) & \sigma^{t-1}(\alpha_{k_1}) & \dots & \sigma^{t-1}(\alpha_{k_{t-1}})
+    \end{vmatrix}
+    \neq 0
+    .\]
+\end{lemma}
+
+\begin{proof}
+    Realizaremos la prueba por inducción sobre \(t\). El caso \(t = 1\) se cumple trivialmente. Por tanto, supongamos que el lema se cumple para un cierto  \(t \geq 1\). Tenemos que comprobar que, para toda matriz \((t+1) \times (t+1)\)
+    \[
+    \Delta =
+    \begin{pmatrix}
+        \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t}} \\
+        \sigma(\alpha_{k_0}) & \sigma(\alpha_{k_1}) & \dots & \sigma(\alpha_{k_{t}}) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma^{t}(\alpha_{k_0}) & \sigma^{t}(\alpha_{k_1}) & \dots & \sigma^{t}(\alpha_{k_{t}})
+
+    \end{pmatrix}
+    .\]
+el determinante \(|\Delta|\) es distinto de cero. Supongamos por el contrario que \(|\Delta| = 0\). Por la hipótesis de inducción tenemos que las primeras \(t\) columnas de \(\Delta\) son linealmente independientes, luego existen \(a_0, \dots, a_{t-1} \in L\) tales que
+
+\[
+(\alpha_{k_t}, \sigma^{t-1}(\alpha_{k_t}), \dots, \sigma^t(\alpha_{k_t})) = \sum_{j=0}^{t-1} a_j(\alpha_{k_j}, \sigma^{t-1}(\alpha_{k_j}), \dots, \sigma^t(\alpha_{k_j}))
+.\]
+
+Es decir, \(a_0, \dots, a_{t-1}\) satisfacen el sistema lineal
+
+\begin{equation}
+\label{linear_system}
+\begin{cases}
+    \alpha_{k_t} = a_0\alpha_{k_0} + \cdots + a_{t-1}\alpha_{k_{t-1}} \\
+    \sigma(\alpha_{k_t}) = a_0\sigma(\alpha_{k_0}) + \cdots + a_{t-1}\sigma(\alpha_{k_{t-1}}) \\
+    \vdots \\
+    \sigma^t(\alpha_{k_t}) = a_0\sigma^t(\alpha_{k_0}) + \cdots + a_{t-1}\sigma^t(\alpha_{k_{t-1}})
+\end{cases}
+.
+\end{equation}
+
+Para cada \(j = 0, \dots, t-1\), restamos en (\ref{linear_system}) la ecuación \(j+1\) transformada por \(\sigma^{-1}\) a la ecuación \(j\). Esto produce el siguiente sistema lineal homogéneo
+
+\begin{equation}
+\label{hom_liner_system}
+\begin{cases}
+0 = (a_0 - \sigma^{-1}(a_0))\alpha_{k_0} + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\alpha_{k_{t-1}} \\
+0 = (a_0 - \sigma^{-1}(a_0))\sigma(\alpha_{k_0}) + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\sigma(\alpha_{k_{t-1}}) \\
+\vdots \\
+0 = (a_0 - \sigma^{-1}(a_0))\sigma^{t-1}(\alpha_{k_0}) + \cdots + (a_{t-1} - \sigma^{-1}(a_{t-1}))\sigma^{t-1}(\alpha_{k_{t-1}}) \\
+\end{cases}
+.
+\end{equation}
+
+Por la hipótesis de inducción la matriz de coeficientes de (\ref{hom_liner_system}) es no singular, de forma que para todo \(j = 0, \dots, t-1\), tenemos que \(a_j - \sigma^{-1}(a_j) = 0\), y por tanto \(a_0, \dots, a_{t-1} \in K\). Como consecuencia, la ecuación (\ref{linear_system}) establece una dependencia lineal sobre  \(K\) de la  \(K\)-base  \(\{\alpha_0, \dots, \alpha_{n-1}\}\), creando una contradicción. Por tanto, \(|\Delta| \neq 0\) y el resultado queda demostrado.
+\end{proof}
+
+A continuación comenzaremos a estudiar los divisores a la derecha de \(x^{n} -1\), empezando por dar un método para hallar divisores a la derecha lineales.
+
+\begin{proposition}
+\label{prop:linear_div}
+    Sea \(\beta \in \F\) tal que \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\). Entonces \(x - \beta\) divide por la derecha a \(x^{n}-1\).
+\end{proposition}
+\begin{proof}
+Por la proposición~\ref{prop:norm_properties} tenemos que \(N_n(\beta) = \sigma^{0}(c^{-1})\sigma^{n}(c) = c^{-1}c = 1\), y por el lema~\ref{lem:eval}, el resto de la división a la izquierda de \(x^{n} - 1\) por \(x - \beta\) es
+    \[
+    N_n(\beta) - N_0(\beta) = 1 - 1 = 0
+    ,\]
+finalizando la prueba.
+\end{proof}
+
+\begin{lemma}
+\label{lem:deg_lcm}
+    Sea \(\alpha \in \F\) tal que \(\{\alpha, \sigma(\alpha), \dots, \sigma^{n-1}(\alpha)\}\) sea una base de \(\F\) como  \(\F^\sigma\)-espacio vectorial. Fijemos  \(\beta = \alpha^{-1}\sigma(\alpha)\). Para todo subconjunto \(T = \{t_1 < t_2 < \cdots < t_m\} \subset \{0, 1, \dots, n-1\}\), los polinomios
+    \[
+    g^l = [x - \sigma^{t_1}(\beta), x - \sigma^{t_2}(\beta), \dots, x - \sigma^{t_m}(\beta)]_l
+    \]
+y
+    \[
+    g^r = [x - \sigma^{t_1}(\beta^{-1}), x - \sigma^{t_2}(\beta^{-1}), \dots, x - \sigma^{t_m}(\beta^{-1})]_r
+    \]
+tienen grado \(m\). Además, si \(x - \sigma^s(\beta) |_r g^l\ \) o \(\ x - \sigma^s(\beta^{-1}) |_l g^r\), entonces \(s \in T\).
+\end{lemma}
+
+\begin{proof}
+    Supongamos que \(\deg g^l < m\), así que \(g^l = \sum_{i=0}^{m-1} g_i x^i\). Como \(g\) es un múltiplo a la izquierda de \(x - \sigma^{t_j}(\beta)\) para todo \(1 \leq j \leq m\), por el lema~\ref{lem:eval} tenemos que
+
+\begin{equation}
+\label{linear_system_1}
+    \sum_{i=0}^{m-1}g_i N_i(\sigma^{t_j}(\beta)) = 0 \text{ para todo } 1 \leq j \leq m
+\end{equation}
+
+Esto es un sistema lineal homogéneo cuya matriz de coeficientes es la traspuesta de la matriz \(M\) dada por
+\[
+\begin{pmatrix}
+    N_0(\sigma^{t_1}(\beta)) & N_0(\sigma^{t_2}(\beta)) & \dots & N_0(\sigma^{t_m}(\beta)) \\
+    N_1(\sigma^{t_1}(\beta)) & N_1(\sigma^{t_2}(\beta)) & \dots & N_1(\sigma^{t_m}(\beta)) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    N_{m-1}(\sigma^{t_1}(\beta)) & N_{m-1}(\sigma^{t_2}(\beta)) & \dots & N_{m-1}(\sigma^{t_m}(\beta))
+\end{pmatrix}
+.\]
+
+Fijémonos que \(N_i(\sigma^{t_j}(\beta)) = \sigma^{t_j}(N_i(\beta)) = \sigma^{t_j}(N_i(\alpha^{-1}\sigma(\alpha))) = \sigma^{t_j}(\alpha^{-1}) \sigma^{t_{j+i}}(\alpha)\) para todo \(1 \leq j \leq m\) y \(0 \leq i \leq m-1\). Por tanto,  \(|M| = 0\) si y solo si el determinante de la matriz \(M'\),
+
+\[
+\begin{pmatrix}
+    \sigma^{t_1}(\alpha) & \sigma^{t_2}(\alpha) & \cdots & \sigma^{t_m}(\alpha) \\
+    \sigma^{t_1+1}(\alpha) & \sigma^{t_2+1}(\alpha) & \cdots & \sigma^{t_m+1}(\alpha) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \sigma^{t_1 + m-1}(\alpha) & \sigma^{t_2+m-1}(\alpha) & \cdots & \sigma^{t_m+m-1}(\alpha)
+\end{pmatrix}
+,\]
+
+o equivalentemente
+
+\[
+\begin{pmatrix}
+    \sigma^{t_1}(\alpha) & \sigma^{t_2}(\alpha) & \cdots & \sigma^{t_m}(\alpha) \\
+    \sigma(\sigma^{t_1}(\alpha)) & \sigma(\sigma^{t_2}(\alpha)) & \cdots & \sigma(\sigma^{t_m}(\alpha)) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \sigma^{m-1}(\sigma^{t_1}(\alpha)) & \sigma^{m-1}(\sigma^{t_2+m-1}(\alpha)) & \cdots & \sigma^{m-1}(\sigma^{t_m}(\alpha))
+\end{pmatrix}
+,\]
+es cero. Sin embargo, por el lema \ref{lem:det_0}, \(|M'| \neq 0\), luego la única solución del sistema lineal (\ref{linear_system_1}) es \(g_0 = \cdots = g_{m-1} = 0\), siendo una contradicción. Por tanto \(\deg g^l = m\). Para el otro polinomio razonamos de forma análoga. Si \(\deg g^r < m\) y \(g^r = \sum_{i=0}^{m-1}g_ix^i\), obtenemos el sistema lineal
+
+\begin{equation}
+\label{linear_system_2}
+    \sum_{i=0}^{m-1} \sigma^{-i}(g_i)N_{-i}(\sigma^{t_j}(\beta^{-1})) = 0 \text{ para todo } 1 \leq j \leq m.
+\end{equation}
+
+Vemos que \(N_{-i}(\sigma^{t_j}(\beta^{-1})) = \sigma^{t_j}(\alpha^{-1})\sigma^{t_j - i + 1}(\alpha)\) para \(0 \leq i \leq m-1\) y \(1 \leq j \leq m\). Entonces, de nuevo por el lema~\ref{lem:det_0} el sistema tiene una única solución \(\sigma^{-i}(g_i) = 0\) para \(0 \leq i \leq m-1\), luego  \(g_0 = g_1 = \cdots = g_{m-1} = 0\). Como dijimos esto es una contradicción y por tanto \(\deg g^r = m\).
+\end{proof}
+
+Recordemos que el teorema de la base normal nos asegura la existencia de un elemento \(\alpha\) que cumpla las condiciones del teorema anterior.
+
+\begin{corollary}
+\label{cor:llcm_n}
+    Sean \(\alpha, \beta \in \F\) verificando las condiciones del lema~\ref{lem:deg_lcm}. Entonces
+\[
+x^{n} - 1 = {[x - \beta, x - \sigma(\beta), \ldots, x - \sigma^{n-1}(\beta)]}_l = {[x - \beta, x - \sigma(\beta), \ldots, x - \sigma^{n-1}(\beta)]}_r
+.\]
+\end{corollary}
+\begin{proof}
+    % Por ser \(x^{n} - 1\) central, probando la primera igualdad el resultado estará demostrado, y por el lema~\ref{lem:deg_lcm} solo necesitamos ver que \(x - \sigma^{k}(\beta)\) divide a \(x^{n} -1\) para todo \(0 \le k \le n-1\).
+    Por ser \(x^{n} - 1\) central, el lema~\ref{lem:central_decomposition} nos dice que cualquier divisor a la izquierda lo es también a la derecha, y por tanto nos basta con probar solo una de las dos igualdades.
+
+    Para ver la primera igualdad, por el lema~\ref{lem:deg_lcm}, solo necesitamos ver que \(x - \sigma^{k}(\beta)\) divide a \(x^{n} -1\) para todo \(0 \le k \le n-1\). Realizando un argumento similar al que hicimos para la prueba de las proposición~\ref{prop:linear_div}, tenemos que, por la proposición~\ref{prop:norm_properties},
+    \[
+N_n(\sigma^{k}(\beta)) = \sigma^{k}(\alpha^{-1})\sigma^{k+n}(\alpha) = \sigma^{k}(\alpha^{-1})\sigma^{k}(\alpha) = 1
+    .\]
+Entonces, por el lema~\ref{lem:eval}, el resto de dividir \(x^{n} -1\) por \(x - \sigma^{k}(\beta)\) es
+\[
+N_n(\sigma^{k}(\beta)) - N_0(\sigma^{k}(\beta)) = 1 - 1 = 0
+,\]
+
+concluyendo la demostración de la primera igualdad, y por tanto del corolario.
+\end{proof}
+
+Con esto, ya tenemos los resultados suficientes para definir los códigos sobre los que estarán definidos nuestros algoritmos.
+
+\begin{definition}
+\label{def:RS_code}
+    Sean \(\alpha, \beta \in \F\) verificando las condiciones del lema \ref{lem:deg_lcm}. Un código Reed-Solomon (RS) sesgado de distancia fijada \(\delta \leq n\) es un CCS generado por \[{[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \cdots, x - \sigma^{r + \delta -2}(\beta)]}_l,\] para algún \(r \geq 0\).
+\end{definition}
+
+\begin{theorem}
+\label{th:distance}
+    Sea \(\C\) un código RS sesgado de distancia fijada \(\delta\). La distancia Hamming de \(\C\) es \(\delta\).
+\end{theorem}
+
+\begin{proof}
+Definamos en primer lugar
+\[
+g = {[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \dots, x - \sigma^{r+\delta -2}(\beta)]}_l
+\]
+un generador de \(\C\) como ideal a la izquierda de \(\mathcal{R}\). Entonces, una matriz de paridad \(H\) de \(\C\) es
+
+\[
+\begin{pmatrix}
+    N_0(\sigma^r(\beta)) & N_1(\sigma^r(\beta)) & \cdots & N_{n-1}(\sigma^r(\beta)) \\
+    N_0(\sigma^{r+1}(\beta)) & N_1(\sigma^{r+1}(\beta)) & \cdots & N_{n-1}(\sigma^{r+1}(\beta)) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    N_0(\sigma^{r+\delta-2}(\beta)) & N_1(\sigma^{r+\delta-2}(\beta)) & \cdots & N_{n-1}(\sigma^{r+\delta-2}(\beta)) \\
+\end{pmatrix}
+.\]
+
+pues sus filas dan la evaluación a la derecha de las raíces de \(g\). Entonces, por el corolario \ref{cor:distance_parity_matrix}, nos basta con probar no existe ningún conjunto de \(\delta -1\) columnas linealmente dependientes. Para ello procedemos de forma similar a la demostración del lema \ref{lem:deg_lcm}. Como ya utilizamos antes, \(N_i(\sigma^k(\beta)) = \sigma^k(N_i(\beta)) = \sigma^k(\alpha^{-1})\sigma^{i+k}(\alpha)\) para cualesquiera enteros \(i\) y \(k\). Por tanto, dado cualquier conjunto de columnas de tamaño \(\delta -1\), podemos verlo como la matriz M
+
+\[
+\begin{pmatrix}
+    N_{k_1}(\sigma^r(\beta)) & N_{k_2}(\sigma^r(\beta)) & \cdots & N_{k_{\delta-1}}(\sigma^r(\beta)) \\
+    N_{k_1}(\sigma^{r+1}(\beta)) & N_{k_2}(\sigma^{r+1}(\beta)) & \cdots & N_{k_{\delta-1}}(\sigma^{r+1}(\beta)) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    N_{k_1}(\sigma^{r+\delta-2}(\beta)) & N_{k_2}(\sigma^{r+\delta-2}(\beta)) & \cdots & N_{k_{\delta-1}}(\sigma^{r+\delta-2}(\beta))
+\end{pmatrix}
+,\]
+
+con \(\{k_1 < k_2 < \cdots < k_{\delta-1}\} \subset \{0, 1, \dots, n-1\}\). Ahora, \(|M| = 0\), si y solo \(|M'| =0\), donde \(M'\) es la matriz
+
+\[
+\begin{pmatrix}
+    \sigma^{k_1+r}(\alpha) & \sigma^{k_2+r}(\alpha) & \cdots & \sigma^{k_{\delta-1}+r}(\alpha) \\
+    \sigma^{k_1+r+1}(\alpha) & \sigma^{k_2+r+1}(\alpha) & \cdots & \sigma^{k_{\delta-1}+r+1}(\alpha) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \sigma^{k_1+r+\delta-2}(\alpha) & \sigma^{k_2+r+\delta-2}(\alpha) & \cdots & \sigma^{k_{\delta-1}+r+\delta-2}(\alpha)
+\end{pmatrix}
+\]
+\[
+=
+\begin{pmatrix}
+    \sigma^{k_1+r}(\alpha) & \sigma^{k_2+r}(\alpha) & \cdots & \sigma^{k_{\delta-1}+r}(\alpha) \\
+    \sigma(\sigma^{k_1+r}(\alpha)) & \sigma(\sigma^{k_2+r})(\alpha) & \cdots & \sigma(\sigma^{k_{\delta-1}+r}(\alpha)) \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \sigma^{\delta-2}(\sigma^{k_1+r}(\alpha)) & \sigma^{\delta-2}(\sigma^{k_2+r}(\alpha)) & \cdots & \sigma^{\delta-2}(\sigma^{k_{\delta-1}+r}(\alpha))
+\end{pmatrix}
+.\]
+
+Por ser \(\{\alpha, \sigma(\alpha), \dots, \sigma^{n-1}(\alpha)\) una base de la extensión \(\F^\sigma \subset \F\), por el lema \ref{lem:det_0}, \(|M'| \neq 0\), y por tanto esas columnas son linealmente independientes.
+\end{proof}
+
+\section{Algoritmo Principal}%
+\label{sec:algoritmo_principal}
+
+De aquí en adelante \(\C\) denotará un código RS sesgado de distancia fijada \(\delta\) generado, como ideal a la izquierda de  \(\mathcal{R}\), por  \(g = {[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \dots, x - \sigma^{r+\delta - 2}(\beta)]}_l\), para algún \(r \geq 0 \), donde \(\beta\) lo elegimos como en la definición~\ref{def:RS_code}. Sabemos que la distancia mínima de \(\C\) es exactamente \(\delta\) por el teorema~\ref{th:distance}. Sea \(\tau = \lfloor (\delta -1)/2 \rfloor\) que es el máximo número de errores que nuestro código puede corregir. Por simplicidad, supondremos que \(r = 0\). Esto no es una restricción, pues siempre podemos escribir  \(\beta' = \sigma^r(\beta)\). Entonces, \(\beta' = {(\alpha')}^{-1} \sigma(\alpha')\), donde \(\alpha' = \sigma^r(\alpha)\), y es claro que \(\alpha'\) también proporciona una base normal. Por tanto, \(g = [x - \beta', x - \sigma(\beta'), \dots, x - \sigma^{\delta - 2}(\beta')]\).
+
+Sea \(c \in \C\) una palabra que es transmitida a través de un canal binario simétrico y el polinomio \(y = c + e\) es recibido, donde \(e = e_1 x^k + \cdots + e_\nu x^{k_\nu}\) con \(\nu \leq \tau\). Definimos el polinomio \textit{localizador de errores} como
+\[
+\lambda = {\left[1 - \sigma^{k_1}(\beta)x, 1 - \sigma^{k_2}(\beta)x, \dots, 1 - \sigma^{k_\nu}(\beta)x\right]}_r
+.\]
+
+En primer lugar mostraremos que \(\lambda\) determina las posiciones con un error no nulo.
+
+\begin{lemma}\label{lem:lambda_roots}
+    Para cualquier subconjunto \(\{t_1, \dots, t_m\} \subset \{0, 1, \dots, n-1\}\) ,
+    \[
+    {\left[1 -\sigma^{t_1}(\beta)x, \dots, 1 - \sigma^{t_m}(\beta)x \right]}_r
+    = {\left[x - \sigma^{t_1 - 1}(\beta^{-1}), \dots, x - \sigma^{t_m -1}(\beta^{-1})\right]}_r
+    .\]
+\end{lemma}
+
+\begin{proof}
+    Para cualquier \(a \in \F\),
+    \[
+    1 - ax = (x - \sigma^{-1}(a^{-1}))(- \sigma^{-1}(a)),\quad
+    x - \sigma^{-1}(a^{-1}) = (1 - ax)(-\sigma^{-1}(a^{-1})).
+    \]
+    Entonces, los polinomios del resultado se dividen a la izquierda mutuamente, y por tanto ambos mínimos comunes múltiplos coinciden.
+\end{proof}
+
+\begin{proposition}
+\label{prop:root_error_position}
+    \(1- \sigma^d(\beta)x\) divide a la izquierda a \(\lambda\) si y solo si \(x - \sigma^{d-1}(\beta^{-1})\) divide a la izquierda a  \(\lambda\) si y solo si \(d \in \{k_1, \dots, k_\nu\}\).
+\end{proposition}
+
+\begin{proof}
+    Por el lema anterior, \(1 - \sigma^d(\beta)x\) divide a la izquierda \(\lambda\) si y solo si  \(x - \sigma^{d-1}(\beta^{-1})\) divide a la izquierda a \(\lambda\). Ahora, por el lema \ref{lem:deg_lcm}, \(x - \sigma^{d-1}(\beta^{-1})\) es un divisor a la izquierda de \(\lambda\) si y solo si  \(d \in \{k_1, \dots, k_\nu\}\).
+\end{proof}
+
+Por tanto, una vez que \(\lambda\) es conocido, las coordenadas del error pueden ser localizadas siguiendo la siguiente regla: \(d \in {0,1, \dots, n-1}\) es una posición de error si y solo si \(\sigma^{d-1}(\beta{-1})\) es una raíz a la izquierda de \(\lambda\). En realidad,  \(\lambda\) puede ser sustituido por cualquier otro polinomio en \(R\) asociado a la derecha a \(\lambda\), es decir, cualquier polinomio que difiera de \(\lambda\) en la multiplicación a la derecha por un elemento no nulo de \(\F\).
+
+Ahora, para cualquier \(1 \leq j \leq \nu\) existe \(p_j \in R\) tal que \(\lambda = (1 - \sigma^{k_j}(\beta)x)p_j\) con \(\deg p_j = \nu - 1\). Definimos entonces el polinomio \textit{evaluador de errores} como \(\omega = \sum_{j=1}^\nu e_j \sigma^{k_j}(\alpha)p_j\). Así, si conocemos el polinimio localizador de errores \(\lambda\) y el polinomio evaluador de errores \(\omega\), podremos calcular los valores \(e_1, e_2, \ldots, e_{\nu}\) resolviendo un sistema lineal dado por \(\omega = \sum_{j=1}^{\nu} e_j \sigma^{k_j}(\alpha)p_j\). Además, es directo comprobar que \(\deg \omega < \nu\), pues, como ya dijimos, \(\deg(p_j) = \nu -1\) para todo \(1 \le j \le \nu\).
+
+Finalmente, para cada \(0 \leq i \leq n-1\), el \(i\)-ésimo síndrome \(S_i\) del polinomio recibido  \(y = \sum_{j=0}^{n-1} y_j x^j\) se define como el resto de la división a la izquierda de \(y\) por  \(x - \sigma^i(\beta)\). Este \(S_i\) es la evaluación a la derecha de \(y\) en  \(\sigma^i(\beta)\). Siempre que \(0 \leq i \leq 2\tau -1\), las evaluaciónes a la derecha en \(c\) son cero, y por tanto, por el lema~\ref{lem:eval} tenemos:
+ \[
+\begin{aligned}
+    S_i &= \sum_{j=0}^{n-1} y_j N_j(\sigma^i(\beta)) \\
+    &= \sum_{j=1}^\nu e_j N_{k_j}(\sigma^i(\beta))\\
+    &= \sum_{j=1}^\nu e_j \sigma^i(N_{k_j}(\beta))\\
+    &= \sum_{j=1}^\nu e_j \sigma^i(\alpha^{-1})\sigma^{k_j + i}(\alpha)\\
+    &= \sigma^i(\alpha^{-1})\sum_{j=1}^\nu e_j \sigma^{k_j + i}(\alpha).
+\end{aligned}
+\]
+
+Por esto, \(\sigma^i(\alpha)S_i = \sum_{j=1}^\nu e_j \sigma^{k_j + i}(\alpha)\) y llamamos al polinomio \(S = \sum_{i=0}^{2\tau -1} \sigma^i(\alpha) S_i x^i\) el \textit{polinomio síndrome} de \(y\).
+
+\begin{theorem}
+    Los polinomios localizador de errores y evaluador de errores cumplen la ecuación clave no conmutativa:
+    \[
+    \omega = S\lambda + x^{2\tau}u.
+    \]
+    donde \(u \in R\) es de grado menor que \(\nu\).
+\end{theorem}
+
+\begin{proof}
+Por definición sabemos que
+\[
+S = \sum_{i = 0}^{2\tau-1} \sum_{j=1}^{\nu} e_j \sigma^{k_j + i}(\alpha) x^i
+,\]
+y que para cualquier \(1 \leq j \leq \nu\)
+\[
+\lambda = (1 - \sigma^{k_j}(\beta)x)p_j
+.\]
+Queremos llegar a que
+\[
+\omega = \sum_{j=1}^{\nu} e_j \sigma^{k_j}(\alpha)p_j = S\lambda + x^{2\tau u}
+\]
+para algún \(u\) de grado menor que \(\nu\). Tomamos ahora \(u = \sum_{i = 0}^{2\tau-1} \sum_{j=1}^{\nu} \sigma^{-2\tau}(e_j)\sigma^{k_j}(\alpha)p_j\). Entonces
+\[
+\begin{aligned}
+S\lambda + x^{2\tau} u &= \sum_{i = 0}^{2\tau-1} \sum_{j=1}^{\nu} e_j\sigma^{k_j + i}(\alpha)x^i(1-\sigma^{k_j}(\beta)x)p_j + x^{2\tau}\sigma^{-2\tau}(e_j)\sigma^{k_j}(\alpha)p_j \\
+&= \sum_{j=1}^{\nu} e_j \left( \sum_{i = 0}^{2\tau-1} \sigma^{k_j + i}(\alpha)x^i(1-\sigma^{k_j}(\beta)x) + x^{2\tau}\sigma^{k_j}(\alpha)\right)p_j
+\end{aligned}
+,\]
+tras intercambiar las sumatorias, y sacar factor común \(e_j\) y \(p_j\). Ahora nos centramos en la sumatoria interior.
+
+\[
+\begin{aligned}
+&\sum_{i = 0}^{2\tau-1} \sigma^{k_j + i}(\alpha)x^i(1-\sigma^{k_j}(\beta)x) + x^{2\tau}\sigma^{k_j}(\alpha) \\
+&= \sum_{i = 0}^{2\tau-1} x^i \sigma^{k_j}(\alpha) (1-\sigma^{k_j}(\beta)x) + x^{2\tau}\sigma^{k_j}(\alpha) \\
+&= \sum_{i = 0}^{2\tau-1} x^i \sigma^{k_j}(\alpha) - x^i \sigma^{k_j}(\alpha)\sigma^{k_j}(\alpha^{-1})\sigma^{k_j + 1}(\alpha) x) + x^{2\tau}\sigma^{k_j}(\alpha)\\
+&=\sum_{i = 0}^{2\tau-1} x^i \sigma^{k_j}(\alpha) - x^{i+1} \sigma^{k_j}(\alpha) + x^{2\tau}\sigma^{k_j}(\alpha)\\
+&=\left(\sum_{i = 0}^{2\tau-1} x^i  - x^{i+1} + x^{2\tau}\right)\sigma^{k_j}(\alpha) = \sigma^{k_j}(\alpha)
+\end{aligned}
+.\]
+Con esto, sustituyendo en la expresión anterior tenemos que
+\[
+\begin{aligned}
+S\lambda + x^{2\tau} u &= \sum_{j=1}^{\nu} e_j \left( \sum_{i = 0}^{2\tau-1} \sigma^{k_j + i}(\alpha)x^i(1-\sigma^{k_j}(\beta)x) + x^{2\tau}\sigma^{k_j}(\alpha)\right)p_j \\
+&= \sum_{j=1}^{\nu} e_j \sigma^{k_j}(\alpha) p_j = \omega
+\end{aligned}
+.\]
+\end{proof}
+
+Ahora intentaremos resolver esta ecuación, para lo que utilizaremos el Algoritmo Euclídeo Extendido a la derecha presentado en \ref{alg:right_ext_euc_alg}. Recordemos que, para cualesquiera \(f,g \in R\), cada paso \(i\) del algoritmo proporciona coeficientes \(\{u_{i}, v_{i}, r_{i}\}\) tales que \(fu_{i} + fv_{i} = r_{i}\), donde \({(f,g)}_l = r_h\) y \(\deg r_{i+1} < \deg r_{i}\) para cualquier \(0 \le i \le h-1\).
+
+\begin{theorem}
+\label{th:mult_key_eq}
+    La ecuación clave no conmutativa
+    \begin{equation}
+    \label{eq:key_equation}
+        x^{2\tau}u + S\lambda = \omega
+    \end{equation}
+    es un múltiplo a la derecha de la ecuación
+    \begin{equation}
+    \label{eq:key_equation_div}
+        x^{2\tau}u_{I} + Sv_{I} = r_{I},
+    \end{equation}
+    donde $u_{I}, v_{I}$ y $r_{I}$ son los coeficientes de Bezout dados por el Algoritmo Euclídeo Extendido a la derecha con entrada $x^{2\tau}$ y \(S\), e \(I\) es el índice determinado por las condiciones \(\deg r_{I-1} \ge \tau\) y \(\deg r_{I} < \tau\). En particular, \(\lambda = v_{I}g\) y \(\omega = r_{I}g\) para algún \(g \in R\).
+\end{theorem}
+
+\begin{proof}
+    Recordemos que \(\deg S < 2\tau\), \(\deg \lambda \le \nu \le \tau\) y que \(\deg \omega < \nu \le \tau\). Entonces, \(\deg u < \tau\), pues en otro caso \(\deg x^{2\tau}u \ge 3\tau > \deg S\lambda\), y por tanto \(\deg \omega \ge 3\lambda\) que es contradicción. Por otro lado, por el lema \ref{lem:reea} \textit{VI)}, \(\deg v_{I} + \deg r_{I-1} = 2\tau\), y utilizando la hipótesis \(\deg r_{I-1} \ge \tau\) tenemos que \(\deg v_{I} \le \tau\).
+
+    Consideremos ahora el mínimo común múltiplo a la derecha \({[\lambda, v_{I}]}_{r} = \lambda a = v_{I}b\), donde \(a, b \in R\) con \(\deg a \le \deg v_{I} \le \tau\) y \(\deg b \le \deg \lambda \le \tau\). Entonces  \({(a,b)}_{r} = 1\). Entonces, multiplicando~\eqref{eq:key_equation} a la derecha por \(a\), y~\eqref{eq:key_equation_div} a la derecha por \(b\), obtenemos
+    \begin{equation}
+        x^{2\tau} u a + S \lambda a = \omega a
+    \end{equation}
+y
+    \begin{equation}
+        x^{2\tau}u_{I}b + Sv_{I}b = r_{I}b.
+    \end{equation}
+
+    Ahora, restando ambas ecuaciones obtenemos \(x^{2\tau}(ua - u_{I}b) = \omega a - r_{I}b\). Por \(\deg \omega < \tau, \deg a \le \tau, \deg r_{I} < \tau, \deg{b} \le \tau\), tenemos que \(\deg (\omega a - r_{I}b) < 2\tau\), luego \(ua = u_{I}b\) y \(\omega a = r_{I}b\), pues en caso contrario el grado del término izquierdo sería mayor o igual que \(2\tau\). De hecho \({(a,b)}_{r} = 1\) nos lleva a que \({[u, u_{I}]}_r = ua = u_{I}b\) y \({[\omega, r_{I}]}_r = \omega a = r_{I}b\), y en particular \(\deg a \le \deg r_{I} < \tau\).
+
+    Sea \({[a,b]}_l = a'a = b'b\). Por ser \([\lambda, v_{I}]_r\) un múltiplo a la izquierda de \(a\) y \(b\), existe \(m \in R\) tal que \({[\lambda, v_{I}]}_{r} = m{[a,b]}_{l}\), es decir, \(\lambda a = v_{I}b = ma'a = mb'b\). Por esto, \(\lambda = ma'\) y \(v_{I} = mb'\) y, por minimalidad, \({(\lambda, v_{I})}_l = m\). Podemos utilizar argumentos similares para probar que existen \(m', m'' \in R\) tales que \(u_{I} = m'b'\) y  \(u = m'a'\), y  \(r_{I} = m''b'\) y \(\omega = m''a'\). Por el lema \ref{lem:reea} \textit{V)} \({(u_{I}, v_{I})} _r = 1\), luego \(b' = 1\). Esto completa la prueba, pues tenemos \(b = b b' = a a'\), y por tanto  \(\lambda = v_{I}a'\), \(\omega = r_{I}a'\) y \(u = u_{I}a'\).
+\end{proof}
+
+Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores. Como ya dijimos, estos dos polinomios nos permiten calcular el error al recibir un polinomio \(y = c + e\), con \(c\) y \(e\) cumpliendo las hipótesis previamente mencionadas, por tanto, podemos describir un algoritmo de decodificación para códigos RS sesgados (vease el algoritmo~\ref{alg:decoding_1}) que será válido siempre que \({(\lambda, \omega)}_{r} = 1\).
+
+\begin{algorithm}[H]
+ \label{alg:decoding_1}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{Un polinomio \(y = \sum_{i=0}^{n-1}y_i x^{i}\) obtenido de la transmisión de una palabra código \(c\) perteneciente a un código RS sesgado \(C\) generado por \(g = {[\{x-\sigma^{i}(\beta)\}_{i=0,\ldots,\delta-2}]}_{l}\) con capacidad para corregir \(\tau = \lfloor (\delta -1)/2 \rfloor\) errores.}
+ \KwOut{Una palabra código \(c'\) o un \textit{error de ecuación clave}.}
+ \For{\(0 \le i \le 2\tau -1\)}{
+    \(S_i \gets \sum_{j=0}^{n-1} y_j N_{j}(\sigma^{i}(\beta))\)
+ }
+ \(S \gets \sum_{i=0}^{2\tau -1} \sigma^{i}(\alpha)S_{i}x^{i}\)\\
+ \If{\(S = 0\)}{
+    \Return{\(y\)}
+ }
+ \({\{u_{i}, v_{i}, r_{i}\}}_{i=0,\ldots,l} \gets \text{REEA}(x^{2\tau}, S)\)\\
+ \(I \gets \text{ primera iteración en REEA tal que } \deg r_{i} < \tau\)\\
+ \(pos \gets \emptyset\)\\
+ \For{\(0 \le i \le n-1\)}{
+     \If{ \(\sigma^{i-1}(\beta^{-1}) \text{ es una raíz a la izquierda de } v_{I}\) }{
+        \(pos = pos \cup \{i\}\)
+     }
+ }
+\If{\(\deg v_{I} > \operatorname{Cardinal}(pos)\) }{
+    \Return{ error en la ecuación clave }
+}
+\For{ \(j \in pos\) }{
+    \(p_j \gets \operatorname{rquo}(v_{I}, 1 - \sigma^{j}(\beta)x)\)
+}
+
+Resolver el sistema lineal \(r_I = \sum_{j\in pos} e_{j}\sigma^{j}(\alpha)p_{j}\)\\
+\(e \gets \sum_{j\in pos}e_{j}x^{j}\)\\
+\Return{\(y - e\)}
+ \caption{Algoritmo de decodificación para códigos RS sesgados}
+\end{algorithm}
+
+\begin{exampleth}
+En este ejemplo mostraremos la ejecución de este algoritmo utilizando la implementación que ha sido realizada en SageMath.
+
+Sea \(\F = \F_2(t)\) el cuerpo finito con  \(2^{12}\) elementos, donde \(x^{12} + x^{7} + x^{6} + x^{5} + x^{3} + x + 1 = 0\). Escribiremos los elementos de \(\F\) como potencias de \(t\) excepto el \(0\) y el \(1\). Consideremos entonces \(\sigma = \tau^{10}\) donde  \(\tau\) es el endomorfismo de Frobenius, por ejemplo \(sigma(t) = t^{1024}\). El orden de \(\sigma\) es 6, luego un código cíclico sesgado sobre \(\F\) será un ideal a la izquierda del álgebra cociente  \( \mathcal{R} = \F[x;\sigma] / \langle x^{6} - 1\rangle\).
+
+Tomemos ahora \(\alpha = t\), que proporciona una base normal de \(\F\) como \(\F^{\sigma}\)-espacio vectorial, y \(\beta = \sigma(t)t^{-1} = t^{1023}\). Consideramos entonces el código RS sesgado generado por
+\[
+    g = [x - \beta, x - \sigma(\beta), x - \sigma^{2}(\beta), x - \sigma^{3}(\beta)]
+.\]
+
+Por el teorema~\ref{th:distance} + tiene distancia Hamming \(5\) + y por tanto puede corregir hasta \(2\) errores. Supongamos que queremos mandar el mensaje \(m = tx +1\) + así que el polinomio codificado que transmitiremos será \(c = mg =  tx^{5} + t^{2715}x^{4} + t^{1452}x^{3} + t^{2080}x^{2} + t^{3786}x + t^{759} \). Después de la transmisión, recibimos el polinomio \(y = tx^{5} + t^{2715}x^{4} + t^{1452}x^{3} + t^{333}x^{2} + t^{3786}x + t\) por ejemplo, donde hay errores en las posiciones \(0\) y \(2\).
+
+\begin{lstlisting}
+sage: m = t*x + 1
+sage: c = m*g
+sage: y = copy(c)
+sage: y[0] = t
+sage: y[2] = t**333
+\end{lstlisting}
+
+En primer lugar calculamos el polinomio síndrome \(S\).
+\begin{lstlisting}
+sage: for i in range(2*tau):
+sage:   S_i = sum([R(y[j]*norm(j, sigma, (sigma**i)(beta)))
+          for j in range(n)])
+sage:   S = S + (sigma**i)(alpha) * S_i * x**i
+sage: S
+(t^10 + t^9 + t^8 + t^7 + t^5 + 1)*x^3 + ...
+    + t^8 + t^5 + t^4 + t^3 + 1
+\end{lstlisting}
+
+Como \(S\) es distinto de \(0\), el polinomio \(y\) no pertenece al código y han ocurrido errores en la transmisión. Aplicamos el algoritmo extendido de Euclides a la derecha sobre \(x^{2\tau}\) y \(S\), y buscamos la primera posición en la que se cumpla que \(\deg r_i < \tau\).
+
+\begin{lstlisting}
+sage: u, v, r = right_extended_euclidean_algorithm(R,
+        R(x**(2*tau)), S)
+sage: I = 0
+sage: for (i, r_i) in enumerate(r):
+sage:    if r_i.degree() < tau:
+sage:        I = i
+sage:        break
+sage: I
+3
+\end{lstlisting}
+
+A continuación calculamos las posiciones del error, y comprobamos que no se dé un error en la ecuación clave.
+\begin{lstlisting}
+sage: pos = []
+
+sage: for i in range(n):
+sage:     if (R(x - (sigma**(i-1))(beta**(-1))))
+            .left_divides(v[I]):
+sage:           pos.append(i)
+
+sage: v[I].degree() > len(pos):
+False
+\end{lstlisting}
+
+En efecto, no se da un error, luego sabemos que los polinomios \(v_I\) y  \(r_I\) (en el código \texttt{v[I]} y \texttt{r[I]}) son respectivamente los polinomios localizador (\(\lambda\)) y evaluador de errores (\(\w\)). El siguiente paso entonces es calcular los polinomios \(p_j\) de forma que \(\lambda = (1 - \sigma^{j}(\beta)x)p_j \) para cada \(j \in pos\).
+
+\begin{lstlisting}
+sage: p = {}
+sage: for j in pos:
+sage:     p[j] = (v[I].left_quo_rem(
+            R(1 - (sigma**j)(beta)*x)))[0]
+\end{lstlisting}
+
+Ya tenemos todos los ingredientes necesarios para construir el sistema lineal y resolverlo, lo que nos proporcionará el error que ha ocurrido durante la transmisión.
+
+\begin{lstlisting}
+sage: omega = _to_complete_list(r[I], tau)
+sage: Sigma = matrix([[(sigma**j)(alpha) * p[j][i]
+        for j in pos] for i in range(tau)])kj,,kjj
+sage: E = Sigma.transpose().solve_left(vector(omega))
+sage: e = sum([E[j] * x**(pos[j]) for j in range(len(pos))])
+\end{lstlisting}
+
+Por último solo tenemos que restarle el error a la palabra recibida, y comprobamos que coincide con la palabra código transmitida concluyendo el ejemplo.
+
+\begin{lstlisting}
+sage: y - e == c
+True
+\end{lstlisting}
+\end{exampleth}
+
+En caso de que se dé \({(\lambda, \omega)}_r = 1\), el algoritmo no es válido pues \(v_I\) y  \(r_I\) no serían los polinomios localizador y evaluador de errores respectivamente. Por el lema~\ref{lem:eval} es directo ver que si se cumple la condición que presentamos para devolver un error entonces \({(\lambda, \omega)}_r = 1\). Para el caso en que se de la igualdad \(\deg v_I = \operatorname{Cardinal}(pos)\), aunque a priori no podemos descartar que ocurra un error, en la siguiente sección vemos un resultado (teorema~\ref{th:failure_cond}) que nos dice que si se da la igualdad entonces no puede ocurrir un error. Por tanto, solo puede ocurrir un error en la ecuación clave si se cumple dicha condición.
+
+\section{Errores en la ecuación clave}%
+\label{sec:errores_en_ecuación_clave}
+
+En esta sección abordaremos el problema producido por un error en la ecuación clave, es decir, cuando el máximo común divisor a la derecha de los polinomios localizador y evaluador de errores no coincide con la unidad. Además concluiremos la sección analizando cómo de probable es que ocurra un error de este tipo, y estudiando la complejidad del algoritmo
+
+Nuestro principal objetivo entonces es encontrar un método que nos permita, aun existiendo el error mencionado, encontrar los polinomios localizador de errores y evaluador de errores.
+
+A lo largo de toda esta sección seguiremos la notación utilizada en la sección anterior (\ref{sec:algoritmo_principal}).
+
+El primer resultado que mostramos será que, si se produce un único error en el mensaje, en cuyo caso el polinomio localizador será de grado uno, este siempre puede ser corregido.
+
+\begin{lemma}
+    \(\deg v_I \ge 1\). Como consecuencia, si \(\deg \lambda = 1\), entonces  \(v_I\) y  \(\lambda\) son asociados a la derecha.
+\end{lemma}
+
+\begin{proof}
+    La prueba se basa en los grados de los polinomios del teorema~\ref{th:mult_key_eq}. Por este teorema, \(\omega = r_I g\) para algún \(g \in R\). Como ya mencionamos anteriormente, \(\deg \omega < \nu\), y por tanto \(\deg g < \nu\). Ahora, el mismo teorema nos dice que \(\lambda = v_I g\), y por el teorema~\ref{lem:deg_lcm} tenemos que \(\nu = \deg \lambda = \deg v_{I} + \deg g\). De aquí sigue que \(\deg v_I \ge 1\).
+\end{proof}
+
+Volvamos ahora a considerar el caso en el que se produce un error en la ecuación clave, y como afrontarlo. Por el teorema~\ref{th:mult_key_eq} y siguiendo el algoritmo~\ref{alg:decoding_1} obtenemos los polinomios \(r_I, u_i, v_I\), que cumplen la ecuación \(x^{2\tau}u_{I} + Sv_{I} = r_{I}\), con \(\lambda = v_I g\) y  \(\omega = r_I g\) para algún \(g \in R\).
+
+Ahora bien, por el lema recién demostrado, sabemos que \(\deg v_I \ge 1\). Si \(\deg g = 0\), entonces \(v_I\) nos sirve como polinomio localizador, y el algoritmo~\ref{alg:decoding_1} decodificará correctamente el polinomio recibido. En caso contrario, nuestra estrategia consistirá en, empezando por \(v_I\), encontrar una cadena creciente de divisores a la izquierda de \(\lambda\), lo que nos permitirá encontrar una posición nueva del error por cada elemento de dicha cadena. En primer lugar, queremos demostrar un criterio que nos diga si hemos encontrado ya todas las posiciones del error, y de ser así tendremos el polinomio localizador. Para demostrar esto necesitaremos primero probar el siguiente lema.
+
+\begin{lemma}
+\label{lem:direct-sum}
+    Sean \(\{t_1 < t_2 < \cdots < t_m \} \subset \{0, 1, \dots, n-1 \}\) con \(m > 1\), y
+     \[
+    q = {[1 - \sigma^{t_1}(\beta)x, 1 - \sigma^{t_2}(\beta)x, \ldots, 1 - \sigma^{t_m}(\beta)x]}_r
+    .\]
+    Sean \(q_1, q_2, \ldots, q_m\) tales que \(q = (1 - \sigma^{t_j}(\beta)x)q_j\) para cualquier \(1 \le j \le m\). Entonces:
+\begin{nlist}
+    \item \({[q_1, q_2, \ldots, q_m]}_l = q\) y \({(q_1, q_2, \ldots, q_m)}_r = 1\).
+    \item \(R/Rq = \bigoplus_{j = 1}^{m} Rq_j/Rq\).
+    \item Para cada \(f \in R\) con \(\deg f < m\) existen  \(a_1, a_2, \ldots, a_m \in \F\) tales que \(f = \sum_{j=1}^{m}a_j q_j\).
+    \item El conjunto \(\{q_1, \ldots, q_m\}\) módulo \(Rq\) proporciona una base de  \(R/Rq\) como un \(\F\)-espacio vectorial.
+\end{nlist}
+\end{lemma}
+
+\begin{proof}
+\begin{nlist}
+    \item Utilizando el lema~\ref{lem:lambda_roots} para seguidamente poder aplicar el lema~\ref{lem:deg_lcm} tenemos que \(\deg q = m\), y por tanto
+    \[
+    \deg q_j = m-1 \quad \forall j \in \{1, \ldots, m\}.
+    \]
+
+    Como \(m > 1\), el grado del mínimo común múltiplo a la derecha de cualesquiera dos elementos en \(\{q_1, q_2, \ldots, q_m\}\) debe ser al menos \(m - 1 + 1 = m\), luego el grado de  \({[q_1, \ldots, q_m]}_l\) debe ser al menos \(m\). Pero \(q\) es claramente un mínimo común múltiplo a la izquierda de  \(q_1, \ldots, q_m\). Así, \(q = {[q_1, \ldots, q_m]}_l \).
+
+Veamos ahora que \(p = {(q_1, q_2, \ldots, q_m)}_r = 1\). Supongamos \(p \neq 1\), y  \(q_j = q_j'p\) para todo \(j = 1, \ldots, m\). Entonces
+\[
+q = (1 - \sigma^{t_j}(\beta)x)q_j'p \quad \forall j \in \{1, \ldots, m\}
+.\]
+Esto es una contradicción pues, si definimos
+\[
+q' = (1 - \sigma^{t_1}(\beta)x)q_1' = \cdots = (1 - \sigma^{t_m}(\beta)x)q_m'
+,\]
+entonces \(q'\) es un múltiplo común a la derecha de cada \(1 - \sigma^{t_j}(\beta)x\) de grado menor que \(q\) así que este no podría ser el mínimo común múltiplo a la derecha de dichos términos.
+    \item Cada uno de los polinomios \(q_j\) es un divisor a la derecha de \(q\) y por tanto \(Rq \subset Rq_j\) para \(j = 1, \ldots, m\). Por esto, como del apartado anterior sabemos que \({(q_1, \ldots, q_m)}_r = 1\), tenemos que
+    \[
+    R/Rq = \sum_{j=1}^{m} Rq_j/Rq
+    .\]
+Además, por \(q = (1 - \sigma^{t_j}(\beta)x)q_j\) para \(1 \le j \le m\),  \(Rq_j / Rq \equiv R / R(1-\sigma^{t_j}(\beta)x)\) es uno dimensional sobre \(F\). Así, como la dimensión de \(R / Rq\) como  \(\F\)-espacio vectorial es  \(\deg q = m\), tenemos la suma directa que buscábamos.
+
+    \item Se obtiene directamente del apartado (II)
+    \item Se obtiene directamente del apartado (II)
+\end{nlist}
+\end{proof}
+
+Con este lema ya estamos en posición de enunciar y probar el teorema para saber si hemos encontrado ya todas las posiciones de error.
+
+\begin{theorem}
+\label{th:failure_cond}
+    Sean \(q, p, s \in R\)  tales que \(x^{2\tau}q + Sp = s\),  \(qg = u, pg = \lambda, \text{ y  } sg = \omega\) para algún \(g \in R\). Consideremos \(T = \{t_1, t_2, \ldots, t_{m}\} \subset \{0,1, \ldots, n-1\}\) el conjunto de índices que verifican que \(\sigma^{j-1}(\beta^{-1})\) es una raíz a la izquierda de \(p\) si y solo si  \(j \in T\). Entonces \(m = \deg p \) si y solo \(g\) es una constante.
+\end{theorem}
+
+\begin{proof}
+    En primer lugar mencionemos que los elementos de \(T\) son en realidad posiciones del error. Esto se cumple ya que dividen por la izquiera a p, y por \(\lambda = pg\), también a \(\lambda\), así que podemos aplicar la proposición~\ref{prop:root_error_position}. Dicho esto, reordenamos el conjunto de las posiciones del error de forma que \(T = \{k_1, k_2, \ldots, k_m\}\).
+
+    Si \(\deg g = 0\), entonces las raíces de \(p\) coinciden con las de  \(\lambda\), y por tanto, por el lema~\ref{lem:deg_lcm}, \(m = \deg p = \deg \lambda = \nu\). Supongamos ahora que \(m = \deg p\). Por el lema~\ref{lem:deg_lcm} sabemos que \( [x - \sigma^{k_1}(\beta^{-1}), \ldots, x - \sigma^{k_m}(\beta^{-1})]_r \) tiene grado \(m\), y por tanto tiene el mismo grado que \(p\). Por esto
+\(
+p = [x - \sigma^{k_1-1}(\beta^{-1}), x - \sigma^{k_2-1}(\beta^{-1}), \dots, x - \sigma^{k_m-1}(\beta^{-1})]_r
+\)
+, y aplicando directamente el lema~\ref{lem:lambda_roots} tenemos que:
+    \[
+    p = {[1 - \sigma^{k_1}(\beta)x, \ldots, 1 - \sigma^{k_m}(\beta)x]}_{r}
+    .\]
+
+Por el lema~\ref{lem:direct-sum} (III), cada polinomio de grado menor que \(m\) puede escribirse como una combinación  \(\F\)-lineal de los polinomios  \(p_1', \ldots, p_m'\). Ahora, por \(sg = \omega\) y \(pg = \lambda\),
+\[
+\deg s = \deg \omega - \deg g = \deg \omega + \deg p - \deg \lambda \le \nu -1 + m - \nu = m-1
+,\]
+luego podemos escribir \(s\) de la forma \(\sum_{i=1}^{m} a_ip_i'\) para ciertos \(a_1, a_2, \ldots, a_m \in F\). Recordemos que, siguiendo la notación de la sección anterior, los polinomios \(p_1, \ldots, p_\nu\) eran aquellos tales que \(\lambda = (1 - \sigma^{k_j}(\beta)x)p_j\) donde \(k_j\) era una posición del error cualquiera. Entonces, por \(\lambda = pg\), para cada \(j = 1, \ldots, m\) se cumple que \((1 - \sigma ^{k_j}(\beta)x)p_j = (1 - \sigma^{k_j}(\beta)x)p_j'g\), luego \(p_j = p_j'g\). Ahora, usando que \(sg = \omega\), tenemos
+
+\begin{equation}
+\label{eq:m_nu}
+\begin{aligned}
+    \omega &= \sum_{j=1}^{m}e_{j}\sigma^{k_j}(\alpha)p_j + \sum_{j=m+1}^{\nu}e_{j}\sigma^{k_j}(\alpha)p_j = sg  = \left( \sum_{j=1}^{m}a_j p_j' \right) g \\
+    &= \sum_{j=1}^{m} a_j p_j
+\end{aligned}
+.
+\end{equation}
+
+Ahora, volviendo a aplicar el lema~\ref{lem:direct-sum} (IV), pero esta vez sobre todas las posiciones de error y el polinomio localizador, obtenemos que \(\{p_1, \ldots, p_{\nu}\}\) es una base de \(R / R\lambda\) como  \(\F\)-espacio vectorial. Así, como \(e_i\sigma^{k_i} \neq 0\) para cada \(i \le \nu\), la ecuación~\ref{eq:m_nu} nos dice que \(m = \nu\), y por tanto, \(\deg g = 0\).
+\end{proof}
+
+Ahora que gracias a este teorema sabemos cuando hemos encontrado todas las posiciones del error, el siguiente paso será construir el algoritmo que nos permita, en caso de existir, encontrar una posición nueva. De esta forma, en caso de que se produzca un error en la ecuación clave en el algoritmo~\ref{alg:decoding_1}, podremos hallar nuevas posiciones del error iterativamente hasta que sepamos que no existen más.
+
+\begin{algorithm}[H]
+ \label{alg:find_a_position}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{Un polinomio no constante \(p\) tal que \(\lambda = pg\) para algún \(g \in R\), \(pos = \{i \ge 0 \text{ tales que } (1 - \sigma^{i}(\beta)x) {|}_l p \}\), con \(\deg p > \operatorname{Cardinal}(pos)\).}
+ \KwOut{\(d \not \in pos\) tal que \((1 - \sigma^{d}(\beta)x)\) divide a la izquierda a \(\lambda\).}
+ \(f \gets p\),  \(e \gets \deg f\) \\
+ \For{\(0 \le i \le n-1\)}{
+     \If{\(i \not \in pos\)}{
+        \(f \gets {[f, 1 - \sigma^{i}(\beta)x]}_r\) \\
+        \If{\(\deg f = e\)}{
+            \Return{i}
+        }
+        \Else{
+            \(e \gets e + 1\)
+        }
+     }
+ }
+ \caption{Encuentra-una-posición}
+\end{algorithm}
+
+\begin{proposition}
+    El algoritmo~\ref{alg:find_a_position} encuentra una nueva posición del error correctamente.
+\end{proposition}
+\begin{proof}
+    Sea \(T = \{t_1, \ldots, t_r\} = \{0, 1, ..., n-1\} \setminus pos\). Definimos ahora
+\[
+\begin{aligned}
+&\lambda_0 = \lambda, \quad \lambda_i = {[\lambda _{i-1}, 1 - \sigma^{t_i}(\beta)x]}_r\quad \text{para } 1 \le i \le r \\
+&f_0 = p, \quad f_i = {[f _{i-1}, 1 - \sigma^{t_i}(\beta)x]}_r\quad \text{para } 1 \le i \le r
+\end{aligned}
+.\]
+
+Veamos que \(f_i {|}_l \lambda_i\) para cualquier \(i = 0, \ldots, r\). En efecto, para \(i = 0\) el resultado es cierto por hipótesis, y supuesto que se cumple para \(i-1\), \(f_{i-1}\) divide a la izquierda a \(\lambda_i\) por dividir a \(\lambda_{i-1}\), y \(1- \sigma^{t_i}(\beta)x\) lo divide también de forma trivial, luego por definición el mínimo común múltiplo a la derecha de estos divide a \(\lambda_i\). Dicho esto, probaremos en primer lugar que el algoritmo devuelve una posición del error.
+
+Supongamos que la secuencia \(\{\deg f_i\}_{0 \le i \le r}\) es estrictamente creciente. Por esto, \( \deg f_r = r + \deg p > n - \operatorname{Cardinal}(pos) + \deg p > n \). Esto sin embargo no es posible, pues \(f_r\ {|}_l\ \lambda_r = x^{n} - 1\). Por tanto, existe un \(d \ge 0\) mínimo tal que \(\deg f_{d-1} = \deg f_{d}\). Entonces, \(1 - \sigma^{t_d}(\beta)x \ {|}_l\ f_{d-1}\ {|}_l\ \lambda_{d-1} = {[\lambda, 1 - \sigma^{t_1}(\beta)x, \ldots, 1 - \sigma^{t_{d-1}}(\beta)x]}_r \). Como \(t_{d} \neq t_1, \ldots, t_{d-1}\),  \(1 - \sigma^{t_d}(\beta)x \) divide a la izquierda \(\lambda\) concluyendo la prueba.
+\end{proof}
+
+Así, utilizando recursivamente el algoritmo~\ref{alg:find_a_position} encontraremos eventualmente todas las posiciones del error, y así conseguiremos también los polinomios localizador de errores y evaluador de errores. Estos pasos los mostramos formalmente en el algoritmo~\ref{alg:failure_solver}.
+
+\begin{algorithm}[H]
+ \label{alg:failure_solver}
+ \SetKwInput{KwIn}{Entrada}
+ \SetKwInput{KwOut}{Salida}
+ \SetKw{Initialization}{Inicialización:}
+ \KwIn{Polinomios \(v_i, r_I\) tales que \(\lambda = v_I g, \w = r_I g\) para algún \(g \in R\), el conjunto \(pos = \{i \ge 0 \mid (1 - \sigma^{i}(\beta)x) \mid_l v_I\} \)}
+ \KwOut{El polinomio localizador de errores \(\lambda\) y el polinomio evaluador de errores \(\w\).}
+ \caption{Algoritmo para resolver el error en la ecuación clave}
+ \(f \gets v_I\)\\
+\While{\(\operatorname{Cardinal}(pos) < \deg f\)}{
+    \(d \gets \text{Find-a-position}(f,pos)\) \\
+    \(f \gets {\left[ f, 1 - \sigma^{d}(\beta)x\right]}_r\)\\
+    \For{\(0 \le i \le n-1\)}{
+        \If{\(i \neq pos\) y  \(1 - \sigma^{i}(\beta)x \mid_l f\)} {
+            \(pos \gets pos \cup \{i\} \)
+        }
+    }
+}
+\(g \gets rquo(f, v_I)\)\\
+\Return{\(f, r_I g\)}
+\end{algorithm}
+
+Por tanto, esto nos permite que, en caso de que se de un error de ecuación clave en el algoritmo~\ref{alg:decoding_1}, calcular los polinomios localizador y evaluador de errores. De esta manera podemos concluir la decodificación resolviendo el sistema lineal con el que finaliza dicho algoritmo
+
+Para concluir esta sección analizaremos con que frecuencia ocurre un error en la ecuación clave. De hecho, dado un conjunto de posiciones de error, mostraremos que los valores de los errores deben satisfacer una relación no trivial. Recordemos que dicho error en la ecuación clave puede ocurrir únicamente si \({(\lambda, \w)}_r \neq 1\).
+
+\begin{proposition}
+    Los siguientes enunciados son equivalentes:
+    \begin{enumerate}
+        \item \({(\lambda, \w)}_r = 1\).
+        \item \(\w + R\lambda\) genera  \(R / R\lambda\) como un \(R\)-módulo a la izquierda.
+        \item El conjunto \( \{x^{i}(\w + R\lambda)  \mid 0 \le i \le \nu -1\}\) es linealmente independiente sobre \(\F\).
+    \end{enumerate}
+\end{proposition}
+\begin{proof}
+    La equivalencia entre 1 y 2 es una consequencia directa de la identidad de Bezout, ya que \({(\lambda, \w)}_r = 1\) si y solo si \(R\w + R\lambda = R\). Para terminar la prueba de la proposición veremos la equivalencia entre 2 y 3. Es claro que \(\w + R\lambda\) genera el \(R\)-módulo a la izquierda \(R / R\lambda\) si y solo si  \( \{x^{i}(\w + R\lambda)  \mid 0 \le i \le \nu\} \) genera \(R / R\lambda\) como un  \(\F\)-espacio vectorial. Como la dimensión como \(\F\)-espacio vectorial de \(R / R\lambda\) es \(\nu\), la equivalencia entre 2 y 3 es clara.
+\end{proof}
+
+\begin{lemma}
+    La coordenada \(j\)-ésima de \(x^{i}\w + R\lambda\) respecto a \(\{p_1, \ldots, p_\nu\}\) es \(\sigma^{i}(e_j)\sigma^{k_j}(\alpha)\), para cada \(1 \le j \le \nu\).
+\end{lemma}
+\begin{proof}
+Notemos primero que \(R(1 - \sigma^{t_j}(\beta)x) = R(x - \sigma^{t_j}(\beta^{-1}))\) para \(j = 1, \ldots, m\) por el razonamiento de la demostración del lema~\ref{lem:lambda_roots}. Por el lema~\ref{lem:eval}, \(\sigma^{t_j}(\beta^{-1})\) es una raíz a la derecha de \(x^{i} - N_i(\sigma^{t_j}(\beta^{-1}))\). Entonces, \(x^{i} - N_i(\sigma^{t_j}(\beta^{-1})) \in R(1 - \sigma^{t_j}(\beta)x)\). Multiplicando a la derecha por \(p_j\),  \(x_ip_j - N_i(\sigma^{t_j}(\beta^{-1}))p_j \in R\lambda\). Por esto, en \(R / R\lambda\),
+ \[
+\begin{aligned}
+    x^{i}\w =& \sum_{j=1}^{\nu} x^{i}e_j \sigma^{k_j}(\alpha)p_j \\
+    =& \sum_{j=1}^{\nu} \sigma^{i}(e_j) \sigma^{k_j+i}(\alpha)x^{i}p_j \\
+    =& \sum_{j=1}^{\nu} \sigma^{i}(e_j) \sigma^{k_j+i}(\alpha)N_i(\sigma^{k_j}(\beta^{-1}))p_j.\\
+\end{aligned}
+\]
+Ahora, la coordenada asociada a \(p_j\) viene dada por
+\[
+\begin{aligned}
+    \sigma^{i}(e_j&)\sigma^{k_j+i}(\alpha)N_i(\sigma^{k_j}(\beta^{-1}))\\
+    &= \sigma^{i}(e_j)\sigma^{k_j+i}(\alpha)\sigma^{k_j}(N_i(\beta^{-1}))\\
+    &= \sigma^{i}(e_j)\sigma^{k_j+i}(\alpha)\sigma^{k_j}(\alpha\sigma^{i}(\alpha^{-1}))\\
+    &= \sigma^{i}(e_j)\sigma^{k_j}(\alpha)
+\end{aligned}
+,\]
+concluyendo la prueba.
+\end{proof}
+
+\begin{proposition}
+\label{prop:key_eq_error_iif_det}
+\({(\lambda, \w)}_r = 1\) si y solo si
+
+\begin{equation}
+\label{eq:det}
+\begin{vmatrix}
+e_1 & e_2 & \cdots & e_{\nu} \\
+\sigma(e_1) & \sigma(e_2) & \cdots & \sigma(e_{\nu}) \\
+\vdots &\vdots &\ddots &\vdots \\
+\sigma^{\nu-1}(e_1) & \sigma^{\nu-1}(e_2) & \cdots & \sigma^{\nu-1}(e_{\nu}) \\
+\end{vmatrix}
+\neq 0
+\end{equation}
+
+\end{proposition}
+\begin{proof}
+Utilizando la proposición y el lema recién demostrados, \({(\lambda, \w)}_r = 1\) si y solo si la matriz \(A\) dada por
+ \[
+A = \begin{pmatrix}
+e_1\sigma^{k_1}(\alpha) & e_2\sigma^{k_2}(\alpha) & \cdots & e_{\nu}\sigma^{k_\nu}(\alpha) \\
+\sigma(e_1)\sigma^{k_1}(\alpha) & \sigma(e_2)\sigma^{k_2}(\alpha) & \cdots & \sigma(e_{\nu})\sigma^{k_\nu}(\alpha) \\
+\vdots &\vdots &\ddots &\vdots \\
+\sigma^{\nu-1}(e_1)\sigma^{k_1}(\alpha) & \sigma^{\nu-1}(e_2)\sigma^{k_2}(\alpha) & \cdots & \sigma^{\nu-1}(e_{\nu}) \sigma^{k_\nu}(\alpha)\\
+\end{pmatrix}
+\]
+tiene rango completo, es decir, su determinante es distinto de 0. Como \(\sigma^{k_j}(\alpha) \neq 0\) para cada \(j = 1, \ldots, \nu\), tenemos que dicho determinante es distinto de 0 si y solo si el determinante en \ref{eq:det} es no nulo.
+\end{proof}
+
+\begin{theorem}
+\({(\lambda, \w)}_r \neq 1\) si y solo si los valores del error \(e_1, \ldots, e_\nu\) son linealmente dependientes sobre \(\F^{\sigma}\).
+\end{theorem}
+
+\begin{proof}
+Consideremos la matriz
+\[
+A =
+\begin{pmatrix}
+e_1 & e_2 & \cdots & e_{\nu} \\
+\sigma(e_1) & \sigma(e_2) & \cdots & \sigma(e_{\nu}) \\
+\vdots &\vdots &\ddots &\vdots \\
+\sigma^{\nu-1}(e_1) & \sigma^{\nu-1}(e_2) & \cdots & \sigma^{\nu-1}(e_{\nu}) \\
+\end{pmatrix}
+,\]
+de forma que por la proposición~\ref{prop:key_eq_error_iif_det} nos dice que \({(\lambda, r)}_r \neq 1\) si y solo si esta no es de rango completo. Ahora, siguiendo la notación de~\cite{Lam_1988}, \(A\) es una \(\nu \times \nu\) matriz Wronskiana con respecto al endomorfismo \(\sigma\); simbolicamente \(A = W_{\nu,\nu}^{\sigma}(e_1, \ldots, e_\nu)\). Por~\cite[Corolario 4.13]{Lam_1988}, \(A\) es invertible si y solo si \(e_1, \ldots, e_\nu\) son linealmente independientes sobre \(\F^{\sigma}\), y por tanto \(A\) no es de rango completo si y solo si \(e_1, \ldots, e_\nu\) son linealmente dependientes sobre \(\F^{\sigma}\), concluyendo la prueba.
+\end{proof}
+
+Por tanto, como dijimos, hemos probado que para que se de un error en la ecuación clave (\({(\lambda, \w)}_r \neq 1\)) tiene que existir una dependencia lineal entre las posiciones del error.
