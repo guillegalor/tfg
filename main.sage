@@ -44,9 +44,6 @@ sigma = (F.frobenius_endomorphism())**10
 R.<x> = F['x', sigma]
 
 alpha = t
-beta = sigma(t)* t**(-1)
-b_roots = [(sigma**i)(beta) for i in range(6)]
-pols = [x - b_root for b_root in b_roots]
 
 RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 
