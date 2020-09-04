@@ -11,6 +11,12 @@ Para ello hemos seguido las directrices de SageMath presentes en
 
 La primera clase que se ha implementado es \texttt{SkewCyclicCode} para representar cualquier código cíclico sesgado, la cual hereda de la clase abstracta \texttt{AbstractLinearCode}. Para poder codificar mensajes en palabras código de este tipo de códigos se han diseñado las clases \texttt{SkewCyclicCodeVectorEncoder} y \texttt{SkewCyclicCodePolynomialEncoder}, ambas heredando de la clase de Sage \texttt{Encoder}. A continuación, heredando de la clase \texttt{SkewCyclicCode} se implementó la clase \texttt{SkewRSCode} que almacena la estructura necesaria para trabajar con códigos Reed-Solomon sesgados. Por último, la clase \texttt{SkewRSCodeSugiyamaDecoder}, que hereda de la clase \texttt{Decoder}, contiene la implementación del algoritmo de decodificación desarrollado en este trabajo.
 
+El código fuente se encuentra en el archivo \texttt{skew\_cyclic\_code.sage} en
+\begin{center}
+\url{https://github.com/guillegalor/tfg/tree/master/code}.
+\end{center}
+En la misma carpeta se encuentra otro archivo con ejemplos para probar las clases implementadas.
+
 A continuación mostramos la documentación junto con ejemplos de uso de cada una de las estructuras y funciones implementadas.
 
 \newpage
