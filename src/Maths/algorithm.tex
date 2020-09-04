@@ -146,30 +146,11 @@ A continuación comenzaremos a estudiar los divisores a la derecha de \(x^{n} -1
     Sea \(\beta \in \F\) tal que \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\). Entonces \(x - \beta\) divide por la derecha a \(x^{n}-1\).
 \end{proposition}
 \begin{proof}
-Si \(x - \beta\) divide por la derecha a  \(x^{n} -1\), entonces \(R / R(x - \beta) \equiv R / R(x-1)\) como \(R\)-módulos a la izquierda. Entonces, por~\cite[Proposición 2.4]{Leroy95pseudolinear}, \(\beta = \sigma(c)c^{-1}\) para algún \(c \in \F\) no nulo.
-
-Para la otra implicación, por la proposición~\ref{prop:norm_properties} tenemos que \(N_n(\beta) = \sigma^{0}(c^{-1})\sigma^{n}(c) = c^{-1}c = 1\), y por el lema~\ref{lem:eval}, el resto de la división a la izquierda de \(x^{n} - 1\) por \(x - \beta\) es
+Por la proposición~\ref{prop:norm_properties} tenemos que \(N_n(\beta) = \sigma^{0}(c^{-1})\sigma^{n}(c) = c^{-1}c = 1\), y por el lema~\ref{lem:eval}, el resto de la división a la izquierda de \(x^{n} - 1\) por \(x - \beta\) es
     \[
     N_n(\beta) - N_0(\beta) = 1 - 1 = 0
     ,\]
 finalizando la prueba.
-
-% Para demostrar la otra implicación realizaremos una prueba más general de lo necesaria para este resultado, pero que no será útil más adelante.
-% La otra implicación es un caso específico de la prueba que realizaremos más adelante en el corolario~\ref{cor:llcm_n}, así que por evitar la repetición no la incluimos aquí.
-
-% Vamos a ver que \(x - \sigma^{k}(\beta)\) divide a la derecha a \(x^{n} - 1\) para todo \(0 \le k \le n-1\), siendo el caso \(k = 0\) el que nos interesa para este resultado. Utilizando la definición de norma j-ésima, tenemos que:
-%     \[
-%     \begin{aligned}
-%     N_i(\sigma^{k}(\beta)) &= \sigma^{k}(N_i(\beta)) = \sigma^{k}\left(c^{-1}\sigma(c)\sigma(c^{-1})\sigma^{2}(c)\sigma^{2}(c^{-1}) \ldots \sigma^{i}(c) \right) \\
-%        &= \sigma^{k}(c)^{-1} \sigma^{k+i}(c)
-%     \end{aligned}
-%     .\]
-%    Entonces, \(N_n(\sigma^{k}(\beta)) = \sigma^{k}(c)^{-1} \sigma^{k+n}(c) = \sigma^{k}(cc^{-1}) = 1\), y por el lema~\ref{lem:eval}, el resto de la división a la izquierda de \(x^{n} - 1\) por \(x - \sigma^{k}(\beta)\) es
-%     \[
-%     N_n(\sigma^{k}(\beta)) - N_0(\sigma^{k}(\beta)) = 1 - 1 = 0
-%     .\]
-
-%    Por tanto,\(x - \sigma^{k}(\beta)\) divide a la derecha a \(x^{n} - 1\) para todo \(0 \le k \le n-1\), finalizando la prueba.
 \end{proof}
 
 \begin{lemma}
