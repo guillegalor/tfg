@@ -332,9 +332,8 @@ class SkewRSCode(SkewCyclicCode):
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
             sage: RS_C = SkewRSCode(hamming_dist=4, skew_polynomial_ring=R, alpha=t)
-            ValueError: Provided alpha must be an element of the underlying field F of the
-            skew polynomial ring provided such that the set {alpha, sigma(alpha), ..., sigma^{n-1}(alpha)}
-            is a base of F seen as a F^sigma vector space
+            ValueError: Provided alpha must be an normal generator of the field extension given by
+            sigma
         """
 
         if (hamming_dist is not None and alpha is not None
@@ -363,10 +362,8 @@ class SkewRSCode(SkewCyclicCode):
             basis = [(sigma**i)(alpha) for i in range(length)]
             M = matrix([basis[i:] + basis[:i] for i in range(length)])
             if M.det() == 0:
-                    raise ValueError("Provided alpha must be an element of the underlying field F of"
-                            "the skew polynomial ring provided such that the set "
-                            "{alpha, sigma(alpha), ..., sigma^{n-1}(alpha)} is a base "
-                            "of F seen as a F^sigma vector space")
+                raise ValueError("Provided alpha must be an normal generator of "
+                    "the field extension given by sigma")
 
             generator_pol = left_lcm(factors[:delta-1])
             deg = generator_pol.degree()

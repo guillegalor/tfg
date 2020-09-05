@@ -29,7 +29,7 @@ A continuación mostramos la documentación junto con ejemplos de uso de cada un
 
     \textsc{Argumentos}
     \begin{description}
-        \item[generator\_pol] Polinomio generador para construir el código.
+        \item[generator\_pol] Polinomio generador para construir el código. Debe dividir a \(x^{n} -1\), donde \(n\) es el grado del automorfismo asociado al anillo de polonimios sesgado al que pertenece \texttt{g}.
     \end{description}
 
     \textsc{Ejemplos}
@@ -41,6 +41,17 @@ sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: C
 [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
+    \end{lstlisting}
+
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: g = x**3 - 1
+sage: C = SkewCyclicCode(generator_pol=g)
+Traceback (most recent call last)
+...
+ValueError: Provided polynomial must divide x^n - 1, where n is the order of the ring automorphism.
     \end{lstlisting}
 
     \textsc{Métodos}
@@ -248,6 +259,14 @@ sage: RS_C
 [6, 2] Skew Reed Solomon Code over Finite
 Field in t of size 2^12
     \end{lstlisting}
+
+    \begin{lstlisting}
+sage: F.<t> = GF(3^10)
+sage: sigma = F.frobenius_endomorphism()
+sage: R.<x> = F['x', sigma]
+sage: RS_C = SkewRSCode(hamming_dist=4, skew_polynomial_ring=R, alpha=t)
+ValueError: Provided alpha must be an normal generator of the field extension given by sigma
+\end{lstlisting}
 
     \textsc{Métodos}
     \begin{description}
