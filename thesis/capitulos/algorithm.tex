@@ -61,13 +61,13 @@ Sea \(\C\) un código cíclico sesgado en \(\mathcal{R}\). Entonces existe un po
 \end{theorem}
 
 \begin{proof}
-Por el tercer teorema del isomorfismo de Noether para \(R\)-módulos, tenemos que existe un \(R\)-submódulo \(Rg\) de \(R\) (\(R\) era un dominio de ideales principales) tal que \(\langle x^{n} - 1 \rangle \subseteq Rg \subset R\) y \(\C = Rg / \langle x^{n} - 1 \rangle\). Esto nos dice que \(g \mid_r x^{n} -1\), pero como \(x^{n} - 1\) es central, usando el lema~\ref{lem:central_decomposition} tenemos que \(g  \mid_l x^{n} - 1\), probando I y II.
+Por el tercer teorema del isomorfismo de Noether para \(R\)-módulos, tenemos que existe un \(R\)-submódulo \(Rg\) de \(R\) (\(R\) era un dominio de ideales principales) tal que \(\langle x^{n} - 1 \rangle \subseteq Rg \subset R\) y \(\C = Rg / \langle x^{n} - 1 \rangle\). Esto nos dice que \(g \mid_r x^{n} -1\), pero como \(x^{n} - 1\) es central, usando el lema~\ref{lem:central_decomposition} tenemos que \(g  \mid_l x^{n} - 1\), probando los apartados 1 y 2.
 
 Ahora, por el mismo teorema, utilizando el resultado de este análogo al tercer teorema de isomorfía
 \[
 R / Rg \cong (R / \langle x^{n} -1 \rangle) / (Rg / \langle x^{n} -1 \rangle)
 \]
-como \(R\)-módulos, y por tanto también como  \(\F\)-espacios vectoriales. Entonces, como la dimensión de \(R / Rg\) como  \(\F\)-espacio vectorial es \(\deg g\), la dimensión de \(\C\) es \(n - \deg g = k\), probando III. Para concluir, el conjunto \(\{x^{i}g \mid 0 \le i \le k\}\) genera \(\C\), y por tanto se cumple IV.
+como \(R\)-módulos, y por tanto también como  \(\F\)-espacios vectoriales. Entonces, como la dimensión de \(R / Rg\) como  \(\F\)-espacio vectorial es \(\deg g\), la dimensión de \(\C\) es \(n - \deg g = k\), probando 3. Para concluir, el conjunto \(\{x^{i}g \mid 0 \le i \le k\}\) genera \(\C\), y por tanto se cumple 4.
 \end{proof}
 
 Dado un código cíclico sesgado \(\C\), al polinomio \(g(x)\) que nos proporciona el teorema anterior lo llamaremos el \textit{polinomio generador de} \(\C\). Entonces, gracias a este teorema, ya podemos codificar mensajes. Ya sea, multiplicando el polinomio asociado a dicho mensaje por el polinomio generador \(g(x)\), o de la forma usual utilizando la matriz generatriz.
@@ -629,8 +629,8 @@ entonces \(q'\) es un múltiplo común a la derecha de cada \(1 - \sigma^{t_j}(\
     .\]
 Además, por \(q = (1 - \sigma^{t_j}(\beta)x)q_j\) para \(1 \le j \le m\),  \(Rq_j / Rq \equiv R / R(1-\sigma^{t_j}(\beta)x)\) es uno dimensional sobre \(F\). Así, como la dimensión de \(R / Rq\) como  \(\F\)-espacio vectorial es  \(\deg q = m\), tenemos la suma directa que buscábamos.
 
-    \item Se obtiene directamente del apartado (II)
-    \item Se obtiene directamente del apartado (II)
+    \item Se obtiene directamente del apartado 2.
+    \item Se obtiene directamente del apartado 2.
 \end{enumerate}
 \end{proof}
 
@@ -653,7 +653,7 @@ p = [x - \sigma^{k_1-1}(\beta^{-1}), x - \sigma^{k_2-1}(\beta^{-1}), \dots, x - 
     p = {[1 - \sigma^{k_1}(\beta)x, \ldots, 1 - \sigma^{k_m}(\beta)x]}_{r}
     .\]
 
-Por el lema~\ref{lem:direct-sum} (III), cada polinomio de grado menor que \(m\) puede escribirse como una combinación  \(\F\)-lineal de los polinomios  \(p_1', \ldots, p_m'\). Ahora, por \(sg = \omega\) y \(pg = \lambda\),
+Por el apartado 3 del lema~\ref{lem:direct-sum} , cada polinomio de grado menor que \(m\) puede escribirse como una combinación  \(\F\)-lineal de los polinomios  \(p_1', \ldots, p_m'\). Ahora, por \(sg = \omega\) y \(pg = \lambda\),
 \[
 \deg s = \deg \omega - \deg g = \deg \omega + \deg p - \deg \lambda \le \nu -1 + m - \nu = m-1
 ,\]
