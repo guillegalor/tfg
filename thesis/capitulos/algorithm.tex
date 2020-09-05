@@ -76,7 +76,7 @@ Al ser \(\R\) un dominio de ideales principales sabíamos, ya que todo código c
 \section{Códigos Reed-Solomon Sesgados}%
 \label{sec:códigos_reed_solomon_sesgados}
 
-Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados} o \textit{códigos RS sesgados} para abreviar. El siguiente resultado, que es un caso particular de~\cite[Corolario 4.13]{lam_vandermonde_1988}, será importante en resultados posteriores. A continuación mostramos solo una prueba elemental de este.
+Nuestro siguiente objetivo será proporcionar un método sistemático para contruir CCSs de una determinada distancia Hamming. Debido a la analogía con los códigos Reed-Solomon, los llamaremos \textit{códigos Reed-Solomon sesgados} o \textit{códigos skew RS} para abreviar. El siguiente resultado, que es un caso particular de~\cite[Corolario 4.13]{lam_vandermonde_1988}, será importante en resultados posteriores. A continuación mostramos solo una prueba elemental de este.
 
 \begin{lemma}
 \label{lem:det_0}
@@ -253,7 +253,7 @@ Con esto, ya tenemos los resultados suficientes para definir los códigos sobre 
 
 \begin{theorem}
 \label{th:distance}
-    Sea \(\C\) un código RS sesgado de distancia fijada \(\delta\). La distancia Hamming de \(\C\) es \(\delta\).
+    Sea \(\C\) un código skew RS de distancia fijada \(\delta\). La distancia Hamming de \(\C\) es \(\delta\).
 \end{theorem}
 
 \begin{proof}
@@ -309,7 +309,7 @@ Por ser \(\{\alpha, \sigma(\alpha), \dots, \sigma^{n-1}(\alpha)\) una base de la
 \section{Algoritmo Principal}%
 \label{sec:algoritmo_principal}
 
-De aquí en adelante \(\C\) denotará un código RS sesgado de distancia fijada \(\delta\) generado, como ideal a la izquierda de  \(\mathcal{R}\), por  \(g = {[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \dots, x - \sigma^{r+\delta - 2}(\beta)]}_l\), para algún \(r \geq 0 \), donde \(\beta\) lo elegimos como en la definición~\ref{def:RS_code}. Sabemos que la distancia mínima de \(\C\) es exactamente \(\delta\) por el teorema~\ref{th:distance}. Sea \(\tau = \lfloor (\delta -1)/2 \rfloor\) que es el máximo número de errores que nuestro código puede corregir. Por simplicidad, supondremos que \(r = 0\). Esto no es una restricción, pues siempre podemos escribir  \(\beta' = \sigma^r(\beta)\). Entonces, \(\beta' = {(\alpha')}^{-1} \sigma(\alpha')\), donde \(\alpha' = \sigma^r(\alpha)\), y es claro que \(\alpha'\) también proporciona una base normal. Por tanto, \(g = [x - \beta', x - \sigma(\beta'), \dots, x - \sigma^{\delta - 2}(\beta')]\).
+De aquí en adelante \(\C\) denotará un código skew RS de distancia fijada \(\delta\) generado, como ideal a la izquierda de  \(\mathcal{R}\), por  \(g = {[x - \sigma^r(\beta), x - \sigma^{r+1}(\beta), \dots, x - \sigma^{r+\delta - 2}(\beta)]}_l\), para algún \(r \geq 0 \), donde \(\beta\) lo elegimos como en la definición~\ref{def:RS_code}. Sabemos que la distancia mínima de \(\C\) es exactamente \(\delta\) por el teorema~\ref{th:distance}. Sea \(\tau = \lfloor (\delta -1)/2 \rfloor\) que es el máximo número de errores que nuestro código puede corregir. Por simplicidad, supondremos que \(r = 0\). Esto no es una restricción, pues siempre podemos escribir  \(\beta' = \sigma^r(\beta)\). Entonces, \(\beta' = {(\alpha')}^{-1} \sigma(\alpha')\), donde \(\alpha' = \sigma^r(\alpha)\), y es claro que \(\alpha'\) también proporciona una base normal. Por tanto, \(g = [x - \beta', x - \sigma(\beta'), \dots, x - \sigma^{\delta - 2}(\beta')]\).
 
 Sea \(c \in \C\) una palabra que es transmitida a través de un canal binario simétrico y el polinomio \(y = c + e\) es recibido, donde \(e = e_1 x^k + \cdots + e_\nu x^{k_\nu}\) con \(\nu \leq \tau\). Definimos el polinomio \textit{localizador de errores} como
 \[
@@ -443,14 +443,14 @@ y
     Sea \({[a,b]}_l = a'a = b'b\). Por ser \([\lambda, v_{I}]_r\) un múltiplo a la izquierda de \(a\) y \(b\), existe \(m \in R\) tal que \({[\lambda, v_{I}]}_{r} = m{[a,b]}_{l}\), es decir, \(\lambda a = v_{I}b = ma'a = mb'b\). Por esto, \(\lambda = ma'\) y \(v_{I} = mb'\) y, por minimalidad, \({(\lambda, v_{I})}_l = m\). Podemos utilizar argumentos similares para probar que existen \(m', m'' \in R\) tales que \(u_{I} = m'b'\) y  \(u = m'a'\), y  \(r_{I} = m''b'\) y \(\omega = m''a'\). Por el lema \ref{lem:reea} \textit{V)} \({(u_{I}, v_{I})} _r = 1\), luego \(b' = 1\). Esto completa la prueba, pues tenemos \(b = b b' = a a'\), y por tanto  \(\lambda = v_{I}a'\), \(\omega = r_{I}a'\) y \(u = u_{I}a'\).
 \end{proof}
 
-Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores. Como ya dijimos, estos dos polinomios nos permiten calcular el error al recibir un polinomio \(y = c + e\), con \(c\) y \(e\) cumpliendo las hipótesis previamente mencionadas, por tanto, podemos describir un algoritmo de decodificación para códigos RS sesgados (vease el algoritmo~\ref{alg:decoding_1}) que será válido siempre que \({(\lambda, \omega)}_{r} = 1\).
+Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v_{I}a'\) y \(\omega = r_{I}a'\), si \({{(\lambda, \omega)}_{r} = 1}\) entonces \(\lambda = v_{I}\) y \(\omega = r_{I}\). En este caso, el teorema \ref{th:mult_key_eq} proporciona un método algorítmico para calcular ambos polinomios, el localizador de errores y el evaluador de errores. Como ya dijimos, estos dos polinomios nos permiten calcular el error al recibir un polinomio \(y = c + e\), con \(c\) y \(e\) cumpliendo las hipótesis previamente mencionadas, por tanto, podemos describir un algoritmo de decodificación para códigos skew RS (vease el algoritmo~\ref{alg:decoding_1}) que será válido siempre que \({(\lambda, \omega)}_{r} = 1\).
 
-\begin{algorithm}[H]
+\begin{algorithm}[h!]
  \label{alg:decoding_1}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
- \KwIn{Un polinomio \(y = \sum_{i=0}^{n-1}y_i x^{i}\) obtenido de la transmisión de una palabra código \(c\) perteneciente a un código RS sesgado \(C\) generado por \(g = {[\{x-\sigma^{i}(\beta)\}_{i=0,\ldots,\delta-2}]}_{l}\) con capacidad para corregir \(\tau = \lfloor (\delta -1)/2 \rfloor\) errores.}
+ \KwIn{Un polinomio \(y = \sum_{i=0}^{n-1}y_i x^{i}\) obtenido de la transmisión de una palabra código \(c\) perteneciente a un código skew RS \(C\) generado por \(g = {[\{x-\sigma^{i}(\beta)\}_{i=0,\ldots,\delta-2}]}_{l}\) con capacidad para corregir \(\tau = \lfloor (\delta -1)/2 \rfloor\) errores.}
  \KwOut{Una palabra código \(c'\) o un \textit{error de ecuación clave}.}
  \For{\(0 \le i \le 2\tau -1\)}{
     \(S_i \gets \sum_{j=0}^{n-1} y_j N_{j}(\sigma^{i}(\beta))\)
@@ -477,7 +477,7 @@ Usando la notación del teorema recién demostrado, vemos que, por \(\lambda = v
 Resolver el sistema lineal \(r_I = \sum_{j\in pos} e_{j}\sigma^{j}(\alpha)p_{j}\)\\
 \(e \gets \sum_{j\in pos}e_{j}x^{j}\)\\
 \Return{\(y - e\)}
- \caption{Algoritmo de decodificación para códigos RS sesgados}
+ \caption{Algoritmo de decodificación para códigos skew RS}
 \end{algorithm}
 
 \begin{exampleth}
@@ -485,7 +485,7 @@ En este ejemplo mostraremos la ejecución de este algoritmo utilizando la implem
 
 Sea \(\F = \F_2(t)\) el cuerpo finito con  \(2^{12}\) elementos, donde \(x^{12} + x^{7} + x^{6} + x^{5} + x^{3} + x + 1 = 0\). Escribiremos los elementos de \(\F\) como potencias de \(t\) excepto el \(0\) y el \(1\). Consideremos entonces \(\sigma = \tau^{10}\) donde  \(\tau\) es el endomorfismo de Frobenius, por ejemplo \(sigma(t) = t^{1024}\). El orden de \(\sigma\) es 6, luego un código cíclico sesgado sobre \(\F\) será un ideal a la izquierda del álgebra cociente  \( \mathcal{R} = \F[x;\sigma] / \langle x^{6} - 1\rangle\).
 
-Tomemos ahora \(\alpha = t\), que proporciona una base normal de \(\F\) como \(\F^{\sigma}\)-espacio vectorial, y \(\beta = \sigma(t)t^{-1} = t^{1023}\). Consideramos entonces el código RS sesgado generado por
+Tomemos ahora \(\alpha = t\), que proporciona una base normal de \(\F\) como \(\F^{\sigma}\)-espacio vectorial, y \(\beta = \sigma(t)t^{-1} = t^{1023}\). Consideramos entonces el código skew RS generado por
 \[
     g = [x - \beta, x - \sigma(\beta), x - \sigma^{2}(\beta), x - \sigma^{3}(\beta)]
 .\]
@@ -673,7 +673,7 @@ Ahora, volviendo a aplicar el lema~\ref{lem:direct-sum} (IV), pero esta vez sobr
 
 Ahora que gracias a este teorema sabemos cuando hemos encontrado todas las posiciones del error, el siguiente paso será construir el algoritmo que nos permita, en caso de existir, encontrar una posición nueva. De esta forma, en caso de que se produzca un error en la ecuación clave en el algoritmo~\ref{alg:decoding_1}, podremos hallar nuevas posiciones del error iterativamente hasta que sepamos que no existen más.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h!]
  \label{alg:find_a_position}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
@@ -714,7 +714,7 @@ Supongamos que la secuencia \(\{\deg f_i\}_{0 \le i \le r}\) es estrictamente cr
 
 Así, utilizando recursivamente el algoritmo~\ref{alg:find_a_position} encontraremos eventualmente todas las posiciones del error, y así conseguiremos también los polinomios localizador de errores y evaluador de errores. Estos pasos los mostramos formalmente en el algoritmo~\ref{alg:failure_solver}.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h!]
  \label{alg:failure_solver}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}

@@ -1,13 +1,13 @@
 \chapter{Implementación en SageMath del Algoritmo de Sugiyama para códigos cíclicos sesgados}%
 \label{chap:implementación_en_sagemath_del_algoritmo_de_sugiyama_para_códigos_cíclicos_sesgados}
 
-El desarrollo del algoritmo de Sugiyama para códigos RS sesgados, juntos con la estructura necesaria para representar dichos códigos se ha realizado en el entorno SageMath(\cite{sagemath}). Este es una implementación de código abierto de software matemático y científico basado en Python.
+El desarrollo del algoritmo de Sugiyama para códigos RS sesgados, juntos con la estructura necesaria para representar dichos códigos se ha realizado en el entorno SageMath (\cite{sagemath}). Este es una implementación de código abierto de software matemático y científico basado en Python.
 
-Para ello hemos seguido las directrices de SageMath presentes en
+Ya existen en SageMath clases esqueleto para representar códigos lineales, así como para implementar métodos de codificación y decodificación para estos. Por ello, para nuestra implementación hemos seguido las directrices de presentes en
 \begin{center}
 \url{https://doc.sagemath.org/html/en/thematic_tutorials/structures_in_coding_theory.html}.
 \end{center}
- Para realizar dicha implementación hemos utilizado varias clases abstractas de Sage cuya finalidad es servir de base para implementar nuevas familias de códigos, junto con los algoritmos asociados de codificación y decodificación. Además Sage contiene una implementación de anillos de polinomios sesgados, la cual también se usa a lo largo de todo el desarrollo del algoritmo y de las clases para represetnar la estructura.
+Además de la estructura base para códigos, Sage también contiene una implementación de anillos de polinomios sesgados, la cual se usa a lo largo de todo el desarrollo del algoritmo y en las clases esqueleto para los nuevos códigos.
 
 La primera clase que se ha implementado es \texttt{SkewCyclicCode} para representar cualquier código cíclico sesgado, la cual hereda de la clase abstracta \texttt{AbstractLinearCode}. Para poder codificar mensajes en palabras código de este tipo de códigos se han diseñado las clases \texttt{SkewCyclicCodeVectorEncoder} y \texttt{SkewCyclicCodePolynomialEncoder}, ambas heredando de la clase de Sage \texttt{Encoder}. A continuación, heredando de la clase \texttt{SkewCyclicCode} se implementó la clase \texttt{SkewRSCode} que almacena la estructura necesaria para trabajar con códigos Reed-Solomon sesgados. Por último, la clase \texttt{SkewRSCodeSugiyamaDecoder}, que hereda de la clase \texttt{Decoder}, contiene la implementación del algoritmo de decodificación desarrollado en este trabajo.
 

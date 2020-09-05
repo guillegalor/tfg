@@ -8,11 +8,23 @@
 \selectlanguage{english}
 \chapter{Summary}
 
-An english summary of the project (around 800 and 1500 words are recommended).
+The main goal of this project is to present, study and implement a version of the Sugiyama algoritm for a class of skew cyclic codes, the skew RS codes. In order to accomplish this, firstly we need to study the basics of linear codes and Ore extensions, which we cover in the first and second chapter of this thesis.\\
 
-File: \texttt{preliminares/summary.tex}
+In the first chapter, we introduce the basic concepts about linear codes. In essence, a linear code over a finite field is a vector subspace with an associated distance, so it is a well-known mathematical structure. One of the most important concepts that is presented in this chapter is the generator matrix, which is the main tool for enconding messages into the code. The most common distance and the one that we study is the Hamming distance, defined as the number of coordinates that differ between two vectors. Next in this chapter, we discuss the decoding procedure, presenting two of the simpliest decoding algorithms and a proof of a result that stablishes the maximum number of errors that a linear code can correct. This latter result is crucial in coding theory, as research in this area tries to find efficient algorithms which can decode as many errors as possible. Finally, we briefly introduce cyclic codes, in which the codes we will construct in following chapters are based.\\
 
+In the second chapter, we introduce Ore extensions. These have a similar structure as common polynomial rings over a field, with the difference that the product operation is not commutative. Instead, this product is \textit{twisted} by a field automorphism. The usual concepts about polynomial rings, as degree or leading coefficient, also exist for Ore extensions, and are included in this chapter. We will also introduce algorithms to calculate the division from left or right. These algorithms are essential and allow us to show that Ore extensions are non-commutative principal ideal domains, and to develop a left and right version of the extended Euclidean algorithm. The fact that the product is not commutative does not permit to think of the evaluation of these polynomials in the usual manner. Thus, there exist evaluations on the right and on the left, which are defined in accordance to the polynomial remainder theorem, and the respective division algorithm. In order to compute this evaluation, we present the notion of \textit{jth-norm}, and show its relation with the remainder of left and right division by linear factors. \\
+
+In the third chapter, we will present the algorithm whose analysis and implementation in the SageMath framework is the main goal of this thesis, and with it all the mathematical structures and results needed. Along this whole chapter, \(\F[x;\sigma]\) will represent the Ore extension over \(\F\) given by the  \(\F\)-automorphism \(\sigma\). Then, we will firstly introduce the class of \textit{skew cyclic codes}, which are described as left ideals of the quotient ring \(\F[x;\sigma] / \langle x^{n} - 1 \rangle\) where \(n\) is the order of \(\sigma\). Therefore, the code itself is given by the image via the coordinate map (with respect to the usual basis) of the left ideal mentioned. Consecutively, we will present the necessary results to construct skew cyclic codes of a designed Hamming distance, which we denote by \textit{skew RS codes}. Later in this chapter, the concepts of \textit{error locator polynomial} and \textit{error evaluator polynomial} will be described, and we will show how they allow us to find and correct the errors in a received message by simply solving a linear system. Then we will prove a relation between these two polynomials, called the \textit{key equation}. Using this relation, we will be able to present the decoding algorithm and prove that it correctly decodes the message. Lastly, we will cover the procedure to follow when a \textit{key equation error} occurs in order to find the error locator and evaluator polynomials, and analyze how probable is the ocurrence of this type of errors.
+
+In the fourth and last chapter, we present the documentation of the classes that we have developed for SageMath. This classes store the information needed to represent both skew cyclic codes and skew RS codes, and allow us to work with the already existing structures in SageMath. The classes implemented are:
+
+\begin{itemize}
+    \item A class to represent skew cyclic codes.
+    \item Two classes to encode messages into skew cyclic code words, one for the vector form and another for the polynomial form.
+    \item A class to represent skew RS codes.
+    \item A class with the implementation of the decoding algorithm that is the goal of this thesis.
+\end{itemize}
 
 % Al finalizar el resumen en inglés, volvemos a seleccionar el idioma español para el documento
-\selectlanguage{spanish} 
+\selectlanguage{spanish}
 \endinput
