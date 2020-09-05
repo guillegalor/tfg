@@ -8,4 +8,4 @@ compile:
 
 clean:
 	find . -name "*.aux" -type f -delete
-	rm -f libro.toc libro.out libro.lot libro.log libro.lof libro.ind libro.ilg libro.fls libro.fdb_latexmk libro.brf libro.blg libro.bbl libro.idx
+	rm -f thesis.toc thesis.out thesis.lot thesis.log thesis.lof thesis.ind thesis.ilg thesis.fls thesis.fdb_latexmk thesis.brf thesis.blg thesis.bbl thesis.idx
