@@ -37,16 +37,15 @@ A continuación mostramos la documentación junto con ejemplos de uso de cada un
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: C
-[10, 5] Skew Cyclic Code over Finite Field in
-t of size 3^10
+[10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
     \end{lstlisting}
 
     \textsc{Métodos}
     \begin{description}
-    \item[generator\_pol(self)]
+    \item[generator\_polynomial(self)]
     Devuelve el polinomio generador de \texttt{self}.
 
     \textsc{Ejemplos}
@@ -54,10 +53,10 @@ t of size 3^10
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: C.generator_polynomial()
-x^5 + 2
+x^2 + ...  + t^5 + t^2 + 2
     \end{lstlisting}
 
     \end{description}
@@ -71,11 +70,10 @@ x^5 + 2
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
-sage: C.generator_polynomial()
-Skew Polynomial Ring in x over Finite Field in t of
-size 3^10 twisted by t |--> t^3
+sage: C.skew_polynomial_ring()
+Skew Polynomial Ring in x over Finite Field in t of size 3^10 twisted by t |--> t^3
     \end{lstlisting}
 
     \end{description}
@@ -102,12 +100,11 @@ size 3^10 twisted by t |--> t^3
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodeVectorEncoder(C)
 sage: E
-Vector-style encoder for [10, 5] Skew Cyclic
-Code over Finite Field in t of size 3^10
+Vector-style encoder for [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
     \end{lstlisting}
 
     \textsc{Métodos}
@@ -121,15 +118,18 @@ Code over Finite Field in t of size 3^10
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodeVectorEncoder(C)
 sage: E.generator_matrix()
-[2 0 0 0 0 1 0 0 0 0]
-[0 2 0 0 0 0 1 0 0 0]
-[0 0 2 0 0 0 0 1 0 0]
-[0 0 0 2 0 0 0 0 1 0]
-[0 0 0 0 2 0 0 0 0 1]
+[2*t^9 + t^8 + 2*t^6 + t^5 + t^2 + 2 ... 0]
+[                   ...                   ]
+[                   ...                   ]
+[                   ...                   ]
+[                   ...                   ]
+[                   ...                   ]
+[                   ...                   ]
+[0                  ...                  1]
     \end{lstlisting}
     \end{description}
 
@@ -150,12 +150,11 @@ sage: E.generator_matrix()
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodePolynomialEncoder(C)
 sage: E
-Polynomial-style encoder for [10, 5] Skew Cyclic
-Code over Finite Field in t of size 3^10
+Polynomial-style encoder for [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
     \end{lstlisting}
 
     \textsc{Métodos}
@@ -174,12 +173,12 @@ Code over Finite Field in t of size 3^10
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodePolynomialEncoder(C)
 sage: m = x + t + 1
 sage: E.encode(m)
-(2*t + 2, 2, 0, 0, 0, t + 1, 1, 0, 0, 0)
+(t^8 + 2*t^7 + 2*t^6 + 2*t^4 + t^3 + t^2 + 1, ... , 0)
         \end{lstlisting}
 
         \item[unencode\_nocheck(self, c)]
@@ -196,7 +195,7 @@ sage: E.encode(m)
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodePolynomialEncoder(C)
 sage: m = x + t + 1
@@ -213,12 +212,11 @@ x + t + 1
 sage: F.<t> = GF(3^10)
 sage: sigma = F.frobenius_endomorphism()
 sage: R.<x> = F['x', sigma]
-sage: g = x**5 - 1
+sage: g = x**2 + t**24561*x + t**47264
 sage: C = SkewCyclicCode(generator_pol=g)
 sage: E = SkewCyclicCodePolynomialEncoder(C)
 sage: E.message_space()
-Skew Polynomial Ring in x over Finite Field in t
-of size 3^10 twisted by t |--> t^3
+Skew Polynomial Ring in x over Finite Field in t of size 3^10 twisted by t |--> t^3
         \end{lstlisting}
     \end{description}
 
@@ -245,8 +243,7 @@ sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
 sage: sigma = (F.frobenius_endomorphism())**10
 sage: R.<x> = F['x', sigma]
 sage: alpha = t
-sage: RS_C = SkewRSCode(hamming_dist=5,
-              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 sage: RS_C
 [6, 2] Skew Reed Solomon Code over Finite
 Field in t of size 2^12
@@ -264,8 +261,7 @@ sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
 sage: sigma = (F.frobenius_endomorphism())**10
 sage: R.<x> = F['x', sigma]
 sage: alpha = t
-sage: RS_C = SkewRSCode(hamming_dist=5,
-              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 sage: RS_C.hamming_dist()
 2
         \end{lstlisting}
@@ -290,12 +286,10 @@ sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
 sage: sigma = (F.frobenius_endomorphism())**10
 sage: R.<x> = F['x', sigma]
 sage: alpha = t
-sage: RS_C = SkewRSCode(hamming_dist=5,
-              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
 sage: D
-Decoder through the Sugiyama like algorithm of the
-[6, 2] Skew Reed Solomon Code over Finite Field in t
+Decoder through the Sugiyama like algorithm of the [6, 2] Skew Reed Solomon Code over Finite Field in t
 of size 2^12
     \end{lstlisting}
 
@@ -318,8 +312,7 @@ sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
 sage: sigma = (F.frobenius_endomorphism())**10
 sage: R.<x> = F['x', sigma]
 sage: alpha = t
-sage: RS_C = SkewRSCode(hamming_dist=5,
-              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
 sage: P_E = SkewCyclicCodePolynomialEncoder(RS_C)
 sage: m = x + t
@@ -341,8 +334,7 @@ sage: F.<t> = GF(2^12, modulus=x**12 + x**7 +
 sage: sigma = (F.frobenius_endomorphism())**10
 sage: R.<x> = F['x', sigma]
 sage: alpha = t
-sage: RS_C = SkewRSCode(hamming_dist=5,
-              skew_polynomial_ring=R, alpha=alpha)
+sage: RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
 sage: D = SkewRSCodeSugiyamaDecoder(RS_C)
 sage: D.decoding_radius()
 2
@@ -379,11 +371,7 @@ sage: b = t^2 * x**2 + (t+1)*x +1
 sage: f = a*b
 sage: g = b
 sage: left_extended_euclidean_algorithm(R, f, g)
-([1, 0, 1],
- [0, 1, 2*x + 2*t + 2],
- [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 +
-    (t^2 + 2*t + 2)*x + t + 1, t^2*x^2 +
-    (t + 1)*x + 1, 0])
+([1, 0, 1], [0, 1, 2*x + 2*t + 2], [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 + (t^2 + 2*t + 2)*x + t + 1, t^2*x^2 + (t + 1)*x + 1, 0])
     \end{lstlisting}
 
     \item[right\_extended\_euclidean\_algorithm(skew\_polynomial\_ring, f, g)]
@@ -412,10 +400,7 @@ sage: b = t^2 * x**2 + (t+1)*x +1
 sage: f = a*b
 sage: g = a
 sage: right_extended_euclidean_algorithm(R, f, g)
-([1, 0, 1],
- [0, 1, 2*t^2*x^2 + (2*t + 2)*x + 2],
- [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 +
-    (t^2 + 2*t + 2)*x + t + 1, x + t + 1, 0])
+([1, 0, 1], [0, 1, 2*t^2*x^2 + (2*t + 2)*x + 2], [t^6*x^3 + (2*t^3 + t^2 + 1)*x^2 + (t^2 + 2*t + 2)*x + t + 1, x + t + 1, 0])
     \end{lstlisting}
 
     \item[left\_lcm(pols)]
@@ -434,10 +419,7 @@ sage: R.<x> = F['x', sigma]
 sage: a = x + t +1;
 sage: b = t^2 * x**2 + (t+1)*x +1
 sage: left_lcm((a,b))
-x^3 +
-(2*t^9 + 2*t^8 + 2*t^7 + t^6 + t^5 + 2*t^4 + t^2 + t)*x^2 +
-(2*t^9 + t^8 + 2*t^7 + 2*t^6 + 2*t^5 + 2*t^3 + t)*x +
-t^8 + t^6 + 2*t^4 + t^3 + 2*t + 2
+x^3 + (2*t^9 + 2*t^8 + 2*t^7 + t^6 + t^5 + 2*t^4 + t^2 + t)*x^2 + (2*t^9 + t^8 + 2*t^7 + 2*t^6 + 2*t^5 + 2*t^3 + t)*x + t^8 + t^6 + 2*t^4 + t^3 + 2*t + 2
     \end{lstlisting}
 
     \item[norm(j, sigma, gamma)]
