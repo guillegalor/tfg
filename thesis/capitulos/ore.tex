@@ -1,7 +1,7 @@
 \chapter{Introducción a extensiones de Ore}%
 \label{chap:conceptos_básicos_sobre_extensiones_ore}
 
-A continuación introduciremos los conceptos principales sobre extensiones de Ore que utilizaremos como base para el siguiente capítulo. Las definiciones y principales resultados de este capítulo siguen el desarrollo realizado en~\cite{gomez-torrecillas_factoring_2020}.
+A continuación introduciremos los conceptos principales sobre extensiones de Ore que utilizaremos como base para el siguiente capítulo. Las definiciones y principales resultados de este capítulo siguen el desarrollo realizado en~\cite{Gomez:2013}.
 
 \section{Conceptos básicos sobre extensiones de Ore}
 
@@ -161,11 +161,10 @@ Por ser \(R\) un dominio de ideales principales sabemos que \(Rf + Rg = Rd\) par
 
 \begin{proposition}[Identidad de bezout]
 Sean \(f \text{ y } g\) dos polinomios en \(R\), y  \(d = {( f,g )_r}\), entonces existen \(u, v \in R\) tales que
-\[
+\(
 uf + vg = d
-.\]
+.\)
 \end{proposition}
-
 Similarmente  \(Rf \cap Rg = Rm\) si y solo si \(m\) es un \textit{mínimo común múltiplo a la izquierda} de \(f\) y \(g\), notado por \(m = {[f,g]}_l\). Este también es único salvo multiplicación a la izquierda por una unidad de \(R\).
 
 La versión a la derecha de todas estas definiciones y propiedades puede establecerse de forma completamente análoga. En particular, si tenemos que \(g  \mid_r f\) y \(g  \mid_l f\), entonces diremos que \(g\) divide a \(f\) y lo notaremos por \(g  \mid f\).
@@ -173,7 +172,7 @@ La versión a la derecha de todas estas definiciones y propiedades puede estable
 A continuación mostramos las respectivas versiones del Algoritmo Extendido de Euclides a derecha e izquierda (algoritmos~\ref{alg:right_ext_euc_alg} y~\ref{alg:left_ext_euc_alg} respectivamente). Estas nos permiten calcular el máximo común divisor y el mínimo común multiplo tanto a izquierda como a derecha.
 En particular, para nuestro algoritmo principal utilizaremos la versión a la derecha de este algoritmo para obtener los coeficientes de Bezout.
 
-\begin{algorithm}[H]\label{alg:right_ext_euc_alg}
+\begin{algorithm}[ht]\label{alg:right_ext_euc_alg}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
@@ -197,7 +196,7 @@ En particular, para nuestro algoritmo principal utilizaremos la versión a la de
  \caption{Algoritmo extendido de Euclides a la derecha}
 \end{algorithm}
 
-\begin{algorithm}[H]\label{alg:left_ext_euc_alg}
+\begin{algorithm}[ht]\label{alg:left_ext_euc_alg}
  \SetKwInput{KwIn}{Entrada}
  \SetKwInput{KwOut}{Salida}
  \SetKw{Initialization}{Inicialización:}
@@ -467,5 +466,5 @@ f - \sum_{i=0}^n \sigma^{-i}(f_i) N_{-i}(\gamma) = \sum_{i=0}^n x^i\sigma^{-i}(f
 \[
 = \sum_{i=0}^n (x^i - N_{-i}(\gamma))\sigma^{-i}(f_i) \in (x - \gamma)R
 .\]
-Así que por la unicidad del resto queda probado \textit{ii)}.
+Así que por la unicidad del resto queda probado 2.
 \end{proof}
