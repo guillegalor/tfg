@@ -32,7 +32,7 @@ A continuación demostramos un teorema con varias propiedades que necesitaremos 
 \begin{theorem}
 Sea \(\C\) un código cíclico sesgado en \(\mathcal{R}\). Entonces existe un polinomio \(g \in \C\) con las siguientes propiedades:
 
-\begin{enumerate}[label=\roman*.]
+\begin{enumerate}
     \item \(\C\) esta generado como ideal a la izquierda en \(R\) por \(g\).\label{it:1}
     \item \(g \mid (x^{n} - 1) \).
     \item la dimensión de \(\C\) es \(k = n - \deg g \).
@@ -80,7 +80,7 @@ Nuestro siguiente objetivo será proporcionar un método sistemático para contr
 
 \begin{lemma}
 \label{lem:det_0}
-    Sea \(L\) un cuerpo, \(\sigma\) un automorfismo de \(L\) de orden finito \(n\), y \(K = L^\sigma\) el subcuerpo invariante bajo \(\sigma\). Sea  \(\{a_0, \dots, a_{n-1}\}\) una \(K\)-base de \(L\). Entonces, para todo \(t \leq n\), y cada subconjunto \(k_0 < k_1 < \dots < k_{t-1} \subset \{0, 1, \dots, n-1\}\)
+    Sea \(L\) un cuerpo, \(\sigma\) un automorfismo de \(L\) de orden finito \(n\), y \(K = L^\sigma\) el subcuerpo invariante bajo \(\sigma\). Sea  \(\{\alpha_0, \dots, \alpha_{n-1}\}\) una \(K\)-base de \(L\). Entonces, para todo \(t \leq n\), y cada subconjunto \(k_0 < k_1 < \dots < k_{t-1} \subset \{0, 1, \dots, n-1\}\)
     \[
     \begin{vmatrix}
         \alpha_{k_0} & \alpha_{k_1} & \dots & \alpha_{k_{t -1}} \\
@@ -107,7 +107,7 @@ Nuestro siguiente objetivo será proporcionar un método sistemático para contr
 el determinante \(|\Delta|\) es distinto de cero. Supongamos por el contrario que \(|\Delta| = 0\). Por la hipótesis de inducción tenemos que las primeras \(t\) columnas de \(\Delta\) son linealmente independientes, luego existen \(a_0, \dots, a_{t-1} \in L\) tales que
 
 \[
-(\alpha_{k_t}, \sigma^{t-1}(\alpha_{k_t}), \dots, \sigma^t(\alpha_{k_t})) = \sum_{j=0}^{t-1} a_j(\alpha_{k_j}, \sigma^{t-1}(\alpha_{k_j}), \dots, \sigma^t(\alpha_{k_j}))
+(\alpha_{k_t}, \sigma(\alpha_{k_t}), \dots, \sigma^t(\alpha_{k_t})) = \sum_{j=0}^{t-1} a_j(\alpha_{k_j}, \sigma(\alpha_{k_j}), \dots, \sigma^t(\alpha_{k_j}))
 .\]
 
 Es decir, \(a_0, \dots, a_{t-1}\) satisfacen el sistema lineal
@@ -123,7 +123,7 @@ Es decir, \(a_0, \dots, a_{t-1}\) satisfacen el sistema lineal
 .
 \end{equation}
 
-Para cada \(j = 0, \dots, t-1\), restamos en (\ref{linear_system}) la ecuación \(j+1\) transformada por \(\sigma^{-1}\) a la ecuación \(j\). Esto produce el siguiente sistema lineal homogéneo
+Para cada \(j = 0, \dots, t-1\), restamos en~\eqref{linear_system} la ecuación \(j+1\) transformada por \(\sigma^{-1}\) a la ecuación \(j\). Esto produce el siguiente sistema lineal homogéneo
 
 \begin{equation}
 \label{hom_liner_system}
@@ -429,7 +429,7 @@ Ahora intentaremos resolver esta ecuación, para lo que utilizaremos el Algoritm
 \begin{proof}
     Recordemos que \(\deg S < 2\tau\), \(\deg \lambda \le \nu \le \tau\) y que \(\deg \omega < \nu \le \tau\). Entonces, \(\deg u < \tau\), pues en otro caso \(\deg x^{2\tau}u \ge 3\tau > \deg S\lambda\), y por tanto \(\deg \omega \ge 3\lambda\) que es contradicción. Por otro lado, por el lema \ref{lem:reea} \textit{VI)}, \(\deg v_{I} + \deg r_{I-1} = 2\tau\), y utilizando la hipótesis \(\deg r_{I-1} \ge \tau\) tenemos que \(\deg v_{I} \le \tau\).
 
-    Consideremos ahora el mínimo común múltiplo a la derecha \({[\lambda, v_{I}]}_{r} = \lambda a = v_{I}b\), donde \(a, b \in R\) con \(\deg a \le \deg v_{I} \le \tau\) y \(\deg b \le \deg \lambda \le \tau\). Entonces  \({(a,b)}_{r} = 1\). Entonces, multiplicando~\eqref{eq:key_equation} a la derecha por \(a\), y~\eqref{eq:key_equation_div} a la derecha por \(b\), obtenemos
+    Consideremos ahora el mínimo común múltiplo a la derecha \({[\lambda, v_{I}]}_{r} = \lambda a = v_{I}b\), donde \(a, b \in R\) con \(\deg a \le \deg v_{I} \le \tau\) y \(\deg b \le \deg \lambda \le \tau\). Entonces  \({(a,b)}_{r} = 1\). Multiplicando~\eqref{eq:key_equation} a la derecha por \(a\), y~\eqref{eq:key_equation_div} a la derecha por \(b\), obtenemos
     \begin{equation}
         x^{2\tau} u a + S \lambda a = \omega a
     \end{equation}
@@ -565,7 +565,7 @@ True
 \end{lstlisting}
 \end{exampleth}
 
-En caso de que se dé \({(\lambda, \omega)}_r = 1\), el algoritmo no es válido pues \(v_I\) y  \(r_I\) no serían los polinomios localizador y evaluador de errores respectivamente. Por el lema~\ref{lem:eval} es directo ver que si se cumple la condición que presentamos para devolver un error entonces \({(\lambda, \omega)}_r = 1\). Para el caso en que se de la igualdad \(\deg v_I = \operatorname{Cardinal}(pos)\), aunque a priori no podemos descartar que ocurra un error, en la siguiente sección vemos un resultado (teorema~\ref{th:failure_cond}) que nos dice que si se da la igualdad entonces no puede ocurrir un error. Por tanto, solo puede ocurrir un error en la ecuación clave si se cumple dicha condición.
+En caso de que se dé \({(\lambda, \omega)}_r \neq 1\), el algoritmo no es válido pues \(v_I\) y  \(r_I\) no serían los polinomios localizador y evaluador de errores respectivamente. Por el lema~\ref{lem:eval} es directo ver que si se cumple la condición que presentamos para devolver un error entonces \({(\lambda, \omega)}_r = 1\). Para el caso en que se de la igualdad \(\deg v_I = \operatorname{Cardinal}(pos)\), aunque a priori no podemos descartar que ocurra un error, en la siguiente sección vemos un resultado (teorema~\ref{th:failure_cond}) que nos dice que si se da la igualdad entonces no puede ocurrir un error. Por tanto, solo puede ocurrir un error en la ecuación clave si se cumple dicha condición.
 
 \section{Errores en la ecuación clave}%
 \label{sec:errores_en_ecuación_clave}
@@ -597,16 +597,16 @@ Ahora bien, por el lema recién demostrado, sabemos que \(\deg v_I \ge 1\). Si \
     q = {[1 - \sigma^{t_1}(\beta)x, 1 - \sigma^{t_2}(\beta)x, \ldots, 1 - \sigma^{t_m}(\beta)x]}_r
     .\]
     Sean \(q_1, q_2, \ldots, q_m\) tales que \(q = (1 - \sigma^{t_j}(\beta)x)q_j\) para cualquier \(1 \le j \le m\). Entonces:
-\begin{nlist}
+\begin{enumerate}
     \item \({[q_1, q_2, \ldots, q_m]}_l = q\) y \({(q_1, q_2, \ldots, q_m)}_r = 1\).
     \item \(R/Rq = \bigoplus_{j = 1}^{m} Rq_j/Rq\).
     \item Para cada \(f \in R\) con \(\deg f < m\) existen  \(a_1, a_2, \ldots, a_m \in \F\) tales que \(f = \sum_{j=1}^{m}a_j q_j\).
     \item El conjunto \(\{q_1, \ldots, q_m\}\) módulo \(Rq\) proporciona una base de  \(R/Rq\) como un \(\F\)-espacio vectorial.
-\end{nlist}
+\end{enumerate}
 \end{lemma}
 
 \begin{proof}
-\begin{nlist}
+\begin{enumerate}
     \item Utilizando el lema~\ref{lem:lambda_roots} para seguidamente poder aplicar el lema~\ref{lem:deg_lcm} tenemos que \(\deg q = m\), y por tanto
     \[
     \deg q_j = m-1 \quad \forall j \in \{1, \ldots, m\}.
@@ -631,7 +631,7 @@ Además, por \(q = (1 - \sigma^{t_j}(\beta)x)q_j\) para \(1 \le j \le m\),  \(Rq
 
     \item Se obtiene directamente del apartado (II)
     \item Se obtiene directamente del apartado (II)
-\end{nlist}
+\end{enumerate}
 \end{proof}
 
 Con este lema ya estamos en posición de enunciar y probar el teorema para saber si hemos encontrado ya todas las posiciones de error.
@@ -738,7 +738,7 @@ Así, utilizando recursivamente el algoritmo~\ref{alg:find_a_position} encontrar
 
 Por tanto, esto nos permite que, en caso de que se de un error de ecuación clave en el algoritmo~\ref{alg:decoding_1}, calcular los polinomios localizador y evaluador de errores. De esta manera podemos concluir la decodificación resolviendo el sistema lineal con el que finaliza dicho algoritmo
 
-Para concluir esta sección analizaremos con que frecuencia ocurre un error en la ecuación clave. De hecho, dado un conjunto de posiciones de error, mostraremos que los valores de los errores deben satisfacer una relación no trivial. Recordemos que dicho error en la ecuación clave puede ocurrir únicamente si \({(\lambda, \w)}_r \neq 1\).
+Para concluir esta sección analizaremos con qué frecuencia ocurre un error en la ecuación clave. De hecho, dado un conjunto de posiciones de error, mostraremos que los valores de los errores deben satisfacer una relación no trivial. Recordemos que dicho error en la ecuación clave puede ocurrir únicamente si \({(\lambda, \w)}_r \neq 1\).
 
 \begin{proposition}
     Los siguientes enunciados son equivalentes:
@@ -823,4 +823,4 @@ e_1 & e_2 & \cdots & e_{\nu} \\
 de forma que por la proposición~\ref{prop:key_eq_error_iif_det} nos dice que \({(\lambda, r)}_r \neq 1\) si y solo si esta no es de rango completo. Ahora, siguiendo la notación de~\cite{lam_vandermonde_1988}, \(A\) es una \(\nu \times \nu\) matriz Wronskiana con respecto al endomorfismo \(\sigma\); simbolicamente \(A = W_{\nu,\nu}^{\sigma}(e_1, \ldots, e_\nu)\). Por~\cite[Corolario 4.13]{lam_vandermonde_1988}, \(A\) es invertible si y solo si \(e_1, \ldots, e_\nu\) son linealmente independientes sobre \(\F^{\sigma}\), y por tanto \(A\) no es de rango completo si y solo si \(e_1, \ldots, e_\nu\) son linealmente dependientes sobre \(\F^{\sigma}\), concluyendo la prueba.
 \end{proof}
 
-Por tanto, como dijimos, hemos probado que para que se de un error en la ecuación clave (\({(\lambda, \w)}_r \neq 1\)) tiene que existir una dependencia lineal entre las posiciones del error.
+Por tanto, como dijimos, hemos probado que para que se dé un error en la ecuación clave (\({(\lambda, \w)}_r \neq 1\)) tiene que existir una dependencia lineal entre las posiciones del error.

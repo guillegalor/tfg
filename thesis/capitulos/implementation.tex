@@ -23,13 +23,12 @@ A continuación mostramos la documentación junto con ejemplos de uso de cada un
 \section{Clase de códigos cíclicos sesgados}%
 \label{sec:clase_de_códigos_cíclicos_sesgados}
 
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[class SkewCyclicCode(self, generator\_pol=None)]
-
     Clase para representar un código cíclico sesgado. Hereda de \texttt{AbstractLinearCode}.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[generator\_pol] Polinomio generador para construir el código.
     \end{description}
 
@@ -46,7 +45,7 @@ t of size 3^10
     \end{lstlisting}
 
     \textsc{Métodos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
     \item[generator\_pol(self)]
     Devuelve el polinomio generador de \texttt{self}.
 
@@ -63,7 +62,7 @@ x^5 + 2
 
     \end{description}
 
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
     \item[skew\_polynomial\_ring(self)]
     Devuelve el anillo de polinomios de sesgados de \texttt{self}.
 
@@ -85,13 +84,13 @@ size 3^10 twisted by t |--> t^3
 
 \section{Clases de codificadores para códigos cíclicos sesgados}
 
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[class SkewCyclicCodeVectorEncoder(self, code)]
     Clase para codificar un vector como palabras código. Hereda de \texttt{Encoder}.
 
     \textsc{Argumentos}
 
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[code]
         Código sobre el que codificaremos los vectores.
 
@@ -113,7 +112,7 @@ Code over Finite Field in t of size 3^10
 
     \textsc{Métodos}
 
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[generator\_matrix(self)]
         Construye una matriz generatriz asociada al código asociado a este codificador
 
@@ -136,12 +135,12 @@ sage: E.generator_matrix()
 
 \end{description}
 
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[class SkewCyclicCodePolynomialEncoder(self, code)]
     Clase para codificar polinomios en palabras código. Hereda de \texttt{Encoder}.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[code]
         Código sobre el que codificaremos los vectores.
     \end{description}
@@ -160,12 +159,12 @@ Code over Finite Field in t of size 3^10
     \end{lstlisting}
 
     \textsc{Métodos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[encode(self, p)]
         Transforma el polinomio \texttt{p} en un elemento del código asociado a \texttt{self}.
 
         \textsc{Argumentos}
-        \begin{description}[font=\ttfamily, style=nextline]
+        \begin{description}
             \item[p]
             Polinomio que será codificado.
         \end{description}
@@ -187,7 +186,7 @@ sage: E.encode(m)
         Devuelve el mensaje en forma de polinomio asociado a \texttt{c} sin comprobar si \texttt{c} pertenece al código
 
         \textsc{Argumentos}
-        \begin{description}[font=\ttfamily, style=nextline]
+        \begin{description}
             \item[c]
             Un vector de la misma longitud del código asociado a \texttt{self}
         \end{description}
@@ -227,13 +226,13 @@ of size 3^10 twisted by t |--> t^3
 
 \section{Clase de Códigos Reed-Solomon Sesgados}
 
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[class SkewRSCode(self, hamming\_dist=None, \\skew\_polynomial\_ring=None, alpha=None)]
 
     Clase para representar un código RS sesgado. Hereda de \texttt{SkewCyclicCode}.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[hamming\_dist] La distancia hamming de \texttt{self}.
         \item[skew\_polynomial\_ring] El anillo de polinomios sesgados base.
         \item[alpha] Un generador normal de la extensión de cuerpos sobre el cuerpo fijo por el automorfismo asociado a \texttt{skew\_polynomial\_ring}.
@@ -254,7 +253,7 @@ Field in t of size 2^12
     \end{lstlisting}
 
     \textsc{Métodos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[hamming\_dist(self)]
             Devuelve la distancia Hamming asociada a este código.
 
@@ -274,12 +273,12 @@ sage: RS_C.hamming_dist()
 \end{description}
 
 \section{Clase del decodificador para códigos RS sesgados}
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[class SkewRSCodeSugiyamaDecoder(self, code)]
     Clase para decodificar un vector recibido en una palabra del código asociado a \texttt{self}. Hereda de \texttt{Decoder}.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[code]
         Código al que pertenecerá la palabra que devuelve el decodificador.
     \end{description}
@@ -301,12 +300,12 @@ of size 2^12
     \end{lstlisting}
 
     \textsc{Métodos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[decode\_to\_code(self, word)]
         Decodifica el vector \texttt{word} en un elemento del código asociado a \texttt{self}.
 
         \textsc{Argumentos}
-        \begin{description}[font=\ttfamily, style=nextline]
+        \begin{description}
             \item[word]
             Vector de elemtos del mismo cuerpo sobre el que está construido el anillo de polinomios
             sesgados del código asociado a \texttt{self}.
@@ -353,20 +352,20 @@ sage: D.decoding_radius()
 
 \section{Funciones auxiliares}
 
-\begin{description}[font=\ttfamily, style=nextline]
+\begin{description}
     \item[left\_extended\_euclidean\_algorithm(skew\_polynomial\_ring, f, g)]
 
     Implementación del algoritmo extendido de Euclides a la izquierda.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily]
+    \begin{description}
         \item[skew\_polynomial\_ring] anillo de polinomios sesgados
         \item[f] polinomio del anillo pasado como argumento
         \item[g] polinomio del anillo pasado como argumento de grado menor que \texttt{f}
     \end{description}
 
     \textsc{Salida}
-    \begin{description}[font=\ttfamily]
+    \begin{description}
         \item[u, v r] vectores de polinomios sesgados tales que \texttt{u[i]*f + v[i]*g = r[i]} para cualquier posición \texttt{i}
     \end{description}
 
@@ -392,14 +391,14 @@ sage: left_extended_euclidean_algorithm(R, f, g)
     Implementación del algoritmo extendido de Euclides a la derecha.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily]
+    \begin{description}
         \item[skew\_polynomial\_ring] anillo de polinomios sesgados
         \item[f] polinomio del anillo pasado como argumento
         \item[g] polinomio del anillo pasado como argumento de grado menor que \texttt{f}
     \end{description}
 
     \textsc{Salida}
-    \begin{description}[font=\ttfamily]
+    \begin{description}
         \item[u, v r] vectores de polinomios sesgados tales que \texttt{f*u[i] + g*v[i] = r[i]} para cualquier posición \texttt{i}
     \end{description}
 
@@ -423,7 +422,7 @@ sage: right_extended_euclidean_algorithm(R, f, g)
     Calcula el mínimo común múltiplo a la izquierda para una lista de polinomios sesgados
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily, style=nextline]
+    \begin{description}
         \item[pols] Lista de polinomios sesgados
     \end{description}
 
@@ -445,7 +444,7 @@ t^8 + t^6 + 2*t^4 + t^3 + 2*t + 2
     Calcula la norma \texttt{j}-ésima de \texttt{gamma}.
 
     \textsc{Argumentos}
-    \begin{description}[font=\ttfamily]
+    \begin{description}
         \item[j] Número entero
         \item[sigma] Automorfismo del cuerpo donde esté definido \texttt{gamma}
         \item[gamma] Un elemento de un cuerpo cualquiera
