@@ -28,7 +28,7 @@ sigma = F.frobenius_endomorphism()
 R.<x> = F['x', sigma]
 
 # Sample polynomials
-g = x**5 - 1
+g = x**2 + t**24561*x + t**47264
 
 C = SkewCyclicCode(generator_pol=g)
 V_E = SkewCyclicCodeVectorEncoder(C)
@@ -58,23 +58,4 @@ noisy_codeword = copy(codeword)
 noisy_codeword[3] = t**671
 
 decoded_word = D.decode_to_code(noisy_codeword)
-codeword == decoded_word
-
-# Example Skew RS Convolutional Codes
-K.<a> = GF(2^3, 'a', modulus=x**3 + x + 1)
-F.<t> = FunctionField(K)
-sigma = F.hom((t +a)/t)
-R.<x> = F['x', sigma]
-
-alpha = t
-RS_C = SkewRSCode(hamming_dist=5, skew_polynomial_ring=R, alpha=alpha)
-P_E = SkewCyclicCodePolynomialEncoder(RS_C)
-D = SkewRSCodeSugiyamaDecoder(RS_C)
-
-codeword = P_E.encode(R(1))
-noisy_codeword = copy(codeword)
-noisy_codeword[1] = 0
-noisy_codeword[2] = 0
-
-# decoded_word = D.decode_to_code(noisy_codeword)
-# codeword == decoded_word
+codeword == decoded_wordk

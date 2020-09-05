@@ -164,10 +164,10 @@ class SkewCyclicCode(AbstractLinearCode):
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
-        sage: g = x**5 - 1
+        sage: g = x**2 + t**24561*x + t**47264
         sage: C = SkewCyclicCode(generator_pol=g)
         sage: C
-        [10, 5] Skew Cyclic Code over Finite Field in t of size 3^10
+        [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
     """
 
     _registered_encoders = {}
@@ -225,7 +225,7 @@ class SkewCyclicCode(AbstractLinearCode):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C1 = SkewCyclicCode(generator_pol=g)
             sage: C2 = SkewCyclicCode(generator_pol=g)
             sage: C1 == C2
@@ -247,10 +247,10 @@ class SkewCyclicCode(AbstractLinearCode):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: C
-            [10, 5] Skew Cyclic Code over Finite Field in t of size 3^10
+            [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
         """
         return ("[%s, %s] Skew Cyclic Code over %s"
                 % (self.length(), self.dimension(),
@@ -265,10 +265,10 @@ class SkewCyclicCode(AbstractLinearCode):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: C.generator_polynomial()
-            x^5 + 2
+            x^2 + ...  + t^5 + t^2 + 2
         """
         return self._generator_polynomial
 
@@ -281,7 +281,7 @@ class SkewCyclicCode(AbstractLinearCode):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: C.skew_polynomial_ring()
             Skew Polynomial Ring in x over Finite Field in t of
@@ -421,11 +421,11 @@ class SkewCyclicCodeVectorEncoder(Encoder):
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
-        sage: g = x**5 - 1
+        sage: g = x**2 + t**24561*x + t**47264
         sage: C = SkewCyclicCode(generator_pol=g)
         sage: E = SkewCyclicCodeVectorEncoder(C)
-        sage: E.encode(vector(F, [0,1,1,2,t]))
-        (0, 2, 2, 1, 2*t, 0, 1, 1, 2, t)
+        sage: E.encode(vector(F, [1,t,1,t**2,1,t,1,1]))
+        (2*t^9 + t^8 + 2*t^6 + t^5 + t^2 + 2, ... , 1)
     """
 
     def __init__(self, code):
@@ -436,7 +436,7 @@ class SkewCyclicCodeVectorEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodeVectorEncoder(C)
         """
@@ -453,7 +453,7 @@ class SkewCyclicCodeVectorEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E1 = SkewCyclicCodeVectorEncoder(C)
             sage: E2 = SkewCyclicCodeVectorEncoder(C)
@@ -472,11 +472,11 @@ class SkewCyclicCodeVectorEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodeVectorEncoder(C)
             sage: E
-            Vector-style encoder for [10, 5] Skew Cyclic Code over Finite Field in t of size 3^10
+            Vector-style encoder for [10, 8] Skew Cyclic Code over Finite Field in t of size 3^10
         """
         return "Vector-style encoder for %s" % self.code()
 
@@ -489,15 +489,18 @@ class SkewCyclicCodeVectorEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodeVectorEncoder(C)
             sage: E.generator_matrix()
-            [2 0 0 0 0 1 0 0 0 0]
-            [0 2 0 0 0 0 1 0 0 0]
-            [0 0 2 0 0 0 0 1 0 0]
-            [0 0 0 2 0 0 0 0 1 0]
-            [0 0 0 0 2 0 0 0 0 1]
+            [2*t^9 + t^8 + 2*t^6 + t^5 + t^2 + 2 ... 0]
+            [                   ...                   ]
+            [                   ...                   ]
+            [                   ...                   ]
+            [                   ...                   ]
+            [                   ...                   ]
+            [                   ...                   ]
+            [0                  ...                  1]
         """
         C = self.code()
         k = C.dimension()
@@ -527,11 +530,11 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
         sage: F.<t> = GF(3^10)
         sage: sigma = F.frobenius_endomorphism()
         sage: R.<x> = F['x', sigma]
-        sage: g = x**5 - 1
+        sage: g = x**2 + t**24561*x + t**47264
         sage: C = SkewCyclicCode(generator_pol=g)
         sage: E = SkewCyclicCodePolynomialEncoder(C)
         sage: E
-        Polynomial-style encoder for [10, 5] Skew Cyclic
+        Polynomial-style encoder for [10, 8] Skew Cyclic
         Code over Finite Field in t of size 3^10
     """
 
@@ -553,7 +556,7 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E1 = SkewCyclicCodePolynomialEncoder(C)
             sage: E2 = SkewCyclicCodePolynomialEncoder(C)
@@ -593,12 +596,12 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodePolynomialEncoder(C)
             sage: m = x + t + 1
             sage: E.encode(m)
-            (2*t + 2, 2, 0, 0, 0, t + 1, 1, 0, 0, 0)
+            (t^8 + 2*t^7 + 2*t^6 + 2*t^4 + t^3 + t^2 + 1, ... , 0)
         """
         C = self.code()
         k = C.dimension()
@@ -626,7 +629,7 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodePolynomialEncoder(C)
             sage: m = x + t + 1
@@ -648,7 +651,7 @@ class SkewCyclicCodePolynomialEncoder(Encoder):
             sage: F.<t> = GF(3^10)
             sage: sigma = F.frobenius_endomorphism()
             sage: R.<x> = F['x', sigma]
-            sage: g = x**5 - 1
+            sage: g = x**2 + t**24561*x + t**47264
             sage: C = SkewCyclicCode(generator_pol=g)
             sage: E = SkewCyclicCodePolynomialEncoder(C)
             sage: E.message_space()
