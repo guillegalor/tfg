@@ -100,6 +100,9 @@
 
 % TABLAS, GRÁFICOS, LISTADOS DE CÓDIGO y ALGORITMOS
 % ---------------------------------------------------------------------
+% Listas horizontales
+\usepackage[inline]{enumitem}
+
 \usepackage{booktabs}
 % \renewcommand{\arraystretch}{1.5} % Aumenta el espacio vertical entre las filas de un entorno tabular
 
@@ -215,13 +218,13 @@
 
 \input{preliminares/portada}
 \input{preliminares/titulo}
-\input{preliminares/declaracion-originalidad}
+\input{licencia}
 % \input{preliminares/dedicatoria}                % Opcional
 \input{preliminares/tablacontenidos}
-\input{preliminares/agradecimientos}            % Opcional
 
 % \pagestyle{scrheadings} % A partir de ahora sí imprime cabeceras
 
+\input{preliminares/resumen}
 \input{preliminares/summary}
 \input{preliminares/introduccion}
 
@@ -278,12 +281,8 @@
 \bibliography{library.bib}
 \end{small}
 
-% ÍNDICE TERMINOLÓGICO  (Opcional)
+% AGRADECIMIENTOS
 %-------------------------------------------------------------------
-
-\cleardoublepage
-\begin{footnotesize} % Normalmente el índice se imprime en un tamaño de letra más pequeño.
-\printindex
-\end{footnotesize}
+\input{preliminares/agradecimientos}            % Opcional
 
 \end{document}
