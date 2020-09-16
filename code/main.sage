@@ -75,4 +75,4 @@ noisy_codeword = copy(codeword)
 noisy_codeword[3] = t**671
 
 decoded_word = D.decode_to_code(noisy_codeword)
-codeword == decoded_wordk
+codeword == decoded_word
